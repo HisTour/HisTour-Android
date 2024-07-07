@@ -1,6 +1,10 @@
 package com.startup.histour.presentation.util
 
+import android.Manifest
 import androidx.activity.result.ActivityResultLauncher
+import com.startup.histour.core.osversion.UsePermissionHelper
+import com.startup.histour.core.osversion.OsVersions
+import com.startup.histour.core.osversion.UsePermissionHelper.Permission
 
 abstract class PermissionRequestDelegator(
     protected val doOnGranted: () -> Unit,
@@ -16,7 +20,7 @@ abstract class PermissionRequestDelegator(
      * */
     protected val deniedBeforeLaunchedPermission = mutableListOf<String>()
 
-    abstract val requestPermissions: Array<String>
+    abstract val requestPermissionType: Permission
 
     abstract val permissionLauncher: ActivityResultLauncher<Array<String>>
 
@@ -32,6 +36,13 @@ abstract class PermissionRequestDelegator(
             return
         }
 
+        if (OsVersions.isGreaterThanOrEqualsUPSIDEDOWNCAKE() && requestPermissionType == Permission.GALLERY) {
+            if (!deniedPermissions.contains(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+                doOnGranted()
+                return
+            }
+        }
+
         deniedPermissions
             .filter { shouldShowRequestPermissionRationale(it) }
             .takeIf { it.isNotEmpty() }
@@ -44,10 +55,13 @@ abstract class PermissionRequestDelegator(
     }
 
     fun requestPermissionLauncher() {
-        requestPermissions
+        val permission = UsePermissionHelper.getTypeOfPermission(requestPermissionType)
+        permission
             .also { deniedBeforeLaunchedPermission.clear() }
             .filter { shouldShowRequestPermissionRationale(it) }
-            .apply { deniedBeforeLaunchedPermission.addAll(this) }
-        permissionLauncher.launch(requestPermissions)
+            .apply {
+                deniedBeforeLaunchedPermission.addAll(this)
+            }
+        permissionLauncher.launch(permission)
     }
 }
