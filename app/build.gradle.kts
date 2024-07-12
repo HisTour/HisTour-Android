@@ -1,4 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val properties = Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
+
 
 plugins {
     alias(deps.plugins.com.android.application)
@@ -19,6 +24,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "NATIVE_APP_KEY", properties.getProperty("NATIVE_APP_KEY"))
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,12 +35,19 @@ android {
         }
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
     }
 
     composeCompiler {
@@ -103,4 +117,5 @@ dependencies {
     implementation(deps.firebase.crashlytics)
     implementation(deps.google.accompanist.systemuicontroller)
 
+    implementation(deps.kakao.login)
 }
