@@ -42,4 +42,8 @@
         </activity>
     </application>
 
+    <queries>
+        <!-- 인스타그램 앱 패키지명 -->
+        <package android:name="com.instagram.android" />
+    </queries>
 </manifest>
