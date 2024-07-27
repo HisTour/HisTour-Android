@@ -1,4 +1,4 @@
-package com.startup.histour.presentation.widget
+package com.startup.histour.presentation.widget.snack
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
