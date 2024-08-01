@@ -37,7 +37,7 @@ fun HistourSnackBar(snackBarHostState: SnackbarHostState) {
                     snackBarData.visuals.message,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                    color = HistourTheme.colors.white,
+                    color = HistourTheme.colors.white000,
                     style = HistourTheme.typography.detail1Regular.copy(fontWeight = FontWeight.Light),
                 )
             }
