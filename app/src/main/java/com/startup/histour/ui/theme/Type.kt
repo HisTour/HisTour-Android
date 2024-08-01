@@ -26,6 +26,7 @@ data class HistourTypography(
     val detail1Regular: TextStyle,
     val detail2Bold: TextStyle,
     val detail2Regular: TextStyle,
+    val detail2Semi: TextStyle,
     val detail3Semi: TextStyle,
     val detail3Regular: TextStyle,
 )
@@ -46,6 +47,7 @@ val LocalHistourTypography = staticCompositionLocalOf {
         detail1Bold = TextStyle.Default,
         detail1Regular = TextStyle.Default,
         detail2Bold = TextStyle.Default,
+        detail2Semi = TextStyle.Default,
         detail2Regular = TextStyle.Default,
         detail3Semi = TextStyle.Default,
         detail3Regular = TextStyle.Default,
@@ -78,7 +80,7 @@ fun getHistourTypography(): HistourTypography =
         ),
         head4 = TextStyle(
             fontFamily = pretendard,
-            fontWeight = FontWeight.Light,
+            fontWeight = FontWeight.Bold,
             fontSize = 18.dp.toSp(),
             lineHeight = 27.dp.toSp(),
             platformStyle = PlatformTextStyle(includeFontPadding = false),
@@ -149,6 +151,13 @@ fun getHistourTypography(): HistourTypography =
         detail2Bold = TextStyle(
             fontFamily = pretendard,
             fontWeight = FontWeight.Bold,
+            fontSize = 12.dp.toSp(),
+            lineHeight = (12 * 1.4).dp.toSp(),
+            platformStyle = PlatformTextStyle(includeFontPadding = false),
+        ),
+        detail2Semi = TextStyle(
+            fontFamily = pretendard,
+            fontWeight = FontWeight.SemiBold,
             fontSize = 12.dp.toSp(),
             lineHeight = (12 * 1.4).dp.toSp(),
             platformStyle = PlatformTextStyle(includeFontPadding = false),
