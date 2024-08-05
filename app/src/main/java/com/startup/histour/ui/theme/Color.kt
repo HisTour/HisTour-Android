@@ -16,22 +16,23 @@ val Yellow300 = Color(0xFFFFE454)
 val Yellow700 = Color(0xFFBC7C00)
 
 // Sementic
+val Blue100 = Color(0xFFE3EEFF)
 val Blue300 = Color(0xFF73A8FF)
 val Red300 = Color(0xFFFF7474)
 
 // GrayScale
-val Gray10 = Color(0xFFF9FAFB)
-val Gray20 = Color(0xFFF3F4F6)
-val Gray30 = Color(0xFFE2E3E5)
-val Gray40 = Color(0xFFD4D6D9)
-val Gray50 = Color(0xFFA4A7AC)
-val Gray60 = Color(0xFF7B7D85)
-val Gray70 = Color(0xFF5A5F67)
-val Gray80 = Color(0xFF474C55)
-val Gray90 = Color(0xFF2C3138)
-val Gray100 = Color(0xFF1C2028)
+val Gray50 = Color(0xFFF9FAFB)
+val Gray100 = Color(0xFFF3F4F6)
+val Gray200 = Color(0xFFE2E3E5)
+val Gray300 = Color(0xFFD4D6D9)
+val Gray400 = Color(0xFFA4A7AC)
+val Gray500 = Color(0xFF7B7D85)
+val Gray600 = Color(0xFF5A5F67)
+val Gray700 = Color(0xFF474C55)
+val Gray800 = Color(0xFF2C3138)
+val Gray900 = Color(0xFF1C2028)
 val Dim80 = Color(0xCC000000)
-val White = Color(0xFFFFFFFF)
+val White000 = Color(0xFFFFFFFF)
 
 
 @Immutable
@@ -42,20 +43,21 @@ data class HistourSemanticColor(
     val yellow200: Color,
     val yellow300: Color,
     val yellow700: Color,
+    val blue100: Color,
     val blue300: Color,
     val red300: Color,
-    val gray10: Color,
-    val gray20: Color,
-    val gray30: Color,
-    val gray40: Color,
     val gray50: Color,
-    val gray60: Color,
-    val gray70: Color,
-    val gray80: Color,
-    val gray90: Color,
     val gray100: Color,
+    val gray200: Color,
+    val gray300: Color,
+    val gray400: Color,
+    val gray500: Color,
+    val gray600: Color,
+    val gray700: Color,
+    val gray800: Color,
+    val gray900: Color,
     val dim80: Color,
-    val white: Color
+    val white000: Color
 )
 
 val LocalHistourColors = staticCompositionLocalOf {
@@ -66,20 +68,21 @@ val LocalHistourColors = staticCompositionLocalOf {
         yellow200 = Color.Unspecified,
         yellow300 = Color.Unspecified,
         yellow700 = Color.Unspecified,
+        blue100 = Color.Unspecified,
         blue300 = Color.Unspecified,
         red300 = Color.Unspecified,
-        gray10 = Color.Unspecified,
-        gray20 = Color.Unspecified,
-        gray30 = Color.Unspecified,
-        gray40 = Color.Unspecified,
         gray50 = Color.Unspecified,
-        gray60 = Color.Unspecified,
-        gray70 = Color.Unspecified,
-        gray80 = Color.Unspecified,
-        gray90 = Color.Unspecified,
         gray100 = Color.Unspecified,
+        gray200 = Color.Unspecified,
+        gray300 = Color.Unspecified,
+        gray400 = Color.Unspecified,
+        gray500 = Color.Unspecified,
+        gray600 = Color.Unspecified,
+        gray700 = Color.Unspecified,
+        gray800 = Color.Unspecified,
+        gray900 = Color.Unspecified,
         dim80 = Color.Unspecified,
-        white = Color.Unspecified,
+        white000 = Color.Unspecified,
     )
 }
 val LocalHistourLightColorScheme = HistourSemanticColor(
@@ -89,20 +92,21 @@ val LocalHistourLightColorScheme = HistourSemanticColor(
     yellow200 = Yellow200,
     yellow300 = Yellow300,
     yellow700 = Yellow700,
+    blue100 = Blue100,
     blue300 = Blue300,
     red300 = Red300,
-    gray10 = Gray10,
-    gray20 = Gray20,
-    gray30 = Gray30,
-    gray40 = Gray40,
     gray50 = Gray50,
-    gray60 = Gray60,
-    gray70 = Gray70,
-    gray80 = Gray80,
-    gray90 = Gray90,
     gray100 = Gray100,
+    gray200 = Gray200,
+    gray300 = Gray300,
+    gray400 = Gray400,
+    gray500 = Gray500,
+    gray600 = Gray600,
+    gray700 = Gray700,
+    gray800 = Gray800,
+    gray900 = Gray900,
     dim80 = Dim80,
-    white = White,
+    white000 = White000,
 )
 
 val LocalHistourDarkColorScheme = HistourSemanticColor(
@@ -112,18 +116,19 @@ val LocalHistourDarkColorScheme = HistourSemanticColor(
     yellow200 = Yellow200,
     yellow300 = Yellow300,
     yellow700 = Yellow700,
+    blue100 = Blue100,
     blue300 = Blue300,
     red300 = Red300,
-    gray10 = Gray10,
-    gray20 = Gray20,
-    gray30 = Gray30,
-    gray40 = Gray40,
     gray50 = Gray50,
-    gray60 = Gray60,
-    gray70 = Gray70,
-    gray80 = Gray80,
-    gray90 = Gray90,
     gray100 = Gray100,
+    gray200 = Gray200,
+    gray300 = Gray300,
+    gray400 = Gray400,
+    gray500 = Gray500,
+    gray600 = Gray600,
+    gray700 = Gray700,
+    gray800 = Gray800,
+    gray900 = Gray900,
     dim80 = Dim80,
-    white = White,
+    white000 = White000,
 )
