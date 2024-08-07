@@ -225,7 +225,7 @@ private fun HisTourTopBarRightSection(
                 }
 
                 HistourTopBarModel.RightSectionType.Text.State.INACTIVE -> {
-                    HistourTheme.colors.gray30 to false
+                    HistourTheme.colors.gray200 to false
                 }
             }
             Column(
@@ -259,7 +259,7 @@ fun HisTourTopBar(model: HistourTopBarModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = HistourTheme.colors.white)
+            .background(color = HistourTheme.colors.white000)
             .padding(horizontal = topBarPadding)
             .height(topBarDefaultHeight),
     ) {
