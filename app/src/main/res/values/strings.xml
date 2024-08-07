@@ -10,4 +10,7 @@
     <string name="progress_precent">%d%%</string>
     <string name="progress_mission">미션 수행도</string>
     <string name="progress_step">%1$d/%2$d</string>
+    <string name="placeholder_tf_chat">깨비에게 뭐든 물어봐!</string>
+    <string name="placeholder_tf_mission">정답은!</string>
+    <string name="character_name_1">왕도깨비</string>
 </resources>

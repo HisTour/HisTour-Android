@@ -10,6 +10,8 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 
 @Composable
@@ -58,3 +60,22 @@ fun Modifier.noRippleClickable(
     role = role,
     onClick = onClick,
 )
+
+
+fun TextFieldValue.ofMaxLength(maxLength: Int): TextFieldValue {
+    val overLength = text.length - maxLength
+    return if (overLength > 0) {
+        val headIndex = selection.end - overLength
+        val trailIndex = selection.end
+        if (headIndex >= 0) {
+            copy(
+                text = text.substring(0, headIndex) + text.substring(trailIndex, text.length),
+                selection = TextRange(headIndex),
+            )
+        } else {
+            copy(text.take(maxLength), selection = TextRange(maxLength))
+        }
+    } else {
+        this
+    }
+}
