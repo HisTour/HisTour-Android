@@ -2,12 +2,20 @@ package com.startup.histour.presentation.util
 
 import android.content.Context
 import android.media.MediaRecorder
+import android.net.Uri
+import android.os.Environment
 import android.os.StatFs
 import android.util.Log
-import com.startup.histour.presentation.util.DeviceUtil.RecordConst.BIT_RATE
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.FileProvider
+import com.startup.histour.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object DeviceUtil {
     object RecordConst {
@@ -69,5 +77,37 @@ object DeviceUtil {
             return@withContext deleted
         }
         return@withContext false
+    }
+
+    fun dispatchTakePictureIntent(
+        context: Context,
+        takePictureLauncher: ActivityResultLauncher<Uri>
+    ): Uri? {
+        val photoFile: File? = try {
+            createImageFile(context)
+        } catch (ex: IOException) {
+            null
+        }
+
+        return photoFile?.run {
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${BuildConfig.APPLICATION_ID}.provider",
+                this
+            )
+            takePictureLauncher.launch(uri)
+            uri
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(context: Context): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        )
     }
 }
