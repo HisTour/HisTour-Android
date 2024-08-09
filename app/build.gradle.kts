@@ -103,6 +103,7 @@ dependencies {
     implementation(deps.retrofit)
     implementation(deps.retrofit.converter.gson)
     implementation(deps.okhttp)
+    implementation(deps.okhttp.sse)
     implementation(deps.okhttp.logging.interceptor)
     implementation(deps.gson)
 
