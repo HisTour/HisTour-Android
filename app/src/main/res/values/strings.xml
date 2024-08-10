@@ -28,4 +28,16 @@
     <string name="on_boarding_character_title">어떤 깨비와\n함께 하시겠어요?</string>
     <string name="on_boarding_character_sub_title">선택한 복장에 따라 말투가 달라져요</string>
     <string name="on_boarding_character_select">너 내 동료가 돼라!</string>
+
+    <!-- dialog -->
+    <string name="dialog_spot_request">여행지 요청하기</string>
+    <string name="dialog_spot_request_description">가고 싶은 여행지가 있으신가요?\n여행지의 장소와 원하는 미션을 적어주세요!</string>
+    <string name="dialog_spot_hint">예) 전주에서 비빔밥 먹기</string>
+    <string name="dialog_change_close">변경을 중단하시겠어요?</string>
+    <string name="dialog_buldle_close">이야기 보따리를 끝내시겠어요?</string>
+    <string name="dialog_save_description">지금 나가면 내용이 저장되지 않아요</string>
+    <string name="dialog_continue">계속하기</string>
+    <string name="dialog_exit">나가기</string>
+    <string name="dialog_close">닫기</string>
+    <string name="dialog_request">보내기</string>
 </resources>
