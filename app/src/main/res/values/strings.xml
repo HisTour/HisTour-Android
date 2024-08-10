@@ -14,6 +14,8 @@
     <string name="placeholder_tf_chat">깨비에게 뭐든 물어봐!</string>
     <string name="placeholder_tf_mission">정답은!</string>
     <string name="character_name_1">왕도깨비</string>
+    <string name="title_bundle_todaystory">오늘의 역사 이야기</string>
+    <string name="bundle_todaystory_related">연관 여행지</string>
     <string name="bundle_recommended_spot_title">이곳은 어때요?</string>
     <string name="bundle_today_history">오늘의 역사 이야기</string>
 
