@@ -12,13 +12,14 @@ import com.startup.histour.presentation.login.viewmodel.LoginViewModel
 import com.startup.histour.presentation.main.ui.MainActivity
 import com.startup.histour.presentation.navigation.LoginNavigationGraph
 import com.startup.histour.presentation.onboarding.viewmodel.OnBoardingViewModel
+import com.startup.histour.ui.theme.HistourTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     val loginViewModel by viewModels<LoginViewModel>()
-    private val onBoardingViewModel by viewModels<OnBoardingViewModel> ()
+    private val onBoardingViewModel by viewModels<OnBoardingViewModel>()
 
 //    @Inject
 //    lateinit var kaKaoLoginClient: KaKaoLoginClient
@@ -26,19 +27,18 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navigateToMain by onBoardingViewModel.state.valid.collectAsState()
-
-            LaunchedEffect(navigateToMain) {
-                if (navigateToMain) {
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    onBoardingViewModel.onTutorialStarted()
+            HistourTheme {
+                val navigateToMain by onBoardingViewModel.state.valid.collectAsState()
+                LaunchedEffect(navigateToMain) {
+                    if (navigateToMain) {
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                        onBoardingViewModel.onTutorialStarted()
+                    }
                 }
+                LoginNavigationGraph(viewModel = onBoardingViewModel)
             }
-
-
-            LoginNavigationGraph(viewModel = onBoardingViewModel)
         }
     }
 
