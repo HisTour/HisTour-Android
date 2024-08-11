@@ -17,7 +17,6 @@
     <string name="bundle_recommended_spot_title">이곳은 어때요?</string>
     <string name="bundle_today_history">오늘의 역사 이야기</string>
 
-
     <string name="setting_menu_item_version">서비스 버전</string>
     <string name="setting_menu_item_terms">서비스이용약관</string>
     <string name="setting_menu_item_policy">개인정보처리방침</string>
@@ -25,5 +24,8 @@
     <string name="setting_menu_item_logout">로그아웃</string>
     <string name="setting_menu_item_leave">회원 탈퇴</string>
 
-
+    <!-- On Boarding -->
+    <string name="on_boarding_character_title">어떤 깨비와\n함께 하시겠어요?</string>
+    <string name="on_boarding_character_sub_title">선택한 복장에 따라 말투가 달라져요</string>
+    <string name="on_boarding_character_select">너 내 동료가 돼라!</string>
 </resources>
