@@ -2,7 +2,7 @@
     <string name="app_name">Histour</string>
     <string name="title_character">캐릭터 변경</string>
     <string name="title_misson">미션 이름</string>
-    <string name="title_bundle">역사 보따리</string>
+    <string name="title_bundle">보따리</string>
     <string name="complete">완료</string>
     <string name="save">저장</string>
     <string name="next">다음</string>
@@ -13,4 +13,6 @@
     <string name="placeholder_tf_chat">깨비에게 뭐든 물어봐!</string>
     <string name="placeholder_tf_mission">정답은!</string>
     <string name="character_name_1">왕도깨비</string>
+    <string name="bundle_recommended_spot_title">이곳은 어때요?</string>
+    <string name="bundle_today_history">오늘의 역사 이야기</string>
 </resources>
