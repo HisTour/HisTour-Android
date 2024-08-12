@@ -3,6 +3,8 @@ package com.startup.histour.presentation.base
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.startup.histour.core.extension.orBlank
+import com.startup.histour.data.util.ClientException
 import com.startup.histour.domain.base.BaseUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +45,12 @@ abstract class BaseViewModel : ViewModel(), DefaultLifecycleObserver {
             launchScope = launchScope,
             params = params,
             onEach = onEach,
-            onError = onError,
+            onError = {
+                if (it is ClientException) {
+                    _event.tryEmit(BaseEvent.NotHandlingExceptionDelivery(it.message.orBlank()))
+                }
+                onError.invoke(it)
+            },
             onCanceled = onCanceled,
             onCompleted = onCompleted,
         )
@@ -65,7 +72,12 @@ abstract class BaseViewModel : ViewModel(), DefaultLifecycleObserver {
             params = params,
             onMap = onMap,
             onEach = onEach,
-            onError = onError,
+            onError = {
+                if (it is ClientException) {
+                    _event.tryEmit(BaseEvent.NotHandlingExceptionDelivery(it.message.orBlank()))
+                }
+                onError.invoke(it)
+            },
             onCanceled = onCanceled,
             onCompleted = onCompleted,
         )
