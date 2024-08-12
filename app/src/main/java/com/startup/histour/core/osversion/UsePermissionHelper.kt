@@ -3,7 +3,22 @@ package com.startup.histour.core.osversion
 import android.Manifest
 
 object UsePermissionHelper {
-    private val PERMISSION_CAMERA = arrayOf(Manifest.permission.CAMERA)
+    private val PERMISSION_CAMERA = if (OsVersions.isGreaterThanOrEqualsTIRAMISU()) {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_MEDIA_IMAGES,
+        )
+    } else if (OsVersions.isGreaterThanOrEqualsR()) {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    } else {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
     private val PERMISSION_GALLERY = if (OsVersions.isGreaterThanOrEqualsUPSIDEDOWNCAKE()) {
         arrayOf(
             Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
