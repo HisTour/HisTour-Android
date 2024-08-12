@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.startup.histour.presentation.navigation.MainScreens
 
 @Composable
 fun RecommendedSpotScreen(navController: NavController) {
