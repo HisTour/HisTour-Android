@@ -22,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.startup.histour.R
 import com.startup.histour.core.extension.orZero
@@ -260,62 +265,96 @@ fun HisTourTopBar(model: HistourTopBarModel) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = HistourTheme.colors.white000)
-            .padding(horizontal = topBarPadding)
-            .height(topBarDefaultHeight),
+            .height(topBarDefaultHeight)
+            .drawBottomBorder(
+                strokeWidth = 0.5.dp,
+                color = HistourTheme.colors.gray400
+            ),
     ) {
-        SubcomposeLayout { constraints ->
-            val leftSectionPlaceable = subcompose("leftSection") {
-                HisTourTopBarLeftSection(model.leftSectionType)
-            }.firstOrNull()?.measure(constraints)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = topBarPadding)
+        ) {
+            SubcomposeLayout { constraints ->
+                val leftSectionPlaceable = subcompose("leftSection") {
+                    HisTourTopBarLeftSection(model.leftSectionType)
+                }.firstOrNull()?.measure(constraints)
 
-            val rightSectionPlaceable = subcompose("rightSection") {
-                HisTourTopBarRightSection(model.rightSectionType)
-            }.firstOrNull()?.measure(constraints)
+                val rightSectionPlaceable = subcompose("rightSection") {
+                    HisTourTopBarRightSection(model.rightSectionType)
+                }.firstOrNull()?.measure(constraints)
 
-            val totalWidth = constraints.maxWidth
-            val totalHeight = constraints.maxHeight
-            val leftIconsWidth = leftSectionPlaceable?.width.orZero()
-            val rightIconsWidth = rightSectionPlaceable?.width.orZero()
-            val titleAvailableWidth = when (model.titleAlign) {
-                HistourTopBarModel.TitleAlign.LEFT -> totalWidth - (leftIconsWidth + rightIconsWidth)
-                HistourTopBarModel.TitleAlign.CENTER ->
-                    totalWidth - 2 * kotlin.math.max(
-                        leftIconsWidth,
-                        rightIconsWidth,
+                val totalWidth = constraints.maxWidth
+                val totalHeight = constraints.maxHeight
+                val leftIconsWidth = leftSectionPlaceable?.width.orZero()
+                val rightIconsWidth = rightSectionPlaceable?.width.orZero()
+                val titleAvailableWidth = when (model.titleAlign) {
+                    HistourTopBarModel.TitleAlign.LEFT -> totalWidth - (leftIconsWidth + rightIconsWidth)
+                    HistourTopBarModel.TitleAlign.CENTER ->
+                        totalWidth - 2 * kotlin.math.max(
+                            leftIconsWidth,
+                            rightIconsWidth,
+                        )
+                }.let { if (it < 0) 0 else it }
+                val leftPlacableX = 0
+                val diffLeftRightWidth =
+                    maxOf(leftIconsWidth, rightIconsWidth) - minOf(leftIconsWidth, rightIconsWidth)
+                val titlePlaceAbleX =
+                    leftPlacableX + leftIconsWidth + if (rightIconsWidth > leftIconsWidth) {
+                        diffLeftRightWidth
+                    } else {
+                        0
+                    }
+                val rightPlaceAbleX =
+                    leftPlacableX + leftIconsWidth + titleAvailableWidth + diffLeftRightWidth
+
+                val titleSectionPlaceable = subcompose("titleSection") {
+                    HisTourTopBarTitleSection(
+                        titleStyle = model.titleStyle,
                     )
-            }.let { if (it < 0) 0 else it }
-            val leftPlacableX = 0
-            val diffLeftRightWidth =
-                maxOf(leftIconsWidth, rightIconsWidth) - minOf(leftIconsWidth, rightIconsWidth)
-            val titlePlaceAbleX =
-                leftPlacableX + leftIconsWidth + if (rightIconsWidth > leftIconsWidth) {
-                    diffLeftRightWidth
-                } else {
-                    0
-                }
-            val rightPlaceAbleX =
-                leftPlacableX + leftIconsWidth + titleAvailableWidth + diffLeftRightWidth
-
-            val titleSectionPlaceable = subcompose("titleSection") {
-                HisTourTopBarTitleSection(
-                    titleStyle = model.titleStyle,
+                }.first().measure(
+                    Constraints(
+                        minWidth = titleAvailableWidth,
+                        maxWidth = titleAvailableWidth,
+                        minHeight = totalHeight,
+                        maxHeight = totalHeight,
+                    ),
                 )
-            }.first().measure(
-                Constraints(
-                    minWidth = titleAvailableWidth,
-                    maxWidth = titleAvailableWidth,
-                    minHeight = totalHeight,
-                    maxHeight = totalHeight,
-                ),
-            )
 
-            layout(totalWidth, totalHeight) {
-                leftSectionPlaceable?.placeRelative(x = leftPlacableX, y = 0)
-                titleSectionPlaceable.placeRelative(x = titlePlaceAbleX, y = 0)
-                rightSectionPlaceable?.placeRelative(x = rightPlaceAbleX, y = 0)
+                layout(totalWidth, totalHeight) {
+                    leftSectionPlaceable?.placeRelative(x = leftPlacableX, y = 0)
+                    titleSectionPlaceable.placeRelative(x = titlePlaceAbleX, y = 0)
+                    rightSectionPlaceable?.placeRelative(x = rightPlaceAbleX, y = 0)
+                }
             }
         }
     }
+}
+
+/**
+ * 하단 stroke 그리는 함수
+ */
+fun Modifier.drawBottomBorder(strokeWidth: Dp, color: Color) = this.then(
+    Modifier.drawWithContent {
+        drawContent()
+        drawLine(
+            color = color,
+            start = Offset(0f, size.height),
+            end = Offset(size.width, size.height),
+            strokeWidth = strokeWidth.toPx()
+        )
+    }
+)
+
+fun DrawScope.drawBottomBorder(strokeWidth: Dp, color: Color) {
+    val strokeWidthPx = strokeWidth.toPx()
+    drawLine(
+        color = color,
+        start = Offset(0f, size.height),
+        end = Offset(size.width, size.height),
+        strokeWidth = strokeWidthPx
+    )
 }
 
 @Composable
