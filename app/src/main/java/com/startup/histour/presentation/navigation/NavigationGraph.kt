@@ -9,6 +9,7 @@ import com.startup.histour.presentation.bundle.ui.HistoryStoryScreen
 import com.startup.histour.presentation.bundle.ui.RecommendedSpotScreen
 import com.startup.histour.presentation.login.ui.LoginScreen
 import com.startup.histour.presentation.main.ui.BottomNavigationScreen
+import com.startup.histour.presentation.main.ui.CharacterSettingScreen
 import com.startup.histour.presentation.main.ui.HomeScreen
 import com.startup.histour.presentation.mission.ui.CameraScreen
 import com.startup.histour.presentation.mission.ui.GptScreen
@@ -58,6 +59,7 @@ fun MainNavigationGraph() {
         composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
         composable(MainScreens.RecommendedSpot.route) { RecommendedSpotScreen(navController) }
         composable(MainScreens.Character.route) { CharacterScreen(navController) }
+        composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
         composable(MainScreens.Setting.route) { SettingScreen(navController) }
     }
 }
