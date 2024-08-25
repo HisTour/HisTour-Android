@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -36,6 +38,9 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.widget.dialog.HistourDialog
+import com.startup.histour.presentation.widget.dialog.HistourDialogModel
+import com.startup.histour.presentation.widget.dialog.TYPE
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
@@ -68,6 +73,8 @@ fun SettingScreen(navController: NavController) {
                 .background(color = HistourTheme.colors.gray100),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            val openWithdrawalDialog = remember { mutableStateOf(false) }
+            val openLogOutDialog = remember { mutableStateOf(false) }
             MenuItemView(list = MenuType.entries.map {
                 when (it) {
                     MenuType.Version -> {
@@ -95,6 +102,7 @@ fun SettingScreen(navController: NavController) {
                     MenuType.Logout -> {
                         MenuItem(type = it, titleStrResId = R.string.setting_menu_item_logout, rightMenuType = RightMenuType.Not) {
                             /* TODO Move To 로그아웃 */
+                            openLogOutDialog.value = true
                         }
                     }
                 }
@@ -115,13 +123,44 @@ fun SettingScreen(navController: NavController) {
                         )
                     }
                     .noRippleClickable {
-                        /* TODO Move To 회원 탈퇴 */
+                        openWithdrawalDialog.value = true
                     },
             ) {
                 Text(stringResource(id = R.string.setting_menu_item_leave), style = HistourTheme.typography.detail2Regular.copy(color = HistourTheme.colors.gray400))
                 Image(painter = painterResource(id = R.drawable.ic_unsubscribe), contentDescription = null)
             }
 
+            if (openWithdrawalDialog.value) {
+                HistourDialog(
+                    histourDialogModel = HistourDialogModel(
+                        titleRes = R.string.dialog_title_sign_out_title,
+                        descriptionRes = R.string.dialog_title_sign_out_sub_title,
+                        positiveButtonRes = R.string.dialog_title_sign_out_positive,
+                        negativeButtonRes = R.string.dialog_title_sign_out_negative,
+                        type = TYPE.DEFAULT
+                    ), onClickNegative = {
+                        openWithdrawalDialog.value = false
+                    }, onClickPositive = {
+                        // TODO 탈퇴하기
+                        openWithdrawalDialog.value = false
+                    }
+                )
+            }
+            if (openLogOutDialog.value) {
+                HistourDialog(
+                    histourDialogModel = HistourDialogModel(
+                        titleRes = R.string.dialog_title_log_out_title,
+                        positiveButtonRes = R.string.dialog_continue,
+                        negativeButtonRes = R.string.dialog_cancel,
+                        type = TYPE.DEFAULT
+                    ), onClickNegative = {
+                        openLogOutDialog.value = false
+                    }, onClickPositive = {
+                        // TODO 로그아웃
+                        openLogOutDialog.value = false
+                    }
+                )
+            }
         }
     }
 }
