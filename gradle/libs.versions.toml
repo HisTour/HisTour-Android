@@ -36,7 +36,7 @@ room = "2.4.3"
 hilt = "2.51.1"
 
 goolge-service = "4.4.2"
-firebase-bom = "33.1.1"
+firebase-bom = "33.2.0"
 firebase-crashlytics = "3.0.2"
 accompanist-systemuicontroller = "0.34.0"
 activity = "1.9.0"
@@ -55,7 +55,6 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 gradle-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
 gradle-goolge-service = { module = "com.google.gms:google-services", version.ref = "goolge-service" }
-gradle-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics" }
 
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
@@ -104,9 +103,12 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
+gradle-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
+firebase-remote-config = { module = "com.google.firebase:firebase-config-ktx" }
+
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 

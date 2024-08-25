@@ -9,7 +9,9 @@ plugins {
     alias(deps.plugins.com.android.application)
     alias(deps.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.compose)
+    id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
+    id("com.google.firebase.crashlytics")
     kotlin("kapt")
 }
 
@@ -117,6 +119,7 @@ dependencies {
     implementation(platform(deps.firebase.bom))
     implementation(deps.firebase.analytics)
     implementation(deps.firebase.crashlytics)
+    implementation(deps.firebase.remote.config)
     implementation(deps.google.accompanist.systemuicontroller)
 
     implementation(deps.kakao.login)

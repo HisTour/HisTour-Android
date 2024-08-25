@@ -1,13 +1,11 @@
 package com.startup.histour.di
 
-import android.content.Context
 import com.startup.histour.annotation.CommonHttpClient
 import com.startup.histour.annotation.SSEHttpClient
 import com.startup.histour.data.util.EventSourceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
