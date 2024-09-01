@@ -13,6 +13,7 @@ sealed class MainScreens(val route: String) {
     data object Home : MainScreens("home")
     data object Mission : MainScreens("mission")
     data object MissionMap : MainScreens("missionMap")
+    data object MissionClear:MainScreens("clear")
     data object GPT : MainScreens("gpt")
     data object Camera : MainScreens("camera")
     data object Bundle : MainScreens("bundle")

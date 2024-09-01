@@ -84,7 +84,6 @@ fun HistourProgressBar(
 
     Box(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
             .height(height.dp)
             .fillMaxWidth()
             .onGloballyPositioned { coordinates ->
