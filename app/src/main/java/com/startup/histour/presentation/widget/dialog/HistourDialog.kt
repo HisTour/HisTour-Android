@@ -41,7 +41,7 @@ import com.startup.histour.ui.theme.HistourTheme
 
 data class HistourDialogModel(
     @StringRes val titleRes: Int,
-    @StringRes val descriptionRes: Int,
+    @StringRes val descriptionRes: Int? = null,
     @StringRes val positiveButtonRes: Int,
     @StringRes val negativeButtonRes: Int,
     val type: TYPE = TYPE.DEFAULT
@@ -142,12 +142,14 @@ private fun TextArea(model: HistourDialogModel) {
             .height(8.dp)
             .fillMaxWidth()
     )
-    Text(
-        text = stringResource(id = model.descriptionRes),
-        textAlign = TextAlign.Start,
-        color = HistourTheme.colors.gray600,
-        style = HistourTheme.typography.detail2Regular
-    )
+    model.descriptionRes?.let {
+        Text(
+            text = stringResource(id = it),
+            textAlign = TextAlign.Start,
+            color = HistourTheme.colors.gray600,
+            style = HistourTheme.typography.detail2Regular
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
