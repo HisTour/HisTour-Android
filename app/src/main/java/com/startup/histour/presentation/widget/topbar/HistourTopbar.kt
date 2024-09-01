@@ -3,6 +3,7 @@ package com.startup.histour.presentation.widget.topbar
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -122,7 +123,6 @@ private fun HisTourTopBarIconSection(
         icons.forEach { icon ->
             Icon(
                 modifier = Modifier
-                    .fillMaxSize(1f)
                     .rippleClickable { onClick(icon.name) },
                 painter = painterResource(id = icon.resId),
                 contentDescription = null,
@@ -164,7 +164,7 @@ private fun HisTourTopBarTitleSection(
                         textAlign = TextAlign.Center, // 항상 중앙 정렬
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        text =  "강원도 춘천시",
+                        text = "강원도 춘천시",
                         style = HistourTheme.typography.body1Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))

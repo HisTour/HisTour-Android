@@ -207,7 +207,7 @@ fun HomeMissionScreen(navController: NavController) {
                         text = R.string.home_mission_doing,
                         mode = CTAMode.Enable.instance()
                     ) {
-                        navController.navigate(MainScreens.Mission.route)
+                        navController.navigate(MainScreens.MissionTask.route)
                     }
                 }
             }

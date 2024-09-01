@@ -15,7 +15,8 @@ import com.startup.histour.presentation.mission.ui.CameraScreen
 import com.startup.histour.presentation.mission.ui.GptScreen
 import com.startup.histour.presentation.mission.ui.MissionClearScreen
 import com.startup.histour.presentation.mission.ui.MissionMapScreen
-import com.startup.histour.presentation.mission.ui.MissionScreen
+import com.startup.histour.presentation.mission.ui.TaskMissionScreen
+import com.startup.histour.presentation.mission.ui.SubMissionChoiceScreen
 import com.startup.histour.presentation.onboarding.ui.CharacterScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingMapScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingScreen
@@ -53,7 +54,8 @@ fun MainNavigationGraph() {
         composable(MainScreens.BottomNavigation.route) { BottomNavigationScreen(navController) }
         composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
         composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
-        composable(MainScreens.Mission.route) { MissionScreen(navController) }
+        composable(MainScreens.MissionTask.route) { TaskMissionScreen(navController) }
+        composable(MainScreens.SubMissionChoice.route) { SubMissionChoiceScreen(navController) }
         composable(MainScreens.Camera.route) { CameraScreen(navController) }
         composable(MainScreens.GPT.route) { GptScreen(navController) }
         composable(MainScreens.Bundle.route) { BundleScreen(navController) }

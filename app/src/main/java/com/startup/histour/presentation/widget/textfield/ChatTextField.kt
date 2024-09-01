@@ -38,6 +38,7 @@ import com.startup.histour.ui.theme.HistourTheme
 
 @Composable
 fun ChatTextField(
+    modifier: Modifier,
     maxLine: Int = Int.MAX_VALUE,
     @StringRes placeHolder: Int,
     maxLength: Int = Int.MAX_VALUE,
@@ -55,7 +56,7 @@ fun ChatTextField(
         MutableInteractionSource()
     }
     Row(
-        Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(color = HistourTheme.colors.white000, shape = RoundedCornerShape(25.dp))
             .padding(start = 16.dp, end = 10.dp),
@@ -130,6 +131,7 @@ fun PreviewTextField() {
                 .padding(horizontal = 20.dp)
         ) {
             ChatTextField(
+                modifier = Modifier,
                 text = "ㅇㄴㅁ",
                 enabled = true,
                 textStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
@@ -141,6 +143,7 @@ fun PreviewTextField() {
             }
             Spacer(modifier = Modifier.height(10.dp))
             ChatTextField(
+                modifier = Modifier,
                 text = "asdjkashdkjashdkjashdkjashdkajshdaksjhdaksjdhakjsdjkhadskhj",
                 enabled = true,
                 textStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),

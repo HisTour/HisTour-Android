@@ -11,8 +11,9 @@ sealed class LoginScreens(val route: String) {
 sealed class MainScreens(val route: String) {
     data object BottomNavigation : MainScreens("bottomNavigation")
     data object Home : MainScreens("home")
-    data object Mission : MainScreens("mission")
+    data object MissionTask : MainScreens("taskMission")
     data object MissionMap : MainScreens("missionMap")
+    data object SubMissionChoice : MainScreens("submissionChoice")
     data object MissionClear:MainScreens("clear")
     data object GPT : MainScreens("gpt")
     data object Camera : MainScreens("camera")

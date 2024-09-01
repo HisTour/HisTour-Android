@@ -19,7 +19,7 @@ fun MissionMapScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = { navController.navigate(MainScreens.Mission.route) }) {
+        Button(onClick = { navController.navigate(MainScreens.MissionTask.route) }) {
             Text("Mission")
         }
     }
