@@ -75,7 +75,7 @@ class TopBarPreviewProvider : PreviewParameterProvider<HistourTopBarModel> {
                 listOf(HistourTopBarModel.TopBarIcon.BACK),
                 onClickRightIcon = {},
             ),
-            titleStyle = HistourTopBarModel.TitleStyle.TextWithIcon(R.string.title_character, R.drawable.ic_launcher_foreground),
+            titleStyle = HistourTopBarModel.TitleStyle.TextWithIcon("강원도 춘천시", R.drawable.ic_launcher_foreground),
         ),
     )
 }

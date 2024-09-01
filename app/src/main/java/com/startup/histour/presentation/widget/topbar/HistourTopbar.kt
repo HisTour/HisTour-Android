@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -88,12 +89,13 @@ data class HistourTopBarModel(
         @DrawableRes val contentDescription: Int? = null,
     ) {
         BACK(R.drawable.ic_arrow_left_back),
+        SETTINGS(R.drawable.btn_setting)
     }
 
     sealed interface TitleStyle {
 
         data class Text(@StringRes val titleResId: Int) : TitleStyle
-        data class TextWithIcon(@StringRes val titleResId: Int, @DrawableRes val icon: Int) :
+        data class TextWithIcon(val titleResId: String, @DrawableRes val icon: Int) :
             TitleStyle
 
         data class Image(val resId: Int) : TitleStyle
@@ -120,7 +122,7 @@ private fun HisTourTopBarIconSection(
         icons.forEach { icon ->
             Icon(
                 modifier = Modifier
-                    .size(24.dp)
+                    .fillMaxSize(1f)
                     .rippleClickable { onClick(icon.name) },
                 painter = painterResource(id = icon.resId),
                 contentDescription = null,
@@ -162,7 +164,7 @@ private fun HisTourTopBarTitleSection(
                         textAlign = TextAlign.Center, // 항상 중앙 정렬
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        text = stringResource(id = titleStyle.titleResId),
+                        text =  "강원도 춘천시",
                         style = HistourTheme.typography.body1Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
