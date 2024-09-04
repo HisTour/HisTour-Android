@@ -91,7 +91,7 @@ abstract class BaseUseCase<R, P>(
 
     }
 
-    private fun cancelJob() {
+    fun cancelJob() {
         useCaseJob?.cancel()
     }
 

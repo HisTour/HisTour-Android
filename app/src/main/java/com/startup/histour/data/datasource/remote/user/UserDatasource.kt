@@ -1,6 +1,6 @@
-package com.startup.histour.data.remote.dataource.user
+package com.startup.histour.data.datasource.remote.user
 
-import com.startup.histour.data.remote.provider.RemoteConfigProvider
+import com.startup.histour.data.datasource.remote.provider.RemoteConfigProvider
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
