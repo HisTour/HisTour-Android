@@ -1,4 +1,4 @@
-package com.startup.histour.data.remote.provider
+package com.startup.histour.data.datasource.remote.provider
 
 import android.util.Log
 import com.google.firebase.ktx.Firebase

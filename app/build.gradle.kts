@@ -27,6 +27,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "NATIVE_APP_KEY", properties.getProperty("NATIVE_APP_KEY"))
+        buildConfigField("String", "SSE_SERVER_DOMAIN", properties.getProperty("SSE_SERVER_DOMAIN"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -98,6 +99,7 @@ dependencies {
     implementation(deps.compose.foundation)
     implementation(deps.compose.constraintlayout)
     implementation(deps.compose.navigation)
+    implementation(deps.compose.hilt.navigation)
     implementation(deps.compose.coil)
     debugImplementation(deps.compose.ui.tooling)
     debugImplementation(deps.compose.ui.test.manifest)

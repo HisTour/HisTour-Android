@@ -27,6 +27,7 @@ compose-activity = "1.9.0"
 compose-bom = "2024.06.00"
 compose-constraint-layout = "1.0.1"
 navigation-compose = "2.7.7"
+navigation-compose-hilt = "1.0.0"
 coil = "2.4.0"
 
 retrofit = "2.9.0"
@@ -84,6 +85,7 @@ compose-animation = { module = "androidx.compose.animation:animation" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "compose-constraint-layout" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+compose-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "navigation-compose-hilt" }
 compose-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 compose-compiler-extension = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "org-jetbrains-kotlin-android" }
 

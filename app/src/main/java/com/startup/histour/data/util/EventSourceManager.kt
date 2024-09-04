@@ -1,6 +1,7 @@
 package com.startup.histour.data.util
 
 import android.util.Log
+import com.google.gson.Gson
 import com.startup.histour.annotation.SSEHttpClient
 import com.startup.histour.data.dto.sse.EventSourceStatus
 import com.startup.histour.data.dto.sse.ResponseEventSource
@@ -13,11 +14,10 @@ import okhttp3.Response
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.startup.histour.BuildConfig.SSE_SERVER_DOMAIN
+import com.startup.histour.data.dto.sse.ResponseSSEData
 
-@Singleton
-class EventSourceManager @Inject constructor(
+class EventSourceManager(
     @SSEHttpClient private val client: OkHttpClient,
 ) {
     private val channel = Channel<ResponseEventSource>(
@@ -25,12 +25,15 @@ class EventSourceManager @Inject constructor(
         onBufferOverflow = BufferOverflow.SUSPEND
     )
     val responseFlow = channel.receiveAsFlow()
+    private val gson = Gson()
 
     private var eventSource: EventSource? = null
 
     private val listener = object : EventSourceListener() {
         override fun onOpen(eventSource: EventSource, response: Response) {
             super.onOpen(eventSource, response)
+            Log.e("EventSource ::", "onOpen :: ${response.message}")
+            Log.e("EventSource ::", "onOpen :: ${response.body?.string().orEmpty()}")
             channel.trySend(ResponseEventSource(EventSourceStatus.OPEN))
         }
 
@@ -43,7 +46,9 @@ class EventSourceManager @Inject constructor(
         override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
             super.onEvent(eventSource, id, type, data)
             Log.e("EventSource ::", "event :: $data")
-            channel.trySend(ResponseEventSource(EventSourceStatus.SUCCESS, data))
+            kotlin.runCatching { gson.fromJson<ResponseSSEData>(data, ResponseSSEData::class.java) }.getOrNull().let {
+                channel.trySend(ResponseEventSource(EventSourceStatus.SUCCESS, it))
+            }
         }
 
         override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
@@ -58,22 +63,15 @@ class EventSourceManager @Inject constructor(
         eventSource = EventSources.createFactory(client)
             .newEventSource(
                 request = Request.Builder()
-                    .url("")
-                    .header("Accept", "application/json")
+                    .url("${SSE_SERVER_DOMAIN}/sse")
+                    .addHeader("Accept", "application/json")
                     .addHeader("Accept", "text/event-stream")
                     .build(),
-                /*TODO Header 체크 필요 */
-                /*TODO URL 체크 필요, url 에 query 보내는 지 */
                 listener = listener
             )
     }
 
     fun cancelEventSource() {
         eventSource?.cancel()
-    }
-    companion object {
-        fun create(
-            client: OkHttpClient,
-        ): EventSourceManager = EventSourceManager(client)
     }
 }

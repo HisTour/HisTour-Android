@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -61,6 +62,54 @@ abstract class BaseUseCase<R, P>(
         onCanceled: () -> Unit = {},
         onCompleted: () -> Unit = {},
     ) {
+        launch(
+            launchScope = launchScope,
+            launchPolicy = launchPolicy,
+            params = params,
+            onMap = onMap,
+            onEach = onEach,
+            onError = onError,
+            onCanceled = onCanceled,
+            onCompleted = onCompleted,
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun launch(
+        launchPolicy: LaunchPolicy = LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
+        launchScope: CoroutineScope? = null,
+        params: P = Unit as P,
+        onStart: () -> Unit = {},
+        onEach: (R) -> Unit,
+        onError: (Throwable) -> Unit,
+        onCanceled: () -> Unit = {},
+        onCompleted: () -> Unit = {},
+    ) {
+        launch(
+            launchScope = launchScope,
+            launchPolicy = launchPolicy,
+            params = params,
+            onStart = onStart,
+            onMap = { it },
+            onEach = onEach,
+            onError = onError,
+            onCanceled = onCanceled,
+            onCompleted = onCompleted,
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <MR> launch(
+        launchPolicy: LaunchPolicy = LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
+        launchScope: CoroutineScope? = null,
+        params: P = Unit as P,
+        onStart: () -> Unit = {},
+        onMap: (R) -> MR,
+        onEach: (MR) -> Unit,
+        onError: (Throwable) -> Unit,
+        onCanceled: () -> Unit = {},
+        onCompleted: () -> Unit = {},
+    ) {
         if (isJobRunning()) {
             when (launchPolicy) {
                 LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED -> {
@@ -75,6 +124,7 @@ abstract class BaseUseCase<R, P>(
 
         useCaseJob = (launchScope ?: coroutineScope).launch {
             buildUseCase(params)
+                .onStart { onStart() }
                 .map { onMap(it) }
                 .flowOn(preExecutionContext)
                 .onEach { onEach(it) }
@@ -88,10 +138,9 @@ abstract class BaseUseCase<R, P>(
                 .flowOn(postExecutionContext)
                 .collect()
         }
-
     }
 
-    private fun cancelJob() {
+    fun cancelJob() {
         useCaseJob?.cancel()
     }
 
