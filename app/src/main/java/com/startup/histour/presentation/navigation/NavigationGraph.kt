@@ -13,6 +13,7 @@ import com.startup.histour.presentation.main.ui.CharacterSettingScreen
 import com.startup.histour.presentation.main.ui.HomeScreen
 import com.startup.histour.presentation.mission.ui.CameraScreen
 import com.startup.histour.presentation.mission.ui.GptScreen
+import com.startup.histour.presentation.mission.ui.MissionClearScreen
 import com.startup.histour.presentation.mission.ui.MissionMapScreen
 import com.startup.histour.presentation.mission.ui.MissionScreen
 import com.startup.histour.presentation.onboarding.ui.CharacterScreen
@@ -61,6 +62,7 @@ fun MainNavigationGraph() {
         composable(MainScreens.Character.route) { CharacterScreen(navController) }
         composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
         composable(MainScreens.Setting.route) { SettingScreen(navController) }
+        composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
     }
 }
 
