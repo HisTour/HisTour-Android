@@ -1,5 +1,6 @@
 package com.startup.histour.di
 
+import android.util.Log
 import com.startup.histour.annotation.CommonHttpClient
 import com.startup.histour.annotation.SSEHttpClient
 import com.startup.histour.data.util.EventSourceManager
@@ -23,14 +24,18 @@ object ApiModule {
         with(chain) {
             val request = request().newBuilder()
                 .build()
-            proceed(request)
+            val response = proceed(request)
+            Log.e("LMH", "RESPONSE ${response.body?.toString()}")
+            Log.e("LMH", "RESPONSE ${response.message}")
+            Log.e("LMH", "RESPONSE ${response.body?.string().orEmpty()}")
+            response
         }
     }
 
     @Provides
     @Singleton
     fun providesLoggerInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.NONE
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
     @Provides
@@ -48,22 +53,12 @@ object ApiModule {
     @Provides
     @SSEHttpClient
     @Singleton
-    fun providesSSEOkHttpClient(
-        loggerInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient =
+    fun providesSSEOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(loggerInterceptor)
             .build()
 
     @Provides
     @Singleton
     fun providesConvertorFactory(): GsonConverterFactory = GsonConverterFactory.create()
-
-
-    @Provides
-    @Singleton
-    fun provideEventSourceManager(
-        @SSEHttpClient client: OkHttpClient,
-    ): EventSourceManager = EventSourceManager.create(client)
 
 }

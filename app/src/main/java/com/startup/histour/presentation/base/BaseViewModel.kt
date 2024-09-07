@@ -70,4 +70,50 @@ abstract class BaseViewModel : ViewModel(), DefaultLifecycleObserver {
             onCompleted = onCompleted,
         )
     }
+
+    protected fun <R, P, MR> BaseUseCase<R, P>.executeOnViewModel(
+        launchPolicy: BaseUseCase.LaunchPolicy = BaseUseCase.LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
+        launchScope: CoroutineScope? = viewModelScope,
+        params: P = Unit as P,
+        onStart: () -> Unit,
+        onMap: (R) -> MR,
+        onEach: (MR) -> Unit,
+        onError: (Throwable) -> Unit,
+        onCanceled: () -> Unit = {},
+        onCompleted: () -> Unit = {},
+    ) {
+        launch(
+            launchPolicy = launchPolicy,
+            launchScope = launchScope,
+            params = params,
+            onStart = onStart,
+            onMap = onMap,
+            onEach = onEach,
+            onError = onError,
+            onCanceled = onCanceled,
+            onCompleted = onCompleted,
+        )
+    }
+
+    protected fun <R, P> BaseUseCase<R, P>.executeOnViewModel(
+        launchPolicy: BaseUseCase.LaunchPolicy = BaseUseCase.LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
+        launchScope: CoroutineScope? = viewModelScope,
+        params: P = Unit as P,
+        onStart: () -> Unit,
+        onEach: (R) -> Unit,
+        onError: (Throwable) -> Unit,
+        onCanceled: () -> Unit = {},
+        onCompleted: () -> Unit = {},
+    ) {
+        launch(
+            launchPolicy = launchPolicy,
+            launchScope = launchScope,
+            params = params,
+            onStart = onStart,
+            onEach = onEach,
+            onError = onError,
+            onCanceled = onCanceled,
+            onCompleted = onCompleted,
+        )
+    }
 }
