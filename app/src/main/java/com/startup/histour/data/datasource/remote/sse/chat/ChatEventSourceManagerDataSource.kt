@@ -1,4 +1,4 @@
-package com.startup.histour.data.datasource.remote.chat
+package com.startup.histour.data.datasource.remote.sse.chat
 
 import com.startup.histour.annotation.SSEHttpClient
 import com.startup.histour.data.dto.sse.ResponseEventSource

@@ -27,6 +27,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "NATIVE_APP_KEY", properties.getProperty("NATIVE_APP_KEY"))
+        buildConfigField("String", "SERVER_DOMAIN", properties.getProperty("SERVER_DOMAIN"))
         buildConfigField("String", "SSE_SERVER_DOMAIN", properties.getProperty("SSE_SERVER_DOMAIN"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
