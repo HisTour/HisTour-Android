@@ -52,12 +52,14 @@ private const val progressDefaultHeight = 44
 private const val progressWithImage = 42
 private const val progressWithTooltipHeight = 85
 private const val progressBarHeight = 16
+private const val submissionProgressBarHeight = 12
 private const val tooltipWidth = 53
 
 enum class ProgressbarType {
     DEFAULT,
     IMAGE,
-    TOOLTIP
+    TOOLTIP,
+    SUBMISSION
 }
 
 
@@ -84,6 +86,7 @@ fun HistourProgressBar(
 
     Box(
         modifier = Modifier
+            .padding(horizontal = if (progressbarType == ProgressbarType.SUBMISSION) 0.dp else 20.dp)
             .height(height.dp)
             .fillMaxWidth()
             .onGloballyPositioned { coordinates ->
@@ -95,6 +98,7 @@ fun HistourProgressBar(
         }
 
         ProgressBar(
+            type = progressbarType,
             progress = animatedProgress,
             backgroundColor = backgroundColor,
             progressColor = progressColor,
@@ -117,27 +121,30 @@ fun HistourProgressBar(
  */
 @Composable
 private fun ProgressBar(
+    type: ProgressbarType = ProgressbarType.DEFAULT,
     progress: Float,
     backgroundColor: Color,
     progressColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val height = if (type == ProgressbarType.SUBMISSION) submissionProgressBarHeight
+    else progressBarHeight
     Box(
         modifier = modifier
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(progressBarHeight.dp)
+                shape = RoundedCornerShape(height.dp)
             )
-            .height(progressBarHeight.dp)
+            .height(height.dp)
             .fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
                 .background(
                     color = progressColor,
-                    shape = RoundedCornerShape(progressBarHeight.dp)
+                    shape = RoundedCornerShape(height.dp)
                 )
-                .height(progressBarHeight.dp)
+                .height(height.dp)
                 .fillMaxWidth(progress.coerceIn(0f, 1f))
         )
     }
@@ -175,7 +182,7 @@ private fun ProgressIndicator(
                 if (progressbarType == ProgressbarType.TOOLTIP) {
                     ProgressTooltip(calculatedProgress)
                 }
-                if (progressbarType != ProgressbarType.DEFAULT) {
+                if (progressbarType == ProgressbarType.IMAGE || progressbarType == ProgressbarType.TOOLTIP) {
                     ProgressImage(dotImage)
                 }
             }
@@ -262,6 +269,7 @@ private fun getProgressBarHeight(progressbarType: ProgressbarType): Int {
         ProgressbarType.DEFAULT -> progressDefaultHeight
         ProgressbarType.IMAGE -> progressWithImage
         ProgressbarType.TOOLTIP -> progressWithTooltipHeight
+        ProgressbarType.SUBMISSION -> progressBarHeight
     }
 }
 
@@ -338,6 +346,26 @@ private fun HistourProgressBarPhone() {
                 ),
                 progress = progressWithTooltip,
                 progressbarType = ProgressbarType.TOOLTIP
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(4.dp)
+                    .fillMaxWidth()
+            )
+
+            // 버튼을 눌러 프로그래스 증가
+            Button(onClick = {
+                progressWithTooltip = (progressWithTooltip + 0.2f).coerceAtMost(1f)
+            }) {
+                Text("진행도 증가")
+            }
+
+            HistourProgressBar(
+                histourProgressBarModel = HistourProgressBarModel(
+                    totalStep = 5,
+                ),
+                progress = progressWithTooltip,
+                progressbarType = ProgressbarType.SUBMISSION
             )
             Spacer(
                 modifier = Modifier
