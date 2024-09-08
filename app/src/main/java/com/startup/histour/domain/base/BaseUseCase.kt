@@ -67,6 +67,7 @@ abstract class BaseUseCase<R, P>(
             launchPolicy = launchPolicy,
             params = params,
             onMap = onMap,
+            onStart = {},
             onEach = onEach,
             onError = onError,
             onCanceled = onCanceled,
