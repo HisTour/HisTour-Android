@@ -1,5 +1,8 @@
 package com.startup.histour.di
 
+import com.startup.histour.annotation.UserTokenDataStore
+import com.startup.histour.data.datastore.TokenDataStoreProvider
+import com.startup.histour.data.datastore.TokenDataStoreProviderImpl
 import com.startup.histour.data.repository.AttractionRepositoryImpl
 import com.startup.histour.data.repository.AuthRepositoryImpl
 import com.startup.histour.data.repository.CharacterRepositoryImpl
@@ -56,4 +59,10 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindsPlaceRepository(placeRepository: PlaceRepositoryImpl): PlaceRepository
+
+    @Singleton
+    @Binds
+    @UserTokenDataStore
+    abstract fun bindSettingPreferenceDataStoreProvider(tokenDataStoreProvider: TokenDataStoreProviderImpl): TokenDataStoreProvider
+
 }

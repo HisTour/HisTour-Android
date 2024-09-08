@@ -7,5 +7,5 @@ interface AuthRepository {
     suspend fun login(type: String): Flow<ResponseLoginDto>
     suspend fun withdrawalAccount()
     suspend fun logout()
-    suspend fun alignRefreshToken(): Flow<ResponseLoginDto>
+    suspend fun alignRefreshToken(): ResponseLoginDto
 }
