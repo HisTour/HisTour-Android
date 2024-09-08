@@ -105,6 +105,7 @@ dependencies {
     debugImplementation(deps.compose.ui.tooling)
     debugImplementation(deps.compose.ui.test.manifest)
 
+    implementation(deps.datastore)
     implementation(deps.retrofit)
     implementation(deps.retrofit.converter.gson)
     implementation(deps.okhttp)

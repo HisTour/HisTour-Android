@@ -1,25 +1,28 @@
 package com.startup.histour.di
 
-import android.content.Context
 import com.startup.histour.BuildConfig
 import com.startup.histour.annotation.AuthHttpClient
 import com.startup.histour.annotation.AuthRetrofit
 import com.startup.histour.annotation.CommonHttpClient
 import com.startup.histour.annotation.CommonRetrofit
+import com.startup.histour.annotation.RefreshTokenHttpClient
+import com.startup.histour.annotation.RefreshTokenRetrofit
 import com.startup.histour.annotation.SSEHttpClient
 import com.startup.histour.data.remote.api.AttractionApi
 import com.startup.histour.data.remote.api.AuthApi
 import com.startup.histour.data.remote.api.CharacterApi
 import com.startup.histour.data.remote.api.HistoryApi
+import com.startup.histour.data.remote.api.LoginApi
 import com.startup.histour.data.remote.api.MemberApi
 import com.startup.histour.data.remote.api.MissionApi
 import com.startup.histour.data.remote.api.PlaceApi
+import com.startup.histour.data.remote.api.TokenUpdateApi
+import com.startup.histour.data.util.AuthInterceptor
+import com.startup.histour.data.util.RefreshTokenAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -30,17 +33,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
-
-    @Provides
-    @Singleton
-    fun providesHeaderInterceptor(@ApplicationContext context: Context): Interceptor = Interceptor { chain ->
-        with(chain) {
-            /* TODO 나중에 Auth 정보 삽입 */
-            val request = request().newBuilder()
-                .build()
-            proceed(request)
-        }
-    }
 
     @Provides
     @Singleton
@@ -67,14 +59,29 @@ object ApiModule {
     @AuthHttpClient
     @Singleton
     fun providesAuthOkHttpClient(
-        headerInterceptor: Interceptor,
+        authInterceptor: AuthInterceptor,
         loggerInterceptor: HttpLoggingInterceptor
     ): OkHttpClient =
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
-            .addInterceptor(headerInterceptor)
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggerInterceptor)
+            .build()
+
+    @Provides
+    @RefreshTokenHttpClient
+    @Singleton
+    fun providesRefreshTokenUpdateOkHttpClient(
+        authInterceptor: RefreshTokenAuthInterceptor,
+        loggerInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggerInterceptor)
             .build()
 
@@ -120,6 +127,19 @@ object ApiModule {
 
     @Provides
     @Singleton
+    @RefreshTokenRetrofit
+    fun providesRefreshTokenRetrofit(
+        @RefreshTokenHttpClient okHttpClient: OkHttpClient,
+        converterFactory: GsonConverterFactory
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.SERVER_DOMAIN)
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .build()
+
+    @Provides
+    @Singleton
     fun provideMemberApi(@AuthRetrofit retrofit: Retrofit): MemberApi = retrofit.create(MemberApi::class.java)
 
     @Provides
@@ -145,4 +165,12 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideAuthApi(@AuthRetrofit retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLoginApi(@CommonRetrofit retrofit: Retrofit): LoginApi = retrofit.create(LoginApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTokenUpdateApi(@RefreshTokenRetrofit retrofit: Retrofit): TokenUpdateApi = retrofit.create(TokenUpdateApi::class.java)
 }
