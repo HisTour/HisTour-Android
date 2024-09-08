@@ -10,7 +10,7 @@ import com.startup.histour.presentation.bundle.ui.RecommendedSpotScreen
 import com.startup.histour.presentation.login.ui.LoginScreen
 import com.startup.histour.presentation.main.ui.BottomNavigationScreen
 import com.startup.histour.presentation.main.ui.CharacterSettingScreen
-import com.startup.histour.presentation.main.ui.HomeScreen
+import com.startup.histour.presentation.main.ui.HomeMissionScreen
 import com.startup.histour.presentation.mission.ui.CameraScreen
 import com.startup.histour.presentation.mission.ui.GptScreen
 import com.startup.histour.presentation.mission.ui.MissionClearScreen
@@ -51,7 +51,7 @@ fun MainNavigationGraph() {
         startDestination = MainScreens.BottomNavigation.route
     ) {
         composable(MainScreens.BottomNavigation.route) { BottomNavigationScreen(navController) }
-        composable(MainScreens.Home.route) { HomeScreen(navController) }
+        composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
         composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
         composable(MainScreens.Mission.route) { MissionScreen(navController) }
         composable(MainScreens.Camera.route) { CameraScreen(navController) }

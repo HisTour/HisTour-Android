@@ -57,7 +57,7 @@ fun BottomNavigationScreen(navController: NavController) {
     ) { innerPadding ->
         NavHost(bottomNavController, startDestination = MainScreens.Home.route, Modifier.padding(innerPadding)) {
             composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
-            composable(MainScreens.Home.route) { HomeScreen(navController) }
+            composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
             composable(MainScreens.Bundle.route) { BundleScreen(navController) }
         }
     }

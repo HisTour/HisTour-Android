@@ -48,7 +48,6 @@
     <string name="dialog_cancel">취소</string>
     <string name="dialog_close">닫기</string>
     <string name="dialog_request">보내기</string>
-
     <string name="dialog_hint">힌트</string>
     <string name="dialog_level">난이도</string>
     <string name="dialog_view_answer">정답 보기</string>
@@ -60,4 +59,14 @@
     <string name="mission_clear_submission">잘했어요~ 서브미션 클리어</string>
     <string name="mission_clear_mission">전체 클리어! 훌륭해요</string>
     <string name="mission_clear_choice_submission">다음 미션 선택하기</string>
-    <string name="mission_clear_cta">미션지도로 돌아가기</string></resources>
+    <string name="mission_clear_cta">미션지도로 돌아가기</string>
+
+    <!-- mission home-->
+    <string name="home_character_setting">캐릭터 설정</string>
+    <string name="home_mission_before">아직 수행한 미션이 없어요</string>
+    <string name="home_mission_progress">%1$d%%를 수행했어요</string>
+    <string name="home_mission_complete">정복 완료! 모든 미션을 수행했어요</string>
+    <string name="home_mission_user_progress">%1$s 님의 미션 수행도</string>
+    <string name="home_mission_doing">미션 하러가기</string>
+
+</resources>
