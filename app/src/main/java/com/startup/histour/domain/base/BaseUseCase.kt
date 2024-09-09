@@ -145,6 +145,6 @@ abstract class BaseUseCase<R, P>(
         useCaseJob?.cancel()
     }
 
-    private fun isJobRunning() =
+    fun isJobRunning() =
         useCaseJob?.isActive ?: false
 }

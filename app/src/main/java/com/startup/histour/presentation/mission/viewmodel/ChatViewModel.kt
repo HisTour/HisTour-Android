@@ -32,6 +32,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun canSend() : Boolean = !connectEventSourceUseCase.isJobRunning()
+
     fun notifyViewModelEvent(chatViewModelEvent: ChatViewModelEvent) {
         viewModelScope.launch {
             viewModelEvent.emit(chatViewModelEvent)

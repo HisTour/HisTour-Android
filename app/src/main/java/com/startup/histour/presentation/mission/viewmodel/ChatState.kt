@@ -3,6 +3,7 @@ package com.startup.histour.presentation.mission.viewmodel
 import com.startup.histour.presentation.base.BaseEvent
 import com.startup.histour.presentation.base.Event
 import com.startup.histour.presentation.base.State
+import com.startup.histour.presentation.model.CharacterModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -30,10 +31,12 @@ data class ChatMessage(
 
 interface ChatViewState : State {
     val chatList: StateFlow<List<ChatMessage>>
+    val characterModel: StateFlow<CharacterModel>
     fun getNextChatId(): Long
 }
 
 class ChatViewStateImpl : ChatViewState {
     override val chatList: MutableStateFlow<List<ChatMessage>> = MutableStateFlow(emptyList())
+    override val characterModel: MutableStateFlow<CharacterModel> = MutableStateFlow(CharacterModel.orEmpty())
     override fun getNextChatId(): Long = (chatList.value.lastOrNull()?.id ?: 0L) + 1L
 }
