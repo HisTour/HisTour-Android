@@ -7,6 +7,7 @@
     <string name="complete">완료</string>
     <string name="save">저장</string>
     <string name="next">다음</string>
+    <string name="chat_bot">챗봇</string>
     <string name="finish">끝내기</string>
     <string name="progress_precent">%d%%</string>
     <string name="progress_mission">미션 수행도</string>
@@ -74,4 +75,7 @@
     <!-- sub mission -->
     <string name="submission_change">서브미션 변경</string>
     <string name="submission_continue">이어하기</string>
+    <string name="task_number">%1$d번 미션 </string>
+    <string name="mission_guide">빈칸에 정답을 입력해주세요</string>
+    <string name="mission_textfield_hint">정답은!</string>
 </resources>

@@ -127,4 +127,6 @@ dependencies {
     implementation(deps.google.accompanist.systemuicontroller)
 
     implementation(deps.kakao.login)
+
+    implementation(deps.markdown.viewer)
 }
