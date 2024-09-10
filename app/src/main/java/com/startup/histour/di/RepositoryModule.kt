@@ -62,7 +62,6 @@ abstract class RepositoryModule {
 
     @Singleton
     @Binds
-    @UserTokenDataStore
     abstract fun bindSettingPreferenceDataStoreProvider(tokenDataStoreProvider: TokenDataStoreProviderImpl): TokenDataStoreProvider
 
 }

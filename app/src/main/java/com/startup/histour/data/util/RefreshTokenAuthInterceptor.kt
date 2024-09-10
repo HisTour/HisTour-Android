@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.startup.histour.data.datastore.REFRESH_ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.TokenDataStoreProvider
 import com.startup.histour.presentation.login.ui.LoginActivity
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +21,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RefreshTokenAuthInterceptor @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val tokenDataStoreProvider: TokenDataStoreProvider,
     @Named(REFRESH_ACCESS_TOKEN_KEY_NAME) private val refreshTokenKey: Preferences.Key<String>,
 ) : Interceptor {

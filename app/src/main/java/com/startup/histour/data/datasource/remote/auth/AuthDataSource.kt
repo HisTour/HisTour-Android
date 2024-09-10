@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthDataSource @Inject constructor(private val authApi: AuthApi, private val loginApi: LoginApi, private val tokenUpdateApi: TokenUpdateApi) {
+class AuthDataSource @Inject constructor(private val authApi: AuthApi, private val loginApi: LoginApi) {
     suspend fun login(type: String): ResponseLoginDto {
         return handleExceptionIfNeed {
             loginApi.login(type).data
@@ -25,12 +25,6 @@ class AuthDataSource @Inject constructor(private val authApi: AuthApi, private v
     suspend fun logout() {
         return handleExceptionIfNeed {
             authApi.logout()
-        }
-    }
-
-    suspend fun alignRefreshToken(): ResponseLoginDto {
-        return handleExceptionIfNeed {
-            tokenUpdateApi.alignRefreshToken().data
         }
     }
 }

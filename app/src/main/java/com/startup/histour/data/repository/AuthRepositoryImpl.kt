@@ -20,6 +20,4 @@ class AuthRepositoryImpl @Inject constructor(private val authDataSource: AuthDat
     override suspend fun logout() {
         authDataSource.logout()
     }
-
-    override suspend fun alignRefreshToken(): ResponseLoginDto = authDataSource.alignRefreshToken()
 }

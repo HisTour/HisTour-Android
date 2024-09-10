@@ -8,6 +8,8 @@ import com.startup.histour.data.datastore.ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.REFRESH_ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.TokenDataStoreProvider
 import com.startup.histour.data.dto.auth.ResponseLoginDto
+import com.startup.histour.data.remote.api.TokenUpdateApi
+import com.startup.histour.data.util.handleExceptionIfNeed
 import com.startup.histour.domain.base.BaseUseCase
 import com.startup.histour.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class RefreshTokenUpdateUseCase @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val tokenUpdateApi: TokenUpdateApi,
     private val tokenDataStoreProvider: TokenDataStoreProvider,
     @Named(ACCESS_TOKEN_KEY_NAME) private val accessTokenKey: Preferences.Key<String>,
     @Named(REFRESH_ACCESS_TOKEN_KEY_NAME) private val refreshTokenKey: Preferences.Key<String>,
@@ -33,7 +35,9 @@ class RefreshTokenUpdateUseCase @Inject constructor(
     postExecutionContext = postExecutionContext
 ) {
     suspend operator fun invoke() {
-        val response = authRepository.alignRefreshToken()
+        val response = handleExceptionIfNeed {
+            tokenUpdateApi.alignRefreshToken().data
+        }
         val (accessToken, refreshToken) = response
         tokenDataStoreProvider.putValue(accessTokenKey, accessToken.orEmpty())
         tokenDataStoreProvider.putValue(refreshTokenKey, refreshToken.orEmpty())
