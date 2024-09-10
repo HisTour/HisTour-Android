@@ -40,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
                 LoginNavigationGraph(viewModel = onBoardingViewModel)
             }
         }
+
     }
 
 //    // 해당 로직들이 context가 필요해서 액티비티에서 작성
@@ -48,6 +49,9 @@ class LoginActivity : AppCompatActivity() {
 //            kaKaoLoginClient.login().fold(
 //                onSuccess = { token ->
 //                    Log.i("KakaoLogin", "$token")
+                        /** 해당 위치에서
+                         * @see loginViewModel.login 날리면 됨
+                         * */
 //                    // 성공 처리 로직
 //                },
 //                onFailure = { error ->
