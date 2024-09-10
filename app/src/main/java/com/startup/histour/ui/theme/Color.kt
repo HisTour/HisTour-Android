@@ -22,6 +22,7 @@ val BgBlue = Color(0xFF99DBFF)
 val Red300 = Color(0xFFFF7474)
 
 // GrayScale
+val D9DD9D9 = Color(0xFFD9D9D9)
 val Gray50 = Color(0xFFF9FAFB)
 val Gray100 = Color(0xFFF3F4F6)
 val Gray200 = Color(0xFFE2E3E5)
@@ -61,7 +62,8 @@ data class HistourSemanticColor(
     val gray900: Color,
     val dim80: Color,
     val white000: Color,
-    val black: Color
+    val black: Color,
+    val D9DD9D9: Color
 )
 
 val LocalHistourColors = staticCompositionLocalOf {
@@ -88,7 +90,8 @@ val LocalHistourColors = staticCompositionLocalOf {
         gray900 = Color.Unspecified,
         dim80 = Color.Unspecified,
         white000 = Color.Unspecified,
-        black = Color.Unspecified
+        black = Color.Unspecified,
+        D9DD9D9 = Color.Unspecified,
     )
 }
 val LocalHistourLightColorScheme = HistourSemanticColor(
@@ -114,7 +117,8 @@ val LocalHistourLightColorScheme = HistourSemanticColor(
     gray900 = Gray900,
     dim80 = Dim80,
     white000 = White000,
-    black = Black
+    black = Black,
+    D9DD9D9 = D9DD9D9
 )
 
 val LocalHistourDarkColorScheme = HistourSemanticColor(
@@ -140,5 +144,6 @@ val LocalHistourDarkColorScheme = HistourSemanticColor(
     gray900 = Gray900,
     dim80 = Dim80,
     white000 = White000,
-    black = Black
+    black = Black,
+    D9DD9D9 = D9DD9D9
 )
