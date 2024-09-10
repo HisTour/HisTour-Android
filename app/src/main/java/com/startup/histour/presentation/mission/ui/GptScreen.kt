@@ -144,7 +144,7 @@ fun ReceiveItem(message: ChatMessage = ChatMessage(id = 0, Author.CHAT_BOT, mess
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.background(HistourTheme.colors.green400, CircleShape)) {
                     AsyncImage(
-                        model = characterModel.smallImageUrl,
+                        model = characterModel.faceImageUrl,
                         contentScale = ContentScale.Crop,
                         onError = {
                             Log.e("LMH", "DISPLAY IMAGE ERROR ${it.result.throwable}")

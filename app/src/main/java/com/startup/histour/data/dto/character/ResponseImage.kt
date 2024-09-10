@@ -5,6 +5,6 @@ import com.google.gson.annotations.SerializedName
 data class ResponseImage(
     @SerializedName("normalImageUrl")
     val normalImageUrl: String?,
-    @SerializedName("smallImageUrl")
-    val smallImageUrl: String?
+    @SerializedName("faceImageUrl")
+    val faceImageUrl: String?
 )

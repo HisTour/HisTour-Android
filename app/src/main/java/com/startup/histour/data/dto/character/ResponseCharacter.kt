@@ -28,6 +28,6 @@ data class ResponseCharacter(
             backgroundEnd = color?.backgroundEnd.orEmpty(),
             description = description.orEmpty(),
             normalImageUrl = image?.normalImageUrl.orEmpty(),
-            smallImageUrl = image?.smallImageUrl.orEmpty()
+            faceImageUrl = image?.faceImageUrl.orEmpty()
         )
 }

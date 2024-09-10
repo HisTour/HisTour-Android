@@ -1,3 +1,4 @@
+import com.google.protobuf.gradle.id
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -13,6 +14,11 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.firebase.crashlytics")
     kotlin("kapt")
+    id("com.google.protobuf") version "0.9.3"
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 android {
@@ -105,7 +111,9 @@ dependencies {
     debugImplementation(deps.compose.ui.tooling)
     debugImplementation(deps.compose.ui.test.manifest)
 
-    implementation(deps.datastore)
+    implementation(deps.datastore.preference)
+    implementation(deps.datastore.proto)
+    implementation(deps.proto.buf.javalite)
     implementation(deps.retrofit)
     implementation(deps.retrofit.converter.gson)
     implementation(deps.okhttp)
@@ -129,4 +137,19 @@ dependencies {
     implementation(deps.kakao.login)
 
     implementation(deps.markdown.viewer)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.12"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                id("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }

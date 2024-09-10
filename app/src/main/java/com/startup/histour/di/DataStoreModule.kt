@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.startup.histour.UserInfo
 import com.startup.histour.annotation.UserTokenDataStore
 import com.startup.histour.data.datastore.ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.REFRESH_ACCESS_TOKEN_KEY_NAME
+import com.startup.histour.data.datastore.userInfoDataStore
 import com.startup.histour.data.datastore.userTokenDataStore
 import dagger.Module
 import dagger.Provides
@@ -21,8 +23,12 @@ class DataStoreModule {
 
     @Provides
     @UserTokenDataStore
-    fun provideSignUpFlowPreferenceDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+    fun provideUserTokenPreferenceDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         context.userTokenDataStore
+
+    @Provides
+    fun providesUserInfoInfoModule(@ApplicationContext context: Context): DataStore<UserInfo> =
+        context.userInfoDataStore
 
     @Provides
     @Named(REFRESH_ACCESS_TOKEN_KEY_NAME)
