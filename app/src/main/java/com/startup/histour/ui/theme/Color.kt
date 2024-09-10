@@ -18,6 +18,7 @@ val Yellow700 = Color(0xFFBC7C00)
 // Sementic
 val Blue100 = Color(0xFFE3EEFF)
 val Blue300 = Color(0xFF73A8FF)
+val BgBlue = Color(0xFF99DBFF)
 val Red300 = Color(0xFFFF7474)
 
 // GrayScale
@@ -46,6 +47,7 @@ data class HistourSemanticColor(
     val yellow700: Color,
     val blue100: Color,
     val blue300: Color,
+    val bgblue: Color,
     val red300: Color,
     val gray50: Color,
     val gray100: Color,
@@ -72,6 +74,7 @@ val LocalHistourColors = staticCompositionLocalOf {
         yellow700 = Color.Unspecified,
         blue100 = Color.Unspecified,
         blue300 = Color.Unspecified,
+        bgblue = Color.Unspecified,
         red300 = Color.Unspecified,
         gray50 = Color.Unspecified,
         gray100 = Color.Unspecified,
@@ -97,6 +100,7 @@ val LocalHistourLightColorScheme = HistourSemanticColor(
     yellow700 = Yellow700,
     blue100 = Blue100,
     blue300 = Blue300,
+    bgblue = BgBlue,
     red300 = Red300,
     gray50 = Gray50,
     gray100 = Gray100,
@@ -122,6 +126,7 @@ val LocalHistourDarkColorScheme = HistourSemanticColor(
     yellow700 = Yellow700,
     blue100 = Blue100,
     blue300 = Blue300,
+    bgblue = BgBlue,
     red300 = Red300,
     gray50 = Gray50,
     gray100 = Gray100,

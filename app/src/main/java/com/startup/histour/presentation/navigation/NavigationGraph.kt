@@ -36,7 +36,7 @@ fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
         composable(LoginScreens.Setting.route) { SettingScreen(navController) }
         composable(LoginScreens.Character.route) { CharacterScreen(navController) }
         composable(LoginScreens.Map.route) { _ ->
-            OnBoardingMapScreen(navController, viewModel = viewModel)
+            OnBoardingMapScreen(navController)
         }
     }
 }
