@@ -34,9 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
+import com.startup.histour.presentation.main.viewmodel.MainViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.widget.button.CTAButton
 import com.startup.histour.presentation.widget.button.CTAMode
@@ -48,7 +50,7 @@ import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
 
 @Composable
-fun HomeMissionScreen(navController: NavController) {
+fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel = hiltViewModel()) {
 
     var progress by remember { mutableStateOf(0.3f) } // TODO get api
 

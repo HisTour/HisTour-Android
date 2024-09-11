@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.startup.histour";
+option java_multiple_files = true;
+
+message UserInfo {
+  message CharacterInfo {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    string normalImageUrl = 4;
+    string faceImageUrl = 5;
+  }
+  string userName = 1;
+  string profileImageUrl = 2;
+  CharacterInfo characterInfo = 3;
+}
