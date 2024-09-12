@@ -73,7 +73,9 @@ fun TaskMissionScreen(navController: NavController, type: MissionType = MissionT
             HistourTopBarModel(
                 leftSectionType = HistourTopBarModel.LeftSectionType.Icons(
                     listOf(HistourTopBarModel.TopBarIcon.BACK),
-                    onClickLeftIcon = {},
+                    onClickLeftIcon = {
+                        navController.popBackStack()
+                    },
                 ),
                 rightSectionType = HistourTopBarModel.RightSectionType.Text(
                     stringResId = R.string.next,

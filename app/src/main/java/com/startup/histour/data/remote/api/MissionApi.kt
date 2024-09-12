@@ -4,12 +4,17 @@ import com.startup.histour.data.dto.mission.ResponseMissionDto
 import com.startup.histour.data.dto.mission.ResponseQuizDto
 import com.startup.histour.data.util.BaseResponse
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 interface MissionApi {
-    @GET("mission/place/{placeId}")
+    @GET("missions/place/{placeId}")
     suspend fun getMissions(@Path("placeId") placeId: String): BaseResponse<ResponseMissionDto>
 
-    @GET("quiz/mission/{missionId}")
+    @PATCH("missions/{missionId}/member")
+    suspend fun clearSubMission(@Path("placeId") placeId: String): BaseResponse<Boolean>
+
+
+    @GET("quizzes/mission/{missionId}")
     suspend fun getQuiz(@Path("missionId") missionId: String): BaseResponse<ResponseQuizDto>
 }

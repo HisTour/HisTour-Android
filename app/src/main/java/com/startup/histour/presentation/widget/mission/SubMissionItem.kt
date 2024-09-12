@@ -81,10 +81,20 @@ fun SubMissionItem(
         SUBMISSIONSTATE.BEFORE -> HistourTheme.colors.gray200
     }
 
+    val height = when(state){
+        SUBMISSIONSTATE.PROGRESS -> 166.dp
+        else -> 140.dp
+    }
+
+    val width = when(state){
+        SUBMISSIONSTATE.PROGRESS -> 260.dp
+        else -> 240.dp
+    }
+
     Card(
         modifier = Modifier
-            .width(260.dp)
-            .height(166.dp)
+            .width(width)
+            .height(height)
             .border(1.dp, strokeColor, RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor)

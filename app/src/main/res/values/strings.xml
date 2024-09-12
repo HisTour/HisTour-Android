@@ -78,6 +78,9 @@
     <string name="task_number">%1$d번 미션 </string>
     <string name="mission_guide">빈칸에 정답을 입력해주세요</string>
     <string name="mission_textfield_hint">정답은!</string>
+    <string name="submission_title">%1$s님의\n미션 지도에요</string>
+    <string name="submission_subtitle"><![CDATA[지금은 <font color="#00DE4D">%s</font> 여행중]]></string>
+
 
     <!-- chatting -->
     <string name="chatting_placeholder">깨비에게 뭐든 물어봐!</string>

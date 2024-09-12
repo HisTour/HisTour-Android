@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface MissionRepository {
     suspend fun getMissions(placeId: String): Flow<ResponseMissionDto>
+    suspend fun clearMission(placeId: String): Flow<Boolean>
     suspend fun getQuiz(missionId: String): Flow<ResponseQuizDto>
 }
