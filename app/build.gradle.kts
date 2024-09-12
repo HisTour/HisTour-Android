@@ -137,6 +137,7 @@ dependencies {
     implementation(deps.kakao.login)
 
     implementation(deps.markdown.viewer)
+    implementation(deps.lottie)
 }
 
 protobuf {

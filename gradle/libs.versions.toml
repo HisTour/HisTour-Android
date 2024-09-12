@@ -48,6 +48,7 @@ constraintlayout = "2.1.4"
 kakao-sdk = "2.20.3"
 
 markdown-viewer = "0.5.4"
+lottie = "6.5.2"
 
 [libraries]
 gradle-android = { module = "com.android.tools.build:gradle", version.ref = "gradle-android-plugin" }
@@ -124,6 +125,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 kakao-login = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao-sdk" }
 
 markdown-viewer = { module = "com.github.jeziellago:compose-markdown", version.ref = "markdown-viewer" }
+lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
