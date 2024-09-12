@@ -26,8 +26,8 @@ class TravelMapViewModel @Inject constructor(
             onMap = {
                 it.places?.map { place -> place.toPlace() } ?: emptyList()
             },
-            onEach = {
-                _state.placeList.update { it }
+            onEach = { places ->
+                _state.placeList.update { places }
             },
             onError = {
                 Log.e("LMH", "ERROR $it")

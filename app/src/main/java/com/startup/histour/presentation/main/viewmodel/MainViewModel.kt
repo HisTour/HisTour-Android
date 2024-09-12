@@ -41,8 +41,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getMyCurrentTravelPlaceUseCase.executeOnViewModel(
                 params = userInfoDataStoreProvider.getPlaceId(),
-                onEach = {
-                    _state.place.update { it }
+                onEach = { place ->
+                    _state.place.update { place }
                 },
                 onError = {
                     Log.e("LMH", "getMyCurrentTravelPlaceUseCase FAIL $it")
