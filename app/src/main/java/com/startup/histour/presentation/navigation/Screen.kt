@@ -23,4 +23,5 @@ sealed class MainScreens(val route: String) {
     data object Character : MainScreens("character")
     data object CharacterSetting : MainScreens("characterSetting")
     data object Setting : MainScreens("setting")
+    data object NickNameChange : MainScreens("nickNameChange")
 }

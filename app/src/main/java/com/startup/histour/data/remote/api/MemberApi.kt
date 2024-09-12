@@ -1,6 +1,7 @@
 package com.startup.histour.data.remote.api
 
 import com.startup.histour.data.dto.member.RequestUserCharacter
+import com.startup.histour.data.dto.member.RequestUserNickName
 import com.startup.histour.data.dto.member.ResponseUserInfoDto
 import com.startup.histour.data.util.BaseResponse
 import retrofit2.http.Body
@@ -13,4 +14,7 @@ interface MemberApi {
 
     @GET("members/info")
     suspend fun getUserInfo(): BaseResponse<ResponseUserInfoDto>
+
+    @PATCH("members/info")
+    suspend fun setUserNickName(@Body requestUserNickName: RequestUserNickName): BaseResponse<Unit>
 }

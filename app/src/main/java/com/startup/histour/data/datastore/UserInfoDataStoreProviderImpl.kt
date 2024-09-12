@@ -47,7 +47,6 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
         }
     }
 
-
     override suspend fun getUserInfo(): UserInfoModel {
         return (userInfoDataStore.data
             .firstOrNull() ?: UserInfo.getDefaultInstance()).toUserInfoMode()
@@ -66,5 +65,11 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
 
     override fun getCharacterInfoFlow(): Flow<CharacterModel> {
         return userInfoDataStore.data.map { it.characterInfo.toCharacterModel() }
+    }
+
+    override suspend fun clearAllData() {
+        userInfoDataStore.updateData { currentData ->
+            UserInfo.getDefaultInstance()
+        }
     }
 }
