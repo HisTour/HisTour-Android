@@ -2,11 +2,14 @@ package com.startup.histour.presentation.onboarding.ui
 
 import CTAImageButton
 import CTAImageButtonModel
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +36,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,16 +47,28 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.startup.histour.R
+import com.startup.histour.presentation.login.ui.LoginActivity
+import com.startup.histour.presentation.main.ui.MainActivity
 import com.startup.histour.presentation.onboarding.viewmodel.TravelMapViewModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: TravelMapViewModel = hiltViewModel()) {
 
     var selectedButtonPosition by remember { mutableStateOf<Offset?>(null) }
+
+    val preLoaderLottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.loading)
+    )
+    var isPlaceSelectSuccess by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -205,6 +222,35 @@ fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: Travel
                     style = HistourTheme.typography.head4
                 )
             }
+        }
+    }
+    if (isPlaceSelectSuccess) {
+        val context = LocalContext.current
+        LaunchedEffect(key1 = true) {
+            delay(2000)
+            if (context is LoginActivity) {
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+                (context as? Activity)?.finish()
+            } else {
+                navController.popBackStack()
+            }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(android.graphics.Color.parseColor("#B2000000"))),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LottieAnimation(
+                composition = preLoaderLottieComposition,
+                iterations = LottieConstants.IterateForever,
+                restartOnPlay = true,
+                modifier = Modifier.size(247.dp)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(text = "나를 따르라~", style = HistourTheme.typography.head2.copy(HistourTheme.colors.white000))
         }
     }
 }
