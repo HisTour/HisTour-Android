@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,13 +34,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.main.viewmodel.CharacterViewModel
+import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.widget.dialog.HistourDialog
 import com.startup.histour.presentation.widget.dialog.HistourDialogModel
@@ -53,15 +56,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun CharacterSettingScreen(
     navController: NavController,
-    beforeCharacter: TempCharacter = TempCharacter(
-        imgPath = "",
-        name = "왕도깨비",
-        introduce = "예로부터 왕의 옷을 입은 도깨비는 성질이 거만하고 말을 듣지 않아요.\n설명을 들으며 인내심을 길러봐요!"
-    )
+    characterViewModel: CharacterViewModel = hiltViewModel()
 ) {
     var selectedCharacter by remember {
-        mutableStateOf<TempCharacter>(beforeCharacter)
+        mutableStateOf<CharacterModel>(characterViewModel.state.currentCharacter.value)
     }
+    val characterList by characterViewModel.state.characterList.collectAsState()
+    val previousCharacter by characterViewModel.state.currentCharacter.collectAsState()
     val openDialog = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -75,7 +76,7 @@ fun CharacterSettingScreen(
                 ),
                 rightSectionType = HistourTopBarModel.RightSectionType.Text(
                     stringResId = R.string.save,
-                    state = if (beforeCharacter != selectedCharacter) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
+                    state = if (previousCharacter != selectedCharacter) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
                     onClickRightTextArea = {
                         // TODO 저장
                     },
@@ -83,27 +84,11 @@ fun CharacterSettingScreen(
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_character)
             )
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         SelectedCharacterDisplayView(
             character = selectedCharacter
         )
-        SelectableCharacterPager(
-            beforeSelectedItem = beforeCharacter, listOf(
-                TempCharacter(
-                    imgPath = "",
-                    name = "왕도깨비",
-                    introduce = "예로부터 왕의 옷을 입은 도깨비는 성질이 거만하고 말을 듣지 않아요.\n설명을 들으며 인내심을 길러봐요!"
-                ), TempCharacter(
-                    imgPath = "",
-                    name = "어쩌구 도깨비",
-                    introduce = "예로부터 왕의 옷을 입은 도깨비는 성질이 거만하고 말을 듣지 않아요.\n설명을 들으며 인내심을 길러봐요!"
-                ), TempCharacter(
-                    imgPath = "",
-                    name = "응 도깨비",
-                    introduce = "예로부터 왕의 옷을 입은 도깨비는 성질이 거만하고 말을 듣지 않아요.\n설명을 들으며 인내심을 길러봐요!"
-                )
-            )
-        ) {
+        SelectableCharacterPager(beforeSelectedItem = previousCharacter, characterList) {
             selectedCharacter = it
         }
     }
@@ -125,22 +110,21 @@ fun CharacterSettingScreen(
     }
 }
 
-data class TempCharacter(val imgPath: String = "", val name: String = "", val introduce: String = "")
+data class CharacterModel(val imgPath: String = "", val name: String = "", val introduce: String = "")
 
 @Composable
-fun SelectedCharacterDisplayView(character: TempCharacter) {
+fun SelectedCharacterDisplayView(character: CharacterModel) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
         AsyncImage(
-            model = character.imgPath,
+            model = character.normalImageUrl,
             contentScale = ContentScale.Crop,
             onError = {
                 Log.e("LMH", "DISPLAY IMAGE ERROR ${it.result.throwable}")
             },
-            placeholder = painterResource(id = R.drawable.img_chat),
             modifier = Modifier
                 .wrapContentWidth()
-                /* 높이 확정 후 변경 */
-                .height(225.dp)
+                .height(210.dp)
+                .width(210.dp)
                 .noRippleClickable {
                 },
             contentDescription = null,
@@ -158,9 +142,9 @@ fun SelectedCharacterDisplayView(character: TempCharacter) {
                     .padding(top = 18.dp)
             ) {
                 Text(
-                    text = character.introduce,
-                    style = HistourTheme.typography.body2Reg.copy(
-                        color = HistourTheme.colors.gray500
+                    text = character.description,
+                    style = HistourTheme.typography.detail1Regular.copy(
+                        color = HistourTheme.colors.gray700
                     ),
                     modifier = Modifier
                         .background(color = HistourTheme.colors.gray100, shape = RoundedCornerShape(12.dp))
@@ -174,7 +158,7 @@ fun SelectedCharacterDisplayView(character: TempCharacter) {
             }
             Text(
                 text = character.name,
-                style = HistourTheme.typography.body2Bold.copy(
+                style = HistourTheme.typography.body1Bold.copy(
                     color = HistourTheme.colors.white000
                 ),
                 modifier = Modifier
@@ -188,7 +172,7 @@ fun SelectedCharacterDisplayView(character: TempCharacter) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SelectableCharacterPager(beforeSelectedItem: TempCharacter, list: List<TempCharacter>, onSelectItem: (TempCharacter) -> Unit) {
+fun SelectableCharacterPager(beforeSelectedItem: CharacterModel, list: List<CharacterModel>, onSelectItem: (CharacterModel) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(initialPage = list.indexOf(beforeSelectedItem).takeIf { it != -1 } ?: 0, pageCount = { list.size })
     val localConfiguration = LocalConfiguration.current
@@ -254,17 +238,17 @@ fun SelectableCharacterPager(beforeSelectedItem: TempCharacter, list: List<TempC
 
 
 @Composable
-fun SelectableCharacterPagerItem(isSelected: Boolean, character: TempCharacter, onSelectItem: () -> Unit) {
+fun SelectableCharacterPagerItem(isSelected: Boolean, character: CharacterModel, onSelectItem: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
+            .height(230.dp)
             .background(
                 color = if (isSelected) HistourTheme.colors.white000 else HistourTheme.colors.gray50,
                 shape = RoundedCornerShape(16.dp)
             )
             .border(width = if (isSelected) 2.dp else 0.dp, color = if (isSelected) HistourTheme.colors.green400 else Color.Unspecified, shape = RoundedCornerShape(16.dp))
-            .padding(top = 28.dp, bottom = 19.dp)
+            .padding(top = 10.dp, bottom = 17.dp)
             .noRippleClickable {
                 onSelectItem.invoke()
             },
@@ -273,10 +257,9 @@ fun SelectableCharacterPagerItem(isSelected: Boolean, character: TempCharacter, 
         AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1F)
-                .padding(start = 19.dp, end = 19.dp),
-            placeholder = painterResource(id = R.drawable.img_chat),
-            model = character.imgPath,
+                .fillMaxHeight()
+                .weight(1F),
+            model = character.normalImageUrl,
             contentDescription = null
         )
         Spacer(modifier = Modifier.height(12.dp))

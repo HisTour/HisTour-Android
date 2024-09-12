@@ -1,7 +1,6 @@
 package com.startup.histour.presentation.model
 
 import com.startup.histour.UserInfo.CharacterInfo
-import com.startup.histour.core.extension.orZero
 
 data class CharacterModel(
     val id: Int,
@@ -26,7 +25,7 @@ data class CharacterModel(
     companion object {
         fun orEmpty(): CharacterModel =
             CharacterModel(
-                id = 0,
+                id = -1,
                 name = "깨도사",
                 comment = "",
                 commentColor = "",
@@ -39,7 +38,7 @@ data class CharacterModel(
 
         fun CharacterInfo?.toCharacterModel(): CharacterModel = this?.let {
             CharacterModel(
-                id = id.toIntOrNull().orZero(),
+                id = id.toIntOrNull() ?: -1,
                 name = name.orEmpty(),
                 backgroundEnd = "",
                 backgroundStart = "",
