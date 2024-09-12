@@ -52,7 +52,7 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
             .firstOrNull() ?: UserInfo.getDefaultInstance()).toUserInfoMode()
     }
 
-    override suspend fun getPlaceId(): Int = userInfoDataStore.data.firstOrNull()?.placeId?.toIntOrNull() ?: -1
+    override suspend fun getPlaceId(): Int = kotlin.runCatching { userInfoDataStore.data.firstOrNull()?.placeId?.toIntOrNull() ?: -1 }.getOrElse { -1 }
 
     override suspend fun getCharacterInfo(): CharacterModel {
         return (userInfoDataStore.data.firstOrNull()?.characterInfo

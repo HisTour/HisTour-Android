@@ -1,17 +1,34 @@
 package com.startup.histour.presentation.main.viewmodel
 
 import android.util.Log
-import com.startup.histour.domain.usecase.member.ChangeCharacterOfUserUseCase
+import androidx.lifecycle.viewModelScope
+import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.domain.usecase.member.GetMyUserDataUseCase
+import com.startup.histour.domain.usecase.place.GetMyCurrentTravelPlaceUseCase
 import com.startup.histour.presentation.base.BaseViewModel
+import com.startup.histour.presentation.model.UserInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val getMyUserDataUseCase: GetMyUserDataUseCase, private val changeCharacterOfUserUseCase: ChangeCharacterOfUserUseCase) : BaseViewModel() {
+class MainViewModel @Inject constructor(
+    private val getMyUserDataUseCase: GetMyUserDataUseCase,
+    private val userInfoDataStoreProvider: UserInfoDataStoreProvider,
+    private val getMyCurrentTravelPlaceUseCase: GetMyCurrentTravelPlaceUseCase
+) : BaseViewModel() {
+    private val _state = HomeStateImpl(
+        userInfo = userInfoDataStoreProvider.getUserInfoFlow().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            UserInfoModel.orEmpty()
+        ),
+    )
+    override val state: HomeState = _state
 
-    private val _state = HomeStateImpl()
-    override val state: MainState = _state
     init {
         getMyUserDataUseCase.executeOnViewModel(
             onEach = { response ->
@@ -21,7 +38,16 @@ class MainViewModel @Inject constructor(private val getMyUserDataUseCase: GetMyU
                 Log.e("LMH", "getMyUserDataUseCase FAIL $error")
             },
         )
+        viewModelScope.launch {
+            getMyCurrentTravelPlaceUseCase.executeOnViewModel(
+                params = userInfoDataStoreProvider.getPlaceId(),
+                onEach = {
+                    _state.place.update { it }
+                },
+                onError = {
+                    Log.e("LMH", "getMyCurrentTravelPlaceUseCase FAIL $it")
+                }
+            )
+        }
     }
 }
-
-private class HomeStateImpl : MainState

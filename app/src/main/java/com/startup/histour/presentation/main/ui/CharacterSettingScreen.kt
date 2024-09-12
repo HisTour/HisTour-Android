@@ -79,6 +79,7 @@ fun CharacterSettingScreen(
                     state = if (previousCharacter != selectedCharacter) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
                     onClickRightTextArea = {
                         // TODO 저장
+                        characterViewModel.selectCharacter(selectedCharacter.id)
                     },
                 ),
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_character)
@@ -100,12 +101,14 @@ fun CharacterSettingScreen(
                 positiveButtonRes = R.string.dialog_continue,
                 negativeButtonRes = R.string.dialog_exit,
                 type = TYPE.DEFAULT
-            ), onClickNegative = {
+            ),
+            onClickPositive = {
+                openDialog.value = false
+            },
+            onClickNegative = {
                 openDialog.value = false
                 navController.popBackStack()
-            }, onClickPositive = {
-                openDialog.value = false
-            }
+            },
         )
     }
 }

@@ -9,7 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 
 interface MemberApi {
-    @PATCH("characters")
+    @PATCH("members/character")
     suspend fun setUserCharacter(@Body requestUserCharacter: RequestUserCharacter): BaseResponse<Unit>
 
     @GET("members/info")
