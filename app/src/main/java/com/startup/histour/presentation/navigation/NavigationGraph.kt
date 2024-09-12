@@ -67,6 +67,7 @@ fun MainNavigationGraph() {
         composable(MainScreens.Setting.route) { SettingScreen(navController) }
         composable(MainScreens.NickNameChange.route) { NickNameChangeScreen(navController) }
         composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
+        composable(MainScreens.Map.route) { OnBoardingMapScreen(navController) }
     }
 }
 

@@ -21,6 +21,7 @@ sealed class MainScreens(val route: String) {
     data object HistoryStory : MainScreens("historyStory")
     data object RecommendedSpot : MainScreens("recommendedSpot")
     data object Character : MainScreens("character")
+    data object Map : MainScreens("map")
     data object CharacterSetting : MainScreens("characterSetting")
     data object Setting : MainScreens("setting")
     data object NickNameChange : MainScreens("nickNameChange")

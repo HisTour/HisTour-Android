@@ -6,4 +6,14 @@ data class Place(
     val name: String,
     val placeId: Int,
     val totalMissionCount: Int
-)
+) {
+    companion object {
+        fun orEmpty() = Place(
+            0,
+            "",
+            "",
+            -1,
+            0
+        )
+    }
+}

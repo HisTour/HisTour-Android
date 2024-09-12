@@ -3,15 +3,14 @@ package com.startup.histour.presentation.widget.topbar
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -89,14 +88,14 @@ data class HistourTopBarModel(
         @DrawableRes val resId: Int,
         @DrawableRes val contentDescription: Int? = null,
     ) {
-        BACK(R.drawable.ic_arrow_left_back),
+        BACK(R.drawable.ic_btn_back),
         SETTINGS(R.drawable.btn_setting)
     }
 
     sealed interface TitleStyle {
 
         data class Text(@StringRes val titleResId: Int) : TitleStyle
-        data class TextWithIcon(val titleResId: String, @DrawableRes val icon: Int) :
+        data class TextWithIcon(val titleResId: String, @DrawableRes val icon: Int, val onClickTitle: () -> Unit = {}) :
             TitleStyle
 
         data class Image(val resId: Int) : TitleStyle
@@ -123,6 +122,7 @@ private fun HisTourTopBarIconSection(
         icons.forEach { icon ->
             Icon(
                 modifier = Modifier
+                    .defaultMinSize(48.dp, 48.dp)
                     .rippleClickable { onClick(icon.name) },
                 painter = painterResource(id = icon.resId),
                 contentDescription = null,
@@ -155,6 +155,9 @@ private fun HisTourTopBarTitleSection(
 
             is HistourTopBarModel.TitleStyle.TextWithIcon -> {
                 Row(
+                    modifier = Modifier.noRippleClickable {
+                        titleStyle.onClickTitle.invoke()
+                    },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
