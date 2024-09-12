@@ -14,4 +14,5 @@ interface UserInfoDataStoreProvider {
     suspend fun getCharacterInfo(): CharacterModel
     fun getUserInfoFlow(): Flow<UserInfoModel>
     fun getCharacterInfoFlow(): Flow<CharacterModel>
+    suspend fun clearAllData()
 }

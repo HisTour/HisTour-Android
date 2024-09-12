@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface MemberRepository {
     suspend fun setUserCharacter(characterId: Int)
     suspend fun getUserInfo(): Flow<ResponseUserInfoDto>
+    suspend fun setUserNickName(name: String)
 }

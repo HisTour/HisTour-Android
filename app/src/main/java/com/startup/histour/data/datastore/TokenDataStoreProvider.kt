@@ -7,4 +7,5 @@ interface TokenDataStoreProvider {
     suspend fun <T> putValue(key: Preferences.Key<T>, value: T)
     suspend fun <T> getValue(key: Preferences.Key<T>, defaultValue: T): T
     fun <T> getFlowValue(key: Preferences.Key<T>): Flow<T>
+    suspend fun clearAllData()
 }

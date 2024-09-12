@@ -26,4 +26,8 @@ class TokenDataStoreProviderImpl @Inject constructor(@UserTokenDataStore private
     override fun <T> getFlowValue(key: Preferences.Key<T>): Flow<T> {
         return preferencesDataStore.data.mapNotNull { it[key] }
     }
+
+    override suspend fun clearAllData() {
+        preferencesDataStore.edit { it.clear() }
+    }
 }

@@ -18,6 +18,7 @@ import com.startup.histour.presentation.mission.ui.MissionMapScreen
 import com.startup.histour.presentation.mission.ui.TaskMissionScreen
 import com.startup.histour.presentation.mission.ui.SubMissionChoiceScreen
 import com.startup.histour.presentation.onboarding.ui.CharacterScreen
+import com.startup.histour.presentation.onboarding.ui.NickNameChangeScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingMapScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingScreen
 import com.startup.histour.presentation.onboarding.ui.SettingScreen
@@ -64,6 +65,7 @@ fun MainNavigationGraph() {
         composable(MainScreens.Character.route) { CharacterScreen(navController) }
         composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
         composable(MainScreens.Setting.route) { SettingScreen(navController) }
+        composable(MainScreens.NickNameChange.route) { NickNameChangeScreen(navController) }
         composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
     }
 }

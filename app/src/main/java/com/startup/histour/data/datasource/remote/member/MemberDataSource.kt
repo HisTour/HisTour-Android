@@ -1,6 +1,7 @@
 package com.startup.histour.data.datasource.remote.member
 
 import com.startup.histour.data.dto.member.RequestUserCharacter
+import com.startup.histour.data.dto.member.RequestUserNickName
 import com.startup.histour.data.dto.member.ResponseUserInfoDto
 import com.startup.histour.data.remote.api.MemberApi
 import com.startup.histour.data.util.handleExceptionIfNeed
@@ -17,6 +18,12 @@ class MemberDataSource @Inject constructor(private val memberApi: MemberApi) {
     suspend fun getUserInfo(): ResponseUserInfoDto {
         return handleExceptionIfNeed {
             memberApi.getUserInfo().data
+        }
+    }
+
+    suspend fun setUserNickName(name: String) {
+        return handleExceptionIfNeed {
+            memberApi.setUserNickName(RequestUserNickName(name))
         }
     }
 }
