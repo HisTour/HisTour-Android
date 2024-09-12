@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoDataStore: DataStore<UserInfo>) : UserInfoDataStoreProvider {
+class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoDataStore: DataStore<UserInfo>) :
+    UserInfoDataStoreProvider {
     override suspend fun setCharacterInfo(characterInfo: CharacterInfo) {
         userInfoDataStore.updateData { preferences ->
             preferences
@@ -22,7 +23,20 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
         }
     }
 
-    override suspend fun setUserInfo(userName: String, profileImageUrl: String, characterInfo: CharacterInfo) {
+    override suspend fun setPlaceId(placeId: String) {
+        userInfoDataStore.updateData { preferences ->
+            preferences
+                .toBuilder()
+                .setPlaceId(placeId)
+                .build()
+        }
+    }
+
+    override suspend fun setUserInfo(
+        userName: String,
+        profileImageUrl: String,
+        characterInfo: CharacterInfo
+    ) {
         userInfoDataStore.updateData { preferences ->
             preferences
                 .toBuilder()
@@ -39,8 +53,11 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
             .firstOrNull() ?: UserInfo.getDefaultInstance()).toUserInfoMode()
     }
 
+    override suspend fun getPlaceId(): Int = userInfoDataStore.data.firstOrNull()?.placeId?.toIntOrNull() ?: -1
+
     override suspend fun getCharacterInfo(): CharacterModel {
-        return (userInfoDataStore.data.firstOrNull()?.characterInfo ?: CharacterInfo.getDefaultInstance()).toCharacterModel()
+        return (userInfoDataStore.data.firstOrNull()?.characterInfo
+            ?: CharacterInfo.getDefaultInstance()).toCharacterModel()
     }
 
     override fun getUserInfoFlow(): Flow<UserInfoModel> {

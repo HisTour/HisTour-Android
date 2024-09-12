@@ -39,15 +39,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
+import com.startup.histour.presentation.onboarding.viewmodel.TravelMapViewModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.ui.theme.HistourTheme
 
 
 @Composable
-fun OnBoardingMapScreen(navController: NavController) {
+fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: TravelMapViewModel = hiltViewModel()) {
 
     var selectedButtonPosition by remember { mutableStateOf<Offset?>(null) }
 
