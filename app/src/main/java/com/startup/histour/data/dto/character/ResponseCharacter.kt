@@ -20,7 +20,7 @@ data class ResponseCharacter(
 ) {
     fun toCharacter(): CharacterModel =
         CharacterModel(
-            id = id.orZero(),
+            id = id ?: -1,
             name = name.orEmpty(),
             comment = comment?.welcome.orEmpty(),
             commentColor = color?.comment.orEmpty(),
