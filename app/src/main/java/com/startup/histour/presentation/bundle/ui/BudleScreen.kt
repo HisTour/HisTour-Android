@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,28 +41,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.bundle.model.Attraction
+import com.startup.histour.presentation.bundle.model.HistoryHoliday
+import com.startup.histour.presentation.bundle.viewmodel.BundleViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.util.extensions.rippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
-import okhttp3.internal.immutableListOf
 
 @Composable
-fun BundleScreen(navController: NavController = rememberNavController()) {
+fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel = hiltViewModel()) {
 
-    fun navigateHistoryStoryScreen() {
+    fun navigateHistoryStoryScreen(historyHoliday: HistoryHoliday) {
         navController.navigate(MainScreens.RecommendedSpot.route)
     }
 
-    fun navigateRecommendedSpotScreen() {
+    fun navigateRecommendedSpotScreen(attraction: Attraction) {
         navController.navigate(MainScreens.RecommendedSpot.route)
     }
+
+    val attractionList by bundleViewModel.state.attractionList.collectAsState()
+    val historyHolidayList by bundleViewModel.state.historyHolidayList.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,10 +85,12 @@ fun BundleScreen(navController: NavController = rememberNavController()) {
                 text = stringResource(id = R.string.bundle_recommended_spot_title),
                 style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
             )
-            Image(painter = painterResource(id = R.drawable.btn_reload), contentDescription = null)
+            Image(modifier = Modifier.noRippleClickable {
+                bundleViewModel.fetchAttraction()
+            }, painter = painterResource(id = R.drawable.btn_reload), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(12.dp))
-        RecommendedSpotListView()
+        RecommendedSpotListView(attractionList, ::navigateRecommendedSpotScreen)
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             modifier = Modifier
@@ -88,7 +99,7 @@ fun BundleScreen(navController: NavController = rememberNavController()) {
             style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ToDayHistoryList()
+        ToDayHistoryList(historyHolidayList, ::navigateHistoryStoryScreen)
     }
 }
 
@@ -102,12 +113,8 @@ fun PreviewBundleScreen() {
 
 @Composable
 private fun RecommendedSpotListView(
-    list: List<Pair<String, String>> = immutableListOf<Pair<String, String>>(
-        Pair<String, String>("가족과 함께 가기 좋은 역사 관광지", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair<String, String>("당일 코스로 즐겨보는 백제 문화 탐방", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair<String, String>("역사를 지킨 요새, 남한 산성", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair<String, String>("가정의 달, 한복 체험 정보 20자 초과시...", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?")
-    )
+    list: List<Attraction>,
+    onClickSpot: (Attraction) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -120,10 +127,7 @@ private fun RecommendedSpotListView(
         items(
             items = list,
         ) {
-            val (spot, path) = it
-            RecommendedSpotListItem(
-                spot, path
-            )
+            RecommendedSpotListItem(it, onClickSpot)
         }
     }
 }
@@ -131,8 +135,8 @@ private fun RecommendedSpotListView(
 
 @Composable
 private fun RecommendedSpotListItem(
-    spotIntroduce: String,
-    imagePath: String
+    attraction: Attraction,
+    onClickSpot: (Attraction) -> Unit
 ) {
     val localConfiguration = LocalConfiguration.current
     val isError = remember { mutableStateOf(false) }
@@ -150,11 +154,13 @@ private fun RecommendedSpotListItem(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = { },
+                onClick = {
+                    onClickSpot.invoke(attraction)
+                },
             )
     ) {
         AsyncImage(
-            model = imagePath,
+            model = attraction.imageUrl,
             contentScale = ContentScale.Crop,
             onError = {
                 Log.e("LMH", "DISPLAY IMAGE ERROR ${it.result.throwable}")
@@ -175,7 +181,7 @@ private fun RecommendedSpotListItem(
                 .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                 .align(Alignment.BottomCenter),
             style = HistourTheme.typography.body3Medi.copy(color = HistourTheme.colors.white000),
-            text = spotIntroduce,
+            text = attraction.description,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
@@ -185,14 +191,7 @@ private fun RecommendedSpotListItem(
 /** @param list 나중에 Immutable 하도록 변경
  * */
 @Composable
-private fun ToDayHistoryList(
-    list: List<Pair<String, String>> = immutableListOf(
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?")
-    )
-) {
+private fun ToDayHistoryList(list: List<HistoryHoliday>, onClickHistory: (HistoryHoliday) -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -201,8 +200,7 @@ private fun ToDayHistoryList(
                 items = list,
                 key = { index, _ -> index },
             ) { _, item ->
-                val (date, historyStr) = item
-                ToDayHistoryItem(date, historyStr)
+                ToDayHistoryItem(item, onClickHistory)
             }
         }
     }
@@ -211,14 +209,15 @@ private fun ToDayHistoryList(
 /** @param date 나중에 날짜 포맷으로 바꿔야함
  * */
 @Composable
-private fun ToDayHistoryItem(date: String, historyStr: String) {
+private fun ToDayHistoryItem(historyHoliday: HistoryHoliday, onClickHistory: (HistoryHoliday) -> Unit) {
     Box(
         modifier = Modifier
             .background(HistourTheme.colors.yellow100, shape = RoundedCornerShape(4.dp))
             .fillMaxWidth()
             .padding(start = 16.dp)
             .height(40.dp)
-            .rippleClickable {
+            .noRippleClickable {
+                onClickHistory.invoke(historyHoliday)
             }
     ) {
         Row(
@@ -228,7 +227,7 @@ private fun ToDayHistoryItem(date: String, historyStr: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = date,
+                text = historyHoliday.date,
                 style = HistourTheme.typography.detail1Regular.copy(
                     color = HistourTheme.colors.yellow700
                 ),
@@ -237,7 +236,7 @@ private fun ToDayHistoryItem(date: String, historyStr: String) {
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = historyStr,
+                text = historyHoliday.name,
                 style = HistourTheme.typography.body3Medi.copy(
                     color = HistourTheme.colors.gray800
                 ),
