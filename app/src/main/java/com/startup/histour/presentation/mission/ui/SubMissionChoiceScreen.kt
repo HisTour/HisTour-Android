@@ -17,23 +17,35 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
+import com.startup.histour.data.dto.mission.ResponseMission
+import com.startup.histour.presentation.mission.viewmodel.MissionClearViewModel
+import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.util.extensions.rippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
-import okhttp3.internal.immutableListOf
 
 @Composable
-fun SubMissionChoiceScreen(navController: NavController) {
+fun SubMissionChoiceScreen(
+    navController: NavController,
+    missionClearViewModel: MissionClearViewModel = hiltViewModel()
+) {
+
+    val curMissionType = "INTRO"
+    val subMissionId = 1
+    val list = missionClearViewModel.state.missionList.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -44,7 +56,9 @@ fun SubMissionChoiceScreen(navController: NavController) {
             HistourTopBarModel(
                 leftSectionType = HistourTopBarModel.LeftSectionType.Icons(
                     listOf(HistourTopBarModel.TopBarIcon.BACK),
-                    onClickLeftIcon = {},
+                    onClickLeftIcon = {
+                        navController.popBackStack()
+                    },
                 ),
                 rightSectionType = HistourTopBarModel.RightSectionType.Empty,
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.mission_clear_choice_submission),
@@ -59,36 +73,19 @@ fun SubMissionChoiceScreen(navController: NavController) {
             painter = painterResource(id = R.drawable.img_chat),
             contentDescription = "submission"
         )
-        SubMissionList()
+        SubMissionList(missionClearViewModel,modifier = Modifier.weight(1f), list.value, curMissionType)
     }
 }
 
 @Composable
 private fun SubMissionList(
-    list: List<Pair<String, String>> = immutableListOf(
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?"),
-        Pair("1952.05.07", "역사이야기가 이렇게 길 경우에 그라데이션이 있겠죠?")
-    )
+    viewModel: MissionClearViewModel,
+    modifier: Modifier,
+    list: List<ResponseMission>,
+    currentMissionType: String
 ) {
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+    Column(modifier = modifier
+        .padding(horizontal = 24.dp)) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -96,22 +93,36 @@ private fun SubMissionList(
                 items = list,
                 key = { index, _ -> index },
             ) { _, item ->
-                val (date, historyStr) = item
-                SubMissionItem(date, historyStr)
+                if(currentMissionType == "INTRO"){
+                    if(item.type == "NORMAL"){
+                        SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
+                            viewModel.clearSubMission(item.id ?: 1)
+                        }
+                    }
+                }else if(currentMissionType == "NORMAL"){
+                    if(item.type == "FINAL") {
+                        SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
+                            viewModel.clearSubMission(item.id ?: 1)
+                        }
+                    }
+                }
+
+
             }
         }
     }
 }
 
 @Composable
-private fun SubMissionItem(missionType: String, spot: String) {
+private fun SubMissionItem(missionId: Int, missionName: String, onClick: (Int) -> Unit) {
     Box(
         modifier = Modifier
             .background(HistourTheme.colors.yellow100, shape = RoundedCornerShape(4.dp))
             .fillMaxWidth()
             .padding(start = 16.dp)
             .height(40.dp)
-            .rippleClickable {
+            .noRippleClickable {
+                onClick.invoke(missionId)
             }
     ) {
         Row(
@@ -120,17 +131,9 @@ private fun SubMissionItem(missionType: String, spot: String) {
                 .align(Alignment.CenterStart),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = missionType,
-                style = HistourTheme.typography.detail1Regular.copy(
-                    color = HistourTheme.colors.yellow700
-                ),
-                maxLines = 1,
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = spot,
+                text = missionName,
                 style = HistourTheme.typography.body3Medi.copy(
                     color = HistourTheme.colors.gray800
                 ),

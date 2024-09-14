@@ -117,7 +117,7 @@ fun MissionClearScreen(
             CTAButton(
                 text = R.string.mission_clear_choice_submission, mode = CTAMode.Enable.instance()
             ) {
-                //TODO submission tas
+                navController.navigate(MainScreens.SubMissionChoice.route)
             }
             Spacer(modifier = Modifier.height(8.dp))
             CTAButton(
