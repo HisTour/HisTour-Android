@@ -13,6 +13,12 @@ class MissionDataSource @Inject constructor(private val missionApi: MissionApi) 
         }
     }
 
+    suspend fun clearSubMission(placeId: String): Boolean{
+        return handleExceptionIfNeed {
+            missionApi.clearSubMission(placeId).data
+        }
+    }
+
     suspend fun getQuiz(missionId: String): ResponseQuizDto {
         return handleExceptionIfNeed {
             missionApi.getQuiz(missionId).data
