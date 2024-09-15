@@ -16,6 +16,7 @@ data class ResponseUserInfoDto(
     fun toUserInfoModel(): UserInfoModel = UserInfoModel(
         userName = userName.orEmpty(),
         profileImageUrl = profileImageUrl.orEmpty(),
-        character = characterResponse?.toCharacter() ?: CharacterModel.orEmpty()
+        character = characterResponse?.toCharacter() ?: CharacterModel.orEmpty(),
+        placeId = -1
     )
 }

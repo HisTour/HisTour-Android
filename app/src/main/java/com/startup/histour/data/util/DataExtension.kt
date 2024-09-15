@@ -2,7 +2,9 @@ package com.startup.histour.data.util
 
 import android.util.Log
 import com.google.gson.JsonParseException
+import okhttp3.ResponseBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.InterruptedIOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -15,10 +17,16 @@ sealed interface HistourException
 
 class ClientException(
     override val message: String? = null,
-    val code: Int? = null
+    val code: Int? = null,
+    val body: Response<*>? = null
 ) : Exception(message), HistourException
 
 class UnknownException(
+    override val message: String? = null,
+    val code: Int? = null
+) : Exception(message), HistourException
+
+class NoCharacterException(
     override val message: String? = null,
     val code: Int? = null
 ) : Exception(message), HistourException
@@ -36,13 +44,15 @@ fun handleException(e: Throwable): Throwable {
         is HttpException -> when (e.code()) {
             in 400..499 -> throw ClientException(
                 message = e.message,
-                code = e.code()
+                code = e.code(),
+                body = e.response()
             )   //401 code is may processing interceptor
             500, 502, 503, 504 -> {
                 throw NetworkTemporaryException(message = e.message(), code = e.code())
             }
             else -> throw e
         }
+        is NoCharacterException -> throw e
         is SocketTimeoutException,
         is ConnectException,
         is UnknownHostException,
