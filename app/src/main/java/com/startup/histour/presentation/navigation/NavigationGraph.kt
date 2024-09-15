@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,9 +9,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
+import com.startup.histour.presentation.bundle.model.Attraction
 import com.startup.histour.presentation.bundle.ui.BundleScreen
 import com.startup.histour.presentation.bundle.ui.HistoryStoryScreen
 import com.startup.histour.presentation.bundle.ui.RecommendedSpotScreen
@@ -92,8 +97,15 @@ fun MainNavigationGraph() {
                 composable(MainScreens.Camera.route) { CameraScreen(navController) }
                 composable(MainScreens.GPT.route) { GptScreen(navController) }
                 composable(MainScreens.Bundle.route) { BundleScreen(navController) }
-                composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
-                composable(MainScreens.RecommendedSpot.route) { RecommendedSpotScreen(navController) }
+//                composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
+                composable(
+                    route = MainScreens.RecommendedSpot.route + "/{attraction}",
+                    arguments = listOf(navArgument("attraction") { type = NavType.StringType })
+                ) { navBackStackEntry ->
+                    val attractionJson = Uri.decode(navBackStackEntry.arguments?.getString("attraction"))
+                    val attraction = Gson().fromJson(attractionJson, Attraction::class.java)
+                    RecommendedSpotScreen(navController, attraction)
+                }
                 composable(MainScreens.Character.route) { CharacterScreen(navController) }
                 composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
                 composable(MainScreens.Setting.route) { SettingScreen(navController) }

@@ -17,7 +17,7 @@ data class CharacterModel(
         CharacterInfo.newBuilder()
             .setId(id.toString())
             .setName(name)
-            .setDescription(description)
+            .setDescription(comment)
             .setFaceImageUrl(faceImageUrl)
             .setNormalImageUrl(normalImageUrl)
             .build()
@@ -43,7 +43,7 @@ data class CharacterModel(
                 backgroundEnd = "",
                 backgroundStart = "",
                 commentColor = "",
-                comment = "",
+                comment = description,
                 description = description,
                 normalImageUrl = normalImageUrl.orEmpty(),
                 faceImageUrl = faceImageUrl.orEmpty()

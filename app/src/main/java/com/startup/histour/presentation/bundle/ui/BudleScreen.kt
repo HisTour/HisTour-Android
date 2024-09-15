@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.bundle.ui
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import com.startup.histour.R
 import com.startup.histour.presentation.bundle.model.Attraction
 import com.startup.histour.presentation.bundle.model.HistoryHoliday
@@ -59,7 +61,9 @@ import com.startup.histour.ui.theme.HistourTheme
 fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel = hiltViewModel()) {
 
     fun navigateRecommendedSpotScreen(attraction: Attraction) {
-        navController.navigate(MainScreens.RecommendedSpot.route)
+        val attractionJson = Uri.encode(Gson().toJson(attraction))
+        navController.navigate(MainScreens.RecommendedSpot.route + "/${attractionJson}")
+        Log.e("LMH", "NAVIGATE")
     }
 
     val attractionList by bundleViewModel.state.attractionList.collectAsState()
@@ -133,7 +137,6 @@ private fun RecommendedSpotListItem(
     attraction: Attraction,
     onClickSpot: (Attraction) -> Unit
 ) {
-    val localConfiguration = LocalConfiguration.current
     val isError = remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -145,13 +148,6 @@ private fun RecommendedSpotListItem(
                     end = Offset(0F, Float.POSITIVE_INFINITY)
                 ),
                 shape = RoundedCornerShape(8.dp)
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {
-                    onClickSpot.invoke(attraction)
-                },
             )
     ) {
         AsyncImage(
@@ -165,9 +161,7 @@ private fun RecommendedSpotListItem(
                 .fillMaxSize()
                 .clip(RoundedCornerShape(12.dp))
                 .noRippleClickable {
-                    if (!isError.value) {
-
-                    }
+                    onClickSpot.invoke(attraction)
                 },
             contentDescription = null,
         )
