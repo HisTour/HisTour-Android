@@ -20,7 +20,9 @@ class MissionViewModel @Inject constructor(
             params = "1",
             onMap = {
                 val missions = it.missions ?: listOf()
+                val requiredMissionCount = it.requiredMissionCount ?: 1
                 _state.missionList.update { missions }
+                _state.requiredMissionCount.update{ requiredMissionCount }
             },
             onEach = { it->
             },

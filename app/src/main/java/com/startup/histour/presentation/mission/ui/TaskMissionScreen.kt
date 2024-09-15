@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,6 +48,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
 import com.startup.histour.presentation.mission.viewmodel.TaskMissionViewModel
+import com.startup.histour.presentation.navigation.MainScreens
+import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.widget.button.CTAButton
 import com.startup.histour.presentation.widget.button.CTAMode
 import com.startup.histour.presentation.widget.dialog.MissionDialogType
@@ -56,30 +60,36 @@ import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
 
 
-enum class MissionType {
-    INTRO,
-    SUBMISSION,
-    FINAL
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskMissionScreen(
     navController: NavController,
     taskMissionViewModel: TaskMissionViewModel = hiltViewModel(),
-    type: MissionType = MissionType.SUBMISSION,
-    placeId: Int = 1
+    placeId: Int = 1,
+    initialClearedQuizCount: Int = 0
 ) {
+
 
     var enabled by remember { mutableStateOf(false) }
     var taskNumber by remember { mutableIntStateOf(1) }
     val tasksData = taskMissionViewModel.state.missionList.collectAsState()
+    val subMissionType = taskMissionViewModel.state.subMissionType.collectAsState()
+    val correctInfo = taskMissionViewModel.state.correctResponse.collectAsState()
     var taskType by remember {
         mutableStateOf("READING")
     }
 
+    var answer by remember {
+        mutableStateOf("")
+    }
+
+    var clearedQuizCount by remember { mutableIntStateOf(initialClearedQuizCount) }
+
     var showHintDialog by remember { mutableStateOf(false) }
     var showAnswerDialog by remember { mutableStateOf(false) }
+
+    var isLast = (initialClearedQuizCount == tasksData.value.size - 1)
+    val moveEvent = taskMissionViewModel.moveEvent.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -99,15 +109,34 @@ fun TaskMissionScreen(
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_character),
             ),
         )
+
+        if (moveEvent.value) {
+            //TODO clear type LASTSUBMISSION
+            if (correctInfo.value.clearedMissionCount == correctInfo.value.requiredMissionCount - 1) {
+                navController.navigate(MainScreens.MissionClear.route)
+            }
+            // TODO clear type MISSION
+            if (correctInfo.value.clearedMissionCount == correctInfo.value.requiredMissionCount) {
+                navController.navigate(MainScreens.MissionClear.route)
+            } else {
+                //  TODO clear tyep SUBMISSION
+                navController.navigate(MainScreens.MissionClear.route)
+            }
+        }
+
         when (taskType) {
             "READING" -> {
                 Column(
-                    modifier = Modifier.height(56.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .height(72.dp)
+                        .padding(end = 24.dp),
+                    horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Box(
                         modifier = Modifier
+                            .fillMaxWidth()  // 이 줄을 추가
+                            .wrapContentWidth(Alignment.End)  // 이 줄을 추가
                             .border(
                                 1.dp,
                                 color = HistourTheme.colors.gray400,
@@ -211,13 +240,24 @@ fun TaskMissionScreen(
                 .background(Color.Gray)
 
         ) {
-            val pagerState = rememberPagerState(pageCount = { tasksData.value.size })
+            val pagerState = rememberPagerState(
+                initialPage = 0,
+                pageCount = { tasksData.value.size }
+            )
+
+            LaunchedEffect(clearedQuizCount) {
+                // 현재 페이지가 clearedQuizCount보다 크면 clearedQuizCount로 이동
+                if (pagerState.currentPage > clearedQuizCount) {
+                    pagerState.animateScrollToPage(clearedQuizCount)
+                }
+            }
 
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = HistourTheme.colors.white000)
+                    .background(color = HistourTheme.colors.white000),
+                userScrollEnabled = pagerState.currentPage < clearedQuizCount
             ) { page ->
                 taskNumber = pagerState.currentPage + 1
                 taskType = tasksData.value[taskNumber - 1].type
@@ -242,9 +282,14 @@ fun TaskMissionScreen(
                 Row(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-                    CTAButton(R.string.next, CTAMode.Enable.instance()) {}
+                    CTAButton(R.string.next, CTAMode.Enable.instance()) {
+                        //TODO 채점 api clearadQuizCount 수 증가
+                        clearedQuizCount++
+                        if (clearedQuizCount == tasksData.value.size - 1) {
+                            isLast = true
+                        }
+                    }
                 }
-
             }
 
             "KEYWORD" -> {
@@ -285,13 +330,22 @@ fun TaskMissionScreen(
                             placeHolder = R.string.mission_textfield_hint,
                             onValueChange = {
                                 enabled = it.isNotEmpty()
+                                answer = it
                             }
                         ) {
 
                         }
                         if (enabled) Image(
                             modifier = Modifier
-                                .size(42.dp),
+                                .size(42.dp)
+                                .noRippleClickable {
+                                    //TODO 채점 api clearadQuizCount 수 증가
+                                    clearedQuizCount++
+                                    if (clearedQuizCount == tasksData.value.size - 1) {
+                                        isLast = true
+                                    }
+                                    answer
+                                },
                             painter = painterResource(id = R.drawable.btn_send_enabled),
                             contentDescription = "enabled"
                         )
@@ -312,6 +366,6 @@ fun TaskMissionScreen(
 @Composable
 fun PreviewTaskMissionScreen() {
     HistourTheme {
-        TaskMissionScreen(navController = rememberNavController(), type = MissionType.SUBMISSION)
+        TaskMissionScreen(navController = rememberNavController())
     }
 }

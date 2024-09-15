@@ -1,6 +1,8 @@
 package com.startup.histour.presentation.mission.ui
 
+import android.os.Build
 import android.text.Html
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -23,13 +26,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.startup.histour.R
+import com.startup.histour.data.dto.mission.ResponseMission
 import com.startup.histour.presentation.mission.viewmodel.MissionViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.widget.mission.ProgressingTaskDataModel
 import com.startup.histour.presentation.widget.mission.SUBMISSIONSTATE
 import com.startup.histour.presentation.widget.mission.SubMissionItem
 import com.startup.histour.ui.theme.HistourTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MissionMapScreen(
     navController: NavController,
@@ -40,6 +47,48 @@ fun MissionMapScreen(
         Html.FROM_HTML_MODE_COMPACT
     )
     val list = missionViewModel.state.missionList.collectAsState()
+    val requiredMissionCount = missionViewModel.state.requiredMissionCount.collectAsState()
+
+    // 날짜-시간 파싱을 위한 포맷터
+    val sortedList = remember(list.value, requiredMissionCount.value) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+        // COMPLETE와 PROGRESS 상태의 미션만 필터링하고 정렬
+        val completeAndProgress = list.value
+            .filter { it.state == "COMPLETE" || it.state == "PROGRESS" }
+            .sortedWith(
+                compareByDescending<ResponseMission> { it.state == "COMPLETE" }
+                    .thenBy {
+                        it.updateAt?.let { date ->
+                            try {
+                                LocalDateTime.parse(date, formatter)
+                            } catch (e: Exception) {
+                                LocalDateTime.MAX
+                            }
+                        } ?: LocalDateTime.MAX
+                    }
+                    .thenByDescending { it.state == "PROGRESS" }
+            )
+
+        // requiredMissionCount 만큼만 선택
+        val selectedMissions = completeAndProgress.take(requiredMissionCount.value)
+
+        // 남은 공간에 BEFORE 상태 미션 추가
+        val remainingCount = requiredMissionCount.value - selectedMissions.size
+        val beforeMissions = List(remainingCount) {
+            ResponseMission(
+                clearedQuizCount = 0,
+                id = null,
+                name = "미션 ${it + 1}",
+                state = "BEFORE",
+                totalQuizCount = 0,
+                type = null,
+                updateAt = null
+            )
+        }
+        selectedMissions + beforeMissions
+    }
+
 
     Column(
         modifier = Modifier
@@ -78,32 +127,41 @@ fun MissionMapScreen(
             verticalArrangement = Arrangement.spacedBy(32.dp),
             reverseLayout = true
         ) {
-            items(list.value.size) { index ->
-                list.value[index].let { missionData ->
-                    val state = when (missionData.state) {
-                        "BEFORE" -> SUBMISSIONSTATE.BEFORE
-                        "PROGRESS" -> SUBMISSIONSTATE.PROGRESS
-                        "COMPLETE" -> SUBMISSIONSTATE.COMPLETE
-                        else -> SUBMISSIONSTATE.BEFORE
-                    }
-
-                    val progressDataModel = when (state) {
-                        SUBMISSIONSTATE.PROGRESS -> ProgressingTaskDataModel(
-                            totalMissions = missionData.totalQuizCount ?: 0,
-                            completedMissions = missionData.clearedQuizCount ?: 0
-                        )
-
-                        else -> null
-                    }
-                    SubMissionItem(subMissionTitle = missionData.name?.split(":")?.last()?.trim() ?: "수원화성",
-                        state = state,
-                        data = progressDataModel,
-                        {
-                            //TODO 서브미션 변경하기
-                        }, { navController.navigate(MainScreens.MissionTask.route) })
+            items(sortedList.size) { index ->
+                val missionData = sortedList[index]
+                val state = when (missionData.state) {
+                    "BEFORE" -> SUBMISSIONSTATE.BEFORE
+                    "PROGRESS" -> SUBMISSIONSTATE.PROGRESS
+                    "COMPLETE" -> SUBMISSIONSTATE.COMPLETE
+                    else -> SUBMISSIONSTATE.BEFORE
                 }
+                val progressDataModel = when (state) {
+                    SUBMISSIONSTATE.PROGRESS -> ProgressingTaskDataModel(
+                        totalMissions = missionData.totalQuizCount ?: 0,
+                        completedMissions = missionData.clearedQuizCount ?: 0
+                    )
 
+                    else -> null
+                }
+                SubMissionItem(
+                    subMissionTitle = missionData.name?.split(":")?.last()?.trim()
+                        ?: "수원화성",
+                    state = state,
+                    data = progressDataModel
+                ) {
+                    when (missionData.state) {
+                        "PROGRESS" -> {
+                            if (missionData.totalQuizCount == missionData.clearedQuizCount) {
+                                navController.navigate(MainScreens.SubMissionChoice.route)
+                            } else {
+                                navController.navigate(MainScreens.MissionTask.route)
+                            }
+                        }
+                        else -> Unit
+                    }
+                }
             }
+
         }
     }
 }

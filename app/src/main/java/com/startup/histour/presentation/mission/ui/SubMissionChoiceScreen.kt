@@ -73,7 +73,12 @@ fun SubMissionChoiceScreen(
             painter = painterResource(id = R.drawable.img_chat),
             contentDescription = "submission"
         )
-        SubMissionList(missionClearViewModel,modifier = Modifier.weight(1f), list.value, curMissionType)
+        SubMissionList(
+            missionClearViewModel,
+            modifier = Modifier.weight(1f),
+            list.value,
+            curMissionType
+        )
     }
 }
 
@@ -84,8 +89,10 @@ private fun SubMissionList(
     list: List<ResponseMission>,
     currentMissionType: String
 ) {
-    Column(modifier = modifier
-        .padding(horizontal = 24.dp)) {
+    Column(
+        modifier = modifier
+            .padding(horizontal = 24.dp)
+    ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -93,21 +100,19 @@ private fun SubMissionList(
                 items = list,
                 key = { index, _ -> index },
             ) { _, item ->
-                if(currentMissionType == "INTRO"){
-                    if(item.type == "NORMAL"){
+                if (currentMissionType == "INTRO") {
+                    if (item.type == "NORMAL") {
                         SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
                             viewModel.clearSubMission(item.id ?: 1)
                         }
                     }
-                }else if(currentMissionType == "NORMAL"){
-                    if(item.type == "FINAL") {
+                } else if (currentMissionType == "NORMAL") {
+                    if (item.state != "COMPLETE" && item.type == "NORMAL") {
                         SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
                             viewModel.clearSubMission(item.id ?: 1)
                         }
                     }
                 }
-
-
             }
         }
     }

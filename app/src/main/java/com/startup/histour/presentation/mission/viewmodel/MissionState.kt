@@ -7,8 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 class MissionStateImpl : MissionState {
     override val missionList = MutableStateFlow<List<ResponseMission>>(listOf())
+    override val requiredMissionCount = MutableStateFlow(1)
 }
 
 interface MissionState : State {
     val missionList: StateFlow<List<ResponseMission>>
+    val requiredMissionCount: StateFlow<Int>
 }

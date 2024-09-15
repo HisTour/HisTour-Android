@@ -60,7 +60,6 @@ fun SubMissionItem(
     subMissionTitle: String,
     state: SUBMISSIONSTATE = SUBMISSIONSTATE.BEFORE,
     data: ProgressingTaskDataModel? = null,
-    onChangeClick: (() -> Unit)? = null,
     onContinueClick: (() -> Unit)? = null
 ) {
     val strokeColor = when (state) {
@@ -109,8 +108,7 @@ fun SubMissionItem(
                 submissionTitle = subMissionTitle,
                 textColor = textColor,
                 data = data,
-                onChangeClick,
-                onContinueClick
+                onContinueClick,
             )
 
             SUBMISSIONSTATE.COMPLETE -> CompleteSubMission(
@@ -129,7 +127,7 @@ fun BeforeSubMission(submissionTitle: String, textColor: Color) {
                 .align(Alignment.TopStart)
                 .width(120.dp)
                 .padding(top = 16.dp, start = 18.dp),
-            text = submissionTitle,
+            text = stringResource(id = R.string.submission_before),
             style = HistourTheme.typography.body1Bold,
             color = textColor,
             textAlign = TextAlign.Start,
@@ -162,7 +160,6 @@ fun ProgressSubMission(
     submissionTitle: String,
     textColor: Color,
     data: ProgressingTaskDataModel?,
-    onChangeClick: (() -> Unit)?,
     onContinueClick: (() -> Unit)?
 ) {
 
@@ -210,47 +207,25 @@ fun ProgressSubMission(
                 progressbarType = ProgressbarType.SUBMISSION
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row {
-                Column(
-                    modifier = Modifier
-                        .height(36.dp)
-                        .width(110.dp)
-                        .background(color = HistourTheme.colors.white000, shape = CircleShape)
-                        .padding(horizontal = 14.dp)
-                        .noRippleClickable { onChangeClick?.invoke() },
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        style = HistourTheme.typography.body2Bold,
-                        color = HistourTheme.colors.gray500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        text = stringResource(id = R.string.submission_change),
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(
-                    modifier = Modifier
-                        .height(36.dp)
-                        .width(110.dp)
-                        .background(color = HistourTheme.colors.gray900, shape = CircleShape)
-                        .padding(horizontal = 17.dp)
-                        .noRippleClickable { onContinueClick?.invoke() },
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        style = HistourTheme.typography.body2Bold,
-                        color = HistourTheme.colors.white000,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        text = stringResource(id = R.string.submission_continue),
-                        textAlign = TextAlign.Center
-                    )
-                }
+            Column(
+                modifier = Modifier
+                    .height(36.dp)
+                    .width(110.dp)
+                    .background(color = HistourTheme.colors.gray900, shape = CircleShape)
+                    .padding(horizontal = 17.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .noRippleClickable { onContinueClick?.invoke() },
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    style = HistourTheme.typography.body2Bold,
+                    color = HistourTheme.colors.white000,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = stringResource(id = R.string.submission_continue),
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
