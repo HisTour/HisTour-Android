@@ -2,6 +2,7 @@ package com.startup.histour.presentation.widget.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -43,7 +44,8 @@ import com.startup.histour.ui.theme.HistourTheme
 
 enum class MissionDialogType {
     HINT,
-    MISSION_CONTENT
+    MISSION_CONTENT,
+    ANSWER
 }
 
 enum class MissionType {
@@ -71,7 +73,7 @@ fun MissionHintDialog(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val maxHeight = when (missionDialogType) {
-        MissionDialogType.MISSION_CONTENT -> screenHeight * 0.6f
+        MissionDialogType.MISSION_CONTENT, MissionDialogType.ANSWER -> screenHeight * 0.6f
         MissionDialogType.HINT -> screenHeight * 0.8f
     }
 
@@ -90,13 +92,15 @@ fun MissionHintDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                modifier = Modifier.layout { measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
-                    layout(placeable.width, placeable.height) {
-                        val x = (constraints.maxWidth * 0.4f).toInt() - placeable.width / 2
-                        placeable.placeRelative(x = x, y = 0)
+                modifier = Modifier
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        layout(placeable.width, placeable.height) {
+                            val x = (constraints.maxWidth * 0.4f).toInt() - placeable.width / 2
+                            placeable.placeRelative(x = x, y = 0)
+                        }
                     }
-                },
+                    .clickable { onClickClose() },
                 painter = painterResource(id = R.drawable.btn_close),
                 contentDescription = "close",
             )
@@ -123,7 +127,7 @@ fun MissionHintDialog(
                     }
                 }
 
-                MissionDialogType.HINT -> {
+                MissionDialogType.HINT, MissionDialogType.ANSWER -> {
                     Column(
                         Modifier
                             .fillMaxWidth()
@@ -137,21 +141,31 @@ fun MissionHintDialog(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        HintContent(hint = dialogContent)
+                        val title =
+                            if (missionDialogType == MissionDialogType.ANSWER) stringResource(
+                                id = R.string.dialog_answer
+                            ) else {
+                                stringResource(id = R.string.dialog_hint)
+                            }
+
+                        HintContent(title = title, content = dialogContent)
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            CharacterSelectableChipText(select = true, text = "정답 보기") {
-                onClickAnswer()
+            if (missionDialogType != MissionDialogType.ANSWER) {
+                CharacterSelectableChipText(select = true, text = "정답 보기") {
+                    onClickAnswer()
+                }
             }
+
         }
     }
 }
 
 @Composable
-private fun HintContent(hint: String) {
+private fun HintContent(title: String, content: String) {
     Row(
         modifier = Modifier
             .wrapContentSize()
@@ -165,7 +179,7 @@ private fun HintContent(hint: String) {
             tint = Color.Unspecified,
         )
         Text(
-            text = stringResource(id = R.string.dialog_hint),
+            text = title,
             style = HistourTheme.typography.head3,
             color = HistourTheme.colors.gray900
         )
@@ -178,7 +192,7 @@ private fun HintContent(hint: String) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Text(
-            text = hint,
+            text = content,
             style = HistourTheme.typography.body3Reg,
             color = HistourTheme.colors.gray700
         )

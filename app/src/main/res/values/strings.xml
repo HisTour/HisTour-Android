@@ -51,6 +51,7 @@
     <string name="dialog_cancel">취소</string>
     <string name="dialog_close">닫기</string>
     <string name="dialog_request">보내기</string>
+    <string name="dialog_answer">정답</string>
     <string name="dialog_hint">힌트</string>
     <string name="dialog_level">난이도</string>
     <string name="dialog_view_answer">정답 보기</string>
