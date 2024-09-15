@@ -18,8 +18,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,14 +41,39 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.main.model.CharacterViewEvent
 import com.startup.histour.presentation.main.viewmodel.CharacterViewModel
 import com.startup.histour.presentation.model.CharacterModel
+import com.startup.histour.presentation.navigation.LoginScreens
+import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 @Composable
 fun CharacterScreen(navController: NavController, characterViewModel: CharacterViewModel = hiltViewModel()) {
     val characterList by characterViewModel.state.characterList.collectAsState()
+    var selectedCharacter by remember {
+        mutableStateOf<CharacterModel?>(null)
+    }
+    val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            characterViewModel.event
+                .filterIsInstance<CharacterViewEvent>()
+                .collectLatest { event ->
+                    when (event) {
+                        CharacterViewEvent.SuccessChangedCharacterAndPlaceSelect -> {
+                            navController.navigate(LoginScreens.Map.route)
+                        }
+
+                        else -> {}
+                    }
+                }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +112,9 @@ fun CharacterScreen(navController: NavController, characterViewModel: CharacterV
                     bottom.linkTo(button.top)
                     height = Dimension.fillToConstraints
                 }) {
-                CharacterPagerView(characterList)
+                CharacterPagerView(characterList) {
+                    selectedCharacter = it
+                }
             }
             Spacer(modifier = Modifier.height(25.dp))
             Text(
@@ -100,6 +132,9 @@ fun CharacterScreen(navController: NavController, characterViewModel: CharacterV
                     .padding(horizontal = 24.dp, 16.dp)
                     .background(color = HistourTheme.colors.green400, shape = RoundedCornerShape(12.dp))
                     .padding(vertical = 15.dp)
+                    .noRippleClickable {
+                        selectedCharacter?.let { characterViewModel.selectCharacter(it.id, true) }
+                    }
             )
         }
     }
@@ -108,16 +143,21 @@ fun CharacterScreen(navController: NavController, characterViewModel: CharacterV
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CharacterPagerView(
-    list: List<CharacterModel>,
+    list: List<CharacterModel>, onSelectItem: (CharacterModel) -> Unit
 ) {
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { list.size })
     HorizontalPager(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()), pageSpacing = 12.dp, beyondBoundsPageCount = 3, state = rememberPagerState(pageCount = { list.size }),
         verticalAlignment = Alignment.Top,
         contentPadding = PaddingValues(horizontal = 24.dp)
-    ) {
-        CharacterPagerViewItem(list[it])
+    ) { page ->
+        val character = list[page]
+        if (pagerState.currentPage == page) {
+            onSelectItem.invoke(character)
+        }
+        CharacterPagerViewItem(character)
     }
 }
 

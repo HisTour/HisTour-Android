@@ -41,13 +41,13 @@ class CharacterViewModel @Inject constructor(
         }
     }
 
-    fun selectCharacter(characterId: Int) {
+    fun selectCharacter(characterId: Int, isFirst: Boolean) {
         changeCharacterOfUserUseCase.executeOnViewModel(
             params = characterId,
             onEach = {
                 getMyUserDataUseCase.executeOnViewModel(
                     onEach = {
-                        notifyEvent(CharacterViewEvent.SuccessChangedCharacter)
+                        notifyEvent(if (isFirst) CharacterViewEvent.SuccessChangedCharacterAndPlaceSelect else CharacterViewEvent.SuccessChangedCharacter)
                     },
                     onError = {}
                 )

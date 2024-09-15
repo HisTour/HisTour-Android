@@ -4,7 +4,6 @@ import com.startup.histour.data.dto.member.ResponseUserInfoDto
 import kotlinx.coroutines.flow.Flow
 
 interface MemberRepository {
-    suspend fun setUserCharacter(characterId: Int)
+    suspend fun setUserProfile(characterId: Int, userName: String)
     suspend fun getUserInfo(): Flow<ResponseUserInfoDto>
-    suspend fun setUserNickName(name: String)
 }

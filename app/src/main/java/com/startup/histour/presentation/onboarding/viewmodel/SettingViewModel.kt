@@ -47,20 +47,20 @@ class SettingViewModel @Inject constructor(
     fun withdrawalAccount() {
         Log.e("LMH", "MoveToLoginActivity")
         notifyEvent(SettingViewMoveEvent.MoveToLoginActivity)
-       /* withdrawalAccountUseCase.executeOnViewModel(
-            onEach = {
-                Log.e("LMH", "SUCCESS WITHDRAWAL")
-                viewModelScope.launch {
-                    tokenDataStoreProvider.clearAllData()
-                    userInfoDataStoreProvider.clearAllData()
-                    // TODO MOVE LoginActivity
-                    notifyEvent(SettingViewMoveEvent.MoveToLoginActivity)
-                }
-            },
-            onError = {
+        /* withdrawalAccountUseCase.executeOnViewModel(
+             onEach = {
+                 Log.e("LMH", "SUCCESS WITHDRAWAL")
+                 viewModelScope.launch {
+                     tokenDataStoreProvider.clearAllData()
+                     userInfoDataStoreProvider.clearAllData()
+                     // TODO MOVE LoginActivity
+                     notifyEvent(SettingViewMoveEvent.MoveToLoginActivity)
+                 }
+             },
+             onError = {
 
-            }
-        )*/
+             }
+         )*/
     }
 
     fun logout() {
@@ -82,16 +82,16 @@ class SettingViewModel @Inject constructor(
 
     private fun collectUserInfo() {
         viewModelScope.launch {
-            userInfoDataStoreProvider.getUserInfoFlow().collect {
-                _state.userInfo.update { it }
+            userInfoDataStoreProvider.getUserInfoFlow().collect { userData ->
+                _state.userInfo.update { userData }
             }
         }
     }
 
     private fun fetchMyUserData() {
         getMyUserDataUseCase.executeOnViewModel(
-            onEach = {
-                // TODO fetchUserInfo() 에서 Collect 확인
+            onEach = { userData ->
+                _state.userInfo.update { userData }
             },
             onError = {}
         )
