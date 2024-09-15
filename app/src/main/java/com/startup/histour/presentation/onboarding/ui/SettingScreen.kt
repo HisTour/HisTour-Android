@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -59,21 +60,28 @@ import com.startup.histour.presentation.widget.dialog.TYPE
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingScreen(navController: NavController, settingViewModel: SettingViewModel = hiltViewModel()) {
     val userInfo by settingViewModel.state.userInfo.collectAsState()
     val context = LocalContext.current
-    val event by settingViewModel.event.filterIsInstance<SettingViewMoveEvent>().collectAsState(initial = SettingViewMoveEvent.None)
     val activity = context as? ComponentActivity
-    LaunchedEffect(key1 = event) {
-        Log.e("LMH", "EFFECT")
-        if (event is SettingViewMoveEvent.MoveToLoginActivity) {
-            Log.e("LMH", "CALL")
-            val intent = Intent(context, LoginActivity::class.java)
-            context.startActivity(intent)
-            activity?.finish()
+
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            settingViewModel.event
+                .filterIsInstance<SettingViewMoveEvent>()
+                .collectLatest { event ->
+                    if (event is SettingViewMoveEvent.MoveToLoginActivity) {
+                        val intent = Intent(context, LoginActivity::class.java)
+                        context.startActivity(intent)
+                        activity?.finish()
+                    }
+                }
         }
     }
     Column(

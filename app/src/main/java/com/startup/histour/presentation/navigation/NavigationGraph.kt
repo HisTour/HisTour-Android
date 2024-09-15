@@ -1,6 +1,13 @@
 package com.startup.histour.presentation.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,22 +30,35 @@ import com.startup.histour.presentation.onboarding.ui.OnBoardingMapScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingScreen
 import com.startup.histour.presentation.onboarding.ui.SettingScreen
 import com.startup.histour.presentation.onboarding.viewmodel.OnBoardingViewModel
+import com.startup.histour.presentation.widget.snack.HistourSnackBar
+import com.startup.histour.ui.theme.HistourTheme
 
 @Composable
 fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
 
     val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = LoginScreens.Login.route
-    ) {
-        composable(LoginScreens.Login.route) { LoginScreen(navController) }
-        composable(LoginScreens.OnBoarding.route) { OnBoardingScreen(navController) }
-        composable(LoginScreens.Setting.route) { SettingScreen(navController) }
-        composable(LoginScreens.Character.route) { CharacterScreen(navController) }
-        composable(LoginScreens.Map.route) { _ ->
-            OnBoardingMapScreen(navController)
+    val snackBarHostState = SnackbarHostState()
+    Scaffold(
+        snackbarHost = {
+            HistourSnackBar(snackBarHostState = snackBarHostState)
+        },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .background(HistourTheme.colors.white000)
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = LoginScreens.Login.route
+            ) {
+                composable(LoginScreens.Login.route) { LoginScreen(navController) }
+                composable(LoginScreens.OnBoarding.route) { OnBoardingScreen(navController) }
+                composable(LoginScreens.Setting.route) { SettingScreen(navController) }
+                composable(LoginScreens.Character.route) { CharacterScreen(navController) }
+                composable(LoginScreens.Map.route) { OnBoardingMapScreen(navController, snackBarHostState) }
+            }
         }
     }
 }
@@ -47,27 +67,41 @@ fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
 fun MainNavigationGraph() {
 
     val navController = rememberNavController()
+    val snackBarHostState = SnackbarHostState()
 
-    NavHost(
-        navController = navController,
-        startDestination = MainScreens.BottomNavigation.route
-    ) {
-        composable(MainScreens.BottomNavigation.route) { BottomNavigationScreen(navController) }
-        composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
-        composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
-        composable(MainScreens.MissionTask.route) { TaskMissionScreen(navController) }
-        composable(MainScreens.SubMissionChoice.route) { SubMissionChoiceScreen(navController) }
-        composable(MainScreens.Camera.route) { CameraScreen(navController) }
-        composable(MainScreens.GPT.route) { GptScreen(navController) }
-        composable(MainScreens.Bundle.route) { BundleScreen(navController) }
-        composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
-        composable(MainScreens.RecommendedSpot.route) { RecommendedSpotScreen(navController) }
-        composable(MainScreens.Character.route) { CharacterScreen(navController) }
-        composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
-        composable(MainScreens.Setting.route) { SettingScreen(navController) }
-        composable(MainScreens.NickNameChange.route) { NickNameChangeScreen(navController) }
-        composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
-        composable(MainScreens.Map.route) { OnBoardingMapScreen(navController) }
+    Scaffold(
+        snackbarHost = {
+            HistourSnackBar(snackBarHostState = snackBarHostState)
+        },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .background(HistourTheme.colors.white000)
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = MainScreens.BottomNavigation.route
+            ) {
+                composable(MainScreens.BottomNavigation.route) { BottomNavigationScreen(navController) }
+                composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
+                composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
+                composable(MainScreens.MissionTask.route) { TaskMissionScreen(navController) }
+                composable(MainScreens.SubMissionChoice.route) { SubMissionChoiceScreen(navController) }
+                composable(MainScreens.Camera.route) { CameraScreen(navController) }
+                composable(MainScreens.GPT.route) { GptScreen(navController) }
+                composable(MainScreens.Bundle.route) { BundleScreen(navController) }
+                composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
+                composable(MainScreens.RecommendedSpot.route) { RecommendedSpotScreen(navController) }
+                composable(MainScreens.Character.route) { CharacterScreen(navController) }
+                composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
+                composable(MainScreens.Setting.route) { SettingScreen(navController) }
+                composable(MainScreens.NickNameChange.route) { NickNameChangeScreen(navController) }
+                composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
+                composable(MainScreens.Map.route) { OnBoardingMapScreen(navController, snackBarHostState) }
+            }
+        }
     }
 }
 

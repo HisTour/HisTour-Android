@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface PlaceRepository {
     suspend fun getPlaces(): Flow<ResponsePlaceDto>
+    suspend fun postRecommendPlace(content: String): Flow<Boolean>
 }
