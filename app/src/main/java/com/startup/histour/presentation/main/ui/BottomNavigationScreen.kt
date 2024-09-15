@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -36,19 +37,43 @@ fun BottomNavigationScreen(navController: NavController) {
 
                 NavigationBarItem(
                     selected = currentRoute == MainScreens.MissionMap.route,
-                    onClick = { bottomNavController.navigate(MainScreens.MissionMap.route) },
+                    onClick = {
+                        bottomNavController.navigate(MainScreens.MissionMap.route) {
+                            popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     label = { Text("미션 지도") },
                     icon = { Icon(Icons.Default.Place, contentDescription = null) }
                 )
                 NavigationBarItem(
                     selected = currentRoute == MainScreens.Home.route,
-                    onClick = { bottomNavController.navigate(MainScreens.Home.route) },
+                    onClick = {
+                        bottomNavController.navigate(MainScreens.Home.route) {
+                            popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     label = { Text("홈") },
                     icon = { Icon(Icons.Default.Home, contentDescription = null) }
                 )
                 NavigationBarItem(
                     selected = currentRoute == MainScreens.Bundle.route,
-                    onClick = { bottomNavController.navigate(MainScreens.Bundle.route) },
+                    onClick = {
+                        bottomNavController.navigate(MainScreens.Bundle.route) {
+                            popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     label = { Text("보따리") },
                     icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) }
                 )
@@ -61,7 +86,6 @@ fun BottomNavigationScreen(navController: NavController) {
             composable(MainScreens.Bundle.route) { BundleScreen(navController) }
         }
     }
-
 
 
 }
