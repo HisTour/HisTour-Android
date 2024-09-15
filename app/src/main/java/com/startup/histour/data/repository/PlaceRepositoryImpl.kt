@@ -11,4 +11,8 @@ class PlaceRepositoryImpl @Inject constructor(private val placeDataSource: Place
     override suspend fun getPlaces(): Flow<ResponsePlaceDto> = flow {
         emit(placeDataSource.getPlaces())
     }
+
+    override suspend fun postRecommendPlace(content: String): Flow<Boolean> = flow {
+        emit(placeDataSource.postRecommendPlace(content))
+    }
 }

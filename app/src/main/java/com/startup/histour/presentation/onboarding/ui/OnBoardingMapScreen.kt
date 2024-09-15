@@ -23,12 +23,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -54,14 +57,21 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.startup.histour.R
 import com.startup.histour.presentation.login.ui.LoginActivity
 import com.startup.histour.presentation.main.ui.MainActivity
+import com.startup.histour.presentation.onboarding.model.TravelMapViewEvent
 import com.startup.histour.presentation.onboarding.viewmodel.TravelMapViewModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.widget.dialog.HistourDialog
+import com.startup.histour.presentation.widget.dialog.HistourDialogModel
+import com.startup.histour.presentation.widget.dialog.TYPE
 import com.startup.histour.ui.theme.HistourTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: TravelMapViewModel = hiltViewModel()) {
+fun OnBoardingMapScreen(navController: NavController, snackBarHostState: SnackbarHostState, travelMapViewModel: TravelMapViewModel = hiltViewModel()) {
 
     var selectedButtonPosition by remember { mutableStateOf<Offset?>(null) }
 
@@ -70,6 +80,27 @@ fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: Travel
     )
     var isPlaceSelectSuccess by remember { mutableStateOf(false) }
 
+
+    val openRecommendPlaceDialog = remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            travelMapViewModel.event
+                .filterIsInstance<TravelMapViewEvent>()
+                .collectLatest { event ->
+                    when (event) {
+                        TravelMapViewEvent.MoveToMainActivity -> {
+                            isPlaceSelectSuccess = true
+                        }
+
+                        is TravelMapViewEvent.ShowToast -> {
+                            snackBarHostState.showSnackbar(event.msg)
+                        }
+                    }
+                }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +136,9 @@ fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: Travel
                     textId = R.string.on_boarding_request_spot,
                     drawableId = R.drawable.ic_letter
                 )
-            ) {}
+            ) {
+                openRecommendPlaceDialog.value = true
+            }
         }
         Box(
             modifier = Modifier
@@ -159,6 +192,7 @@ fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: Travel
                         .zIndex(1f),
                 ) {
                     selectedButtonPosition = Offset(75f, 370f)
+                    travelMapViewModel.selectPlace(1)
                     Log.e("hi", "수원")
                 }
 
@@ -253,6 +287,26 @@ fun OnBoardingMapScreen(navController: NavController, travelMapViewModel: Travel
             Text(text = "나를 따르라~", style = HistourTheme.typography.head2.copy(HistourTheme.colors.white000))
         }
     }
+    if (openRecommendPlaceDialog.value) {
+        HistourDialog(
+            histourDialogModel = HistourDialogModel(
+                titleRes = R.string.dialog_spot_request,
+                descriptionRes = R.string.dialog_spot_request_description,
+                positiveButtonRes = R.string.dialog_request,
+                negativeButtonRes = R.string.dialog_close,
+                type = TYPE.REQUEST
+            ),
+            onClickPositive = { content ->
+                openRecommendPlaceDialog.value = false
+                content?.let {
+                    travelMapViewModel.callRecommendPlace(content)
+                }
+            },
+            onClickNegative = {
+                openRecommendPlaceDialog.value = false
+            },
+        )
+    }
 }
 
 
@@ -273,6 +327,6 @@ fun TransParentMapButton(
 @Composable
 fun PreviewOnBoardingScreen() {
     HistourTheme {
-        OnBoardingMapScreen(navController = rememberNavController())
+        OnBoardingMapScreen(navController = rememberNavController(), SnackbarHostState())
     }
 }

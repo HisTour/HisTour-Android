@@ -55,7 +55,7 @@ enum class TYPE {
 fun HistourDialog(
     histourDialogModel: HistourDialogModel,
     onClickNegative: () -> Unit,
-    onClickPositive: () -> Unit
+    onClickPositive: (String?) -> Unit
 ) {
 
     var report by remember { mutableStateOf("") }
@@ -117,7 +117,7 @@ fun HistourDialog(
                         modifier = Modifier
                             .wrapContentSize()
                             .noRippleClickable {
-                                onClickPositive.invoke()
+                                onClickPositive.invoke(if (histourDialogModel.type == TYPE.REQUEST) report else null)
                             },
                         text = stringResource(id = histourDialogModel.positiveButtonRes),
                         style = HistourTheme.typography.body2Bold,
