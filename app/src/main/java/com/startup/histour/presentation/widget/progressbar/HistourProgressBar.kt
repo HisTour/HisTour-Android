@@ -280,7 +280,7 @@ private fun calculateProgress(
     progress: Float
 ): Float {
     return when (progressbarType) {
-        ProgressbarType.DEFAULT -> currentStep.toFloat() / totalStep.toFloat()
+        ProgressbarType.DEFAULT -> runCatching { currentStep.toFloat() / totalStep.toFloat() }.getOrElse { progress }
         else -> progress
     }
 }
