@@ -51,17 +51,12 @@ import com.startup.histour.presentation.bundle.model.HistoryHoliday
 import com.startup.histour.presentation.bundle.viewmodel.BundleViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
-import com.startup.histour.presentation.util.extensions.rippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
 
 @Composable
 fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel = hiltViewModel()) {
-
-    fun navigateHistoryStoryScreen(historyHoliday: HistoryHoliday) {
-        navController.navigate(MainScreens.RecommendedSpot.route)
-    }
 
     fun navigateRecommendedSpotScreen(attraction: Attraction) {
         navController.navigate(MainScreens.RecommendedSpot.route)
@@ -99,7 +94,7 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
             style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ToDayHistoryList(historyHolidayList, ::navigateHistoryStoryScreen)
+        ToDayHistoryList(historyHolidayList)
     }
 }
 
@@ -191,7 +186,7 @@ private fun RecommendedSpotListItem(
 /** @param list 나중에 Immutable 하도록 변경
  * */
 @Composable
-private fun ToDayHistoryList(list: List<HistoryHoliday>, onClickHistory: (HistoryHoliday) -> Unit) {
+private fun ToDayHistoryList(list: List<HistoryHoliday>) {
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -200,7 +195,7 @@ private fun ToDayHistoryList(list: List<HistoryHoliday>, onClickHistory: (Histor
                 items = list,
                 key = { index, _ -> index },
             ) { _, item ->
-                ToDayHistoryItem(item, onClickHistory)
+                ToDayHistoryItem(item)
             }
         }
     }
@@ -209,7 +204,7 @@ private fun ToDayHistoryList(list: List<HistoryHoliday>, onClickHistory: (Histor
 /** @param date 나중에 날짜 포맷으로 바꿔야함
  * */
 @Composable
-private fun ToDayHistoryItem(historyHoliday: HistoryHoliday, onClickHistory: (HistoryHoliday) -> Unit) {
+private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
     Box(
         modifier = Modifier
             .background(HistourTheme.colors.yellow100, shape = RoundedCornerShape(4.dp))
@@ -217,7 +212,6 @@ private fun ToDayHistoryItem(historyHoliday: HistoryHoliday, onClickHistory: (Hi
             .padding(start = 16.dp)
             .height(40.dp)
             .noRippleClickable {
-                onClickHistory.invoke(historyHoliday)
             }
     ) {
         Row(
@@ -245,11 +239,11 @@ private fun ToDayHistoryItem(historyHoliday: HistoryHoliday, onClickHistory: (Hi
             )
         }
 
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.btn_enter_history),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-        )
+        )*/
     }
 }

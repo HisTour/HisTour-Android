@@ -18,4 +18,5 @@ interface CharacterViewState : State {
 
 sealed interface CharacterViewEvent : BaseEvent {
     data object SuccessChangedCharacter : CharacterViewEvent
+    data object SuccessChangedCharacterAndPlaceSelect : CharacterViewEvent
 }

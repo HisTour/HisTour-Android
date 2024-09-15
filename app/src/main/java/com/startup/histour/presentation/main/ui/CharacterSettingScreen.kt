@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.login.viewmodel.LoginViewEvent
+import com.startup.histour.presentation.main.model.CharacterViewEvent
 import com.startup.histour.presentation.main.viewmodel.CharacterViewModel
 import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
@@ -51,6 +54,8 @@ import com.startup.histour.presentation.widget.text.CharacterSelectableChipText
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,6 +65,22 @@ fun CharacterSettingScreen(
 ) {
     var selectedCharacter by remember {
         mutableStateOf<CharacterModel>(characterViewModel.state.currentCharacter.value)
+    }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            characterViewModel.event
+                .filterIsInstance<CharacterViewEvent>()
+                .collectLatest { event ->
+                    when(event){
+                        CharacterViewEvent.SuccessChangedCharacter -> {
+                            navController.popBackStack()
+                        }
+                        else -> {}
+                    }
+                }
+        }
     }
     val characterList by characterViewModel.state.characterList.collectAsState()
     val previousCharacter by characterViewModel.state.currentCharacter.collectAsState()
@@ -79,7 +100,7 @@ fun CharacterSettingScreen(
                     state = if (previousCharacter != selectedCharacter) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
                     onClickRightTextArea = {
                         // TODO 저장
-                        characterViewModel.selectCharacter(selectedCharacter.id)
+                        characterViewModel.selectCharacter(selectedCharacter.id, false)
                     },
                 ),
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_character)

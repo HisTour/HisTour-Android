@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
 import com.startup.histour.presentation.onboarding.viewmodel.SettingViewModel
+import com.startup.histour.presentation.util.ServiceConst
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.util.extensions.ofMaxLength
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
@@ -110,7 +112,7 @@ fun NickNameChangeScreen(navController: NavController, settingViewModel: Setting
                 BasicTextField(
                     value = currentText,
                     onValueChange = { value ->
-                        value.ofMaxLength(15).let { convertTextValue ->
+                        value.ofMaxLength(ServiceConst.MAX_LENGTH).let { convertTextValue ->
                             if (currentText != convertTextValue) {
                                 currentText = convertTextValue
                             }
@@ -153,6 +155,15 @@ fun NickNameChangeScreen(navController: NavController, settingViewModel: Setting
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${currentText.text.length}/${ServiceConst.MAX_LENGTH}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
+                textAlign = TextAlign.End,
+                style = HistourTheme.typography.detail2Regular.copy(color = HistourTheme.colors.gray400)
+            )
         }
     }
 }

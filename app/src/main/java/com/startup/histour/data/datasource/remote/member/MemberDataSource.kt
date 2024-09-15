@@ -2,21 +2,19 @@ package com.startup.histour.data.datasource.remote.member
 
 import android.util.Log
 import com.startup.histour.data.dto.member.RequestUserCharacter
-import com.startup.histour.data.dto.member.RequestUserNickName
 import com.startup.histour.data.dto.member.ResponseUserInfoDto
 import com.startup.histour.data.remote.api.MemberApi
 import com.startup.histour.data.util.NoCharacterException
 import com.startup.histour.data.util.UnknownException
 import com.startup.histour.data.util.handleExceptionIfNeed
 import org.json.JSONObject
-import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class MemberDataSource @Inject constructor(private val memberApi: MemberApi) {
 
-    suspend fun setUserCharacter(characterId: Int) {
+    suspend fun setUserProfile(characterId: Int, userName: String) {
         return handleExceptionIfNeed {
-            memberApi.setUserCharacter(RequestUserCharacter(characterId))
+            memberApi.setUserProfile(RequestUserCharacter(characterId, userName))
         }
     }
 
@@ -40,12 +38,6 @@ class MemberDataSource @Inject constructor(private val memberApi: MemberApi) {
                     throw UnknownException()
                 }
             }
-        }
-    }
-
-    suspend fun setUserNickName(name: String) {
-        return handleExceptionIfNeed {
-            memberApi.setUserNickName(RequestUserNickName(name))
         }
     }
 }
