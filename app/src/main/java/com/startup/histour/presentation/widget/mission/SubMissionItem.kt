@@ -100,7 +100,7 @@ fun SubMissionItem(
     ) {
         when (state) {
             SUBMISSIONSTATE.BEFORE -> BeforeSubMission(
-                submissionTitle = subMissionTitle,
+                submissionTitle = R.string.submission_before,
                 textColor = textColor
             )
 
@@ -120,14 +120,14 @@ fun SubMissionItem(
 }
 
 @Composable
-fun BeforeSubMission(submissionTitle: String, textColor: Color) {
+fun BeforeSubMission(submissionTitle: Int, textColor: Color) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .width(120.dp)
                 .padding(top = 16.dp, start = 18.dp),
-            text = stringResource(id = R.string.submission_before),
+            text = stringResource(id = submissionTitle),
             style = HistourTheme.typography.body1Bold,
             color = textColor,
             textAlign = TextAlign.Start,
@@ -163,7 +163,6 @@ fun ProgressSubMission(
     onContinueClick: (() -> Unit)?
 ) {
 
-    val progress by remember { mutableStateOf(0f) }
     Box(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -197,13 +196,14 @@ fun ProgressSubMission(
                 .padding(horizontal = 16.dp)
                 .align(Alignment.TopCenter)
         ) {
+            val progress = (data?.completedMissions ?: 0) / (data?.totalMissions ?: 1)
             Spacer(modifier = Modifier.height(90.dp))
             HistourProgressBar(
                 histourProgressBarModel = HistourProgressBarModel(
                     totalStep = data?.totalMissions ?: 5
                 ),
                 currentStep = data?.completedMissions ?: 0,
-                progress = progress,
+                progress = 0.0f,
                 progressbarType = ProgressbarType.SUBMISSION
             )
             Spacer(modifier = Modifier.height(10.dp))

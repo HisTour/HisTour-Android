@@ -1,5 +1,8 @@
 package com.startup.histour.data.datasource.remote.mission
 
+import com.startup.histour.data.dto.mission.RequestQuizGrade
+import com.startup.histour.data.dto.mission.RequestUnlockMission
+import com.startup.histour.data.dto.mission.ResponseGradeQuizDto
 import com.startup.histour.data.dto.mission.ResponseMissionDto
 import com.startup.histour.data.dto.mission.ResponseQuizDto
 import com.startup.histour.data.remote.api.MissionApi
@@ -13,15 +16,21 @@ class MissionDataSource @Inject constructor(private val missionApi: MissionApi) 
         }
     }
 
-    suspend fun clearSubMission(placeId: String): Boolean{
+    suspend fun clearSubMission(requestUnlockMission: RequestUnlockMission): Boolean {
         return handleExceptionIfNeed {
-            missionApi.clearSubMission(placeId).data
+            missionApi.clearSubMission(requestUnlockMission).data
         }
     }
 
     suspend fun getQuiz(missionId: String): ResponseQuizDto {
         return handleExceptionIfNeed {
             missionApi.getQuiz(missionId).data
+        }
+    }
+
+    suspend fun gradeQuiz(requestQuizGrade: RequestQuizGrade): ResponseGradeQuizDto {
+        return handleExceptionIfNeed {
+            missionApi.gradeQuiz(requestQuizGrade).data
         }
     }
 }

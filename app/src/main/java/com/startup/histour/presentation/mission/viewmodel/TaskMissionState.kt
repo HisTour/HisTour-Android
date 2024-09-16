@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 class TaskMissionStateImpl : TaskMissionState {
     override val missionList = MutableStateFlow<List<ResponseQuiz>>(listOf())
     override val subMissionType = MutableStateFlow<String>("")
+    override val moveEvent = MutableStateFlow<Boolean>(false)
     override val correctResponse =
         MutableStateFlow<ResponseQuizCorrectDto>(ResponseQuizCorrectDto(false, 0, 0))
 }
@@ -16,5 +17,6 @@ class TaskMissionStateImpl : TaskMissionState {
 interface TaskMissionState : State {
     val missionList: StateFlow<List<ResponseQuiz>>
     val subMissionType: StateFlow<String>
+    val moveEvent: StateFlow<Boolean>
     val correctResponse: StateFlow<ResponseQuizCorrectDto>
 }

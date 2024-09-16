@@ -73,8 +73,8 @@ fun TaskMissionScreen(
     var enabled by remember { mutableStateOf(false) }
     var taskNumber by remember { mutableIntStateOf(1) }
     val tasksData = taskMissionViewModel.state.missionList.collectAsState()
-    val subMissionType = taskMissionViewModel.state.subMissionType.collectAsState()
     val correctInfo = taskMissionViewModel.state.correctResponse.collectAsState()
+
     var taskType by remember {
         mutableStateOf("READING")
     }
@@ -89,7 +89,7 @@ fun TaskMissionScreen(
     var showAnswerDialog by remember { mutableStateOf(false) }
 
     var isLast = (initialClearedQuizCount == tasksData.value.size - 1)
-    val moveEvent = taskMissionViewModel.moveEvent.collectAsState()
+    val moveEvent = taskMissionViewModel.state.moveEvent.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -283,10 +283,12 @@ fun TaskMissionScreen(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 ) {
                     CTAButton(R.string.next, CTAMode.Enable.instance()) {
-                        //TODO 채점 api clearadQuizCount 수 증가
-                        clearedQuizCount++
-                        if (clearedQuizCount == tasksData.value.size - 1) {
-                            isLast = true
+                        taskMissionViewModel.checkAnswer(isLast, clearedQuizCount + 1)
+                        if (correctInfo.value.isCorrect) {
+                            clearedQuizCount++
+                            if (clearedQuizCount == tasksData.value.size - 1) {
+                                isLast = true
+                            }
                         }
                     }
                 }
@@ -339,12 +341,18 @@ fun TaskMissionScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .noRippleClickable {
-                                    //TODO 채점 api clearadQuizCount 수 증가
-                                    clearedQuizCount++
-                                    if (clearedQuizCount == tasksData.value.size - 1) {
-                                        isLast = true
+                                    taskMissionViewModel.checkAnswer(
+                                        isLast,
+                                        clearedQuizCount + 1,
+                                        answer
+                                    )
+                                    if (correctInfo.value.isCorrect) {
+                                        clearedQuizCount++
+                                        if (clearedQuizCount == tasksData.value.size - 1) {
+                                            isLast = true
+                                        }
                                     }
-                                    answer
+
                                 },
                             painter = painterResource(id = R.drawable.btn_send_enabled),
                             contentDescription = "enabled"
