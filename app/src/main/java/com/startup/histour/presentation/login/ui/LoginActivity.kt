@@ -2,9 +2,9 @@ package com.startup.histour.presentation.login.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,9 +16,9 @@ import com.startup.histour.ui.theme.HistourTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : ComponentActivity() {
 
-    val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel>()
     private val onBoardingViewModel by viewModels<OnBoardingViewModel>()
 
 //    @Inject

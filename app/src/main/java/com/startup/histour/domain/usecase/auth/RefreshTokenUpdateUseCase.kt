@@ -11,7 +11,6 @@ import com.startup.histour.data.dto.auth.ResponseLoginDto
 import com.startup.histour.data.remote.api.TokenUpdateApi
 import com.startup.histour.data.util.handleExceptionIfNeed
 import com.startup.histour.domain.base.BaseUseCase
-import com.startup.histour.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
