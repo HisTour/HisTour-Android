@@ -14,5 +14,7 @@ data class ResponseMission(
     @SerializedName("totalQuizCount")
     val totalQuizCount: Int?,
     @SerializedName("type")
-    val type: String?
+    val type: String?,
+    @SerializedName("updatedAt")
+    val updateAt: String?
 )

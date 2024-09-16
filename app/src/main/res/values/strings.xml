@@ -64,6 +64,8 @@
     <string name="mission_clear_submission">잘했어요~ 서브미션 클리어</string>
     <string name="mission_clear_mission">전체 클리어! 훌륭해요</string>
     <string name="mission_clear_choice_submission">다음 미션 선택하기</string>
+    <string name="mission_clear_move_to_final">파이널 하러 가기</string>
+
     <string name="mission_clear_cta">미션지도로 돌아가기</string>
 
     <!-- mission home -->
@@ -77,6 +79,7 @@
     <!-- sub mission -->
     <string name="submission_change">서브미션 변경</string>
     <string name="submission_continue">이어하기</string>
+    <string name="submission_before">아직 이르오</string>
     <string name="task_number">%1$d번 미션 </string>
     <string name="mission_guide">빈칸에 정답을 입력해주세요</string>
     <string name="mission_textfield_hint">정답은!</string>
