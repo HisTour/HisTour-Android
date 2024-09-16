@@ -134,8 +134,6 @@ fun CharacterSettingScreen(
     }
 }
 
-data class CharacterModel(val imgPath: String = "", val name: String = "", val introduce: String = "")
-
 @Composable
 fun SelectedCharacterDisplayView(character: CharacterModel) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
