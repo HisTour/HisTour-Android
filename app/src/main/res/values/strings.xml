@@ -20,6 +20,7 @@
     <string name="bundle_todaystory_related">연관 여행지</string>
     <string name="bundle_recommended_spot_title">이곳은 어때요?</string>
     <string name="bundle_today_history">오늘의 역사 이야기</string>
+    <string name="home_welcome">%s에 온 걸 환영해~</string>
 
     <string name="setting_menu_item_version">서비스 버전</string>
     <string name="setting_menu_item_terms">서비스이용약관</string>

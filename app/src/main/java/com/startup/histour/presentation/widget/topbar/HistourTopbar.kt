@@ -167,7 +167,7 @@ private fun HisTourTopBarTitleSection(
                         textAlign = TextAlign.Center, // 항상 중앙 정렬
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        text = "강원도 춘천시",
+                        text = titleStyle.titleResId,
                         style = HistourTheme.typography.body1Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))

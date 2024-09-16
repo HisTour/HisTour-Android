@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,7 +68,7 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                     },
                 ),
                 titleStyle = HistourTopBarModel.TitleStyle.TextWithIcon(
-                    "강원도 춘천시",
+                    place.name,
                     R.drawable.ic_dropdown
                 ) {
                     navController.navigate(MainScreens.Map.route)
@@ -90,10 +91,12 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                     .wrapContentWidth()
                     .paint(painter = painterResource(id = R.drawable.svg_speech_bubble)),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = userInfo.character.comment,
+                    modifier = Modifier
+                        .padding(bottom = 10.dp),
+                    text = stringResource(id = R.string.home_welcome, place.name),
                     style = HistourTheme.typography.body3Medi, color = HistourTheme.colors.yellow700
                 )
             }
@@ -139,7 +142,7 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                     ) {
                         AsyncImage(
                             modifier = Modifier.size(65.dp),
-                            model = userInfo.profileImageUrl,
+                            model = userInfo.character.faceImageUrl,
                             contentDescription = "profile"
                         )
                         Column(
@@ -213,6 +216,18 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun DD() {
+
+    Icon(
+        modifier = Modifier
+            .fillMaxWidth(),
+        painter = painterResource(id = R.drawable.svg_speech_bubble), contentDescription = null,
+        tint = HistourTheme.colors.yellow100
+    )
 }
 
 @Composable

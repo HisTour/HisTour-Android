@@ -116,7 +116,6 @@ fun CharacterScreen(navController: NavController, characterViewModel: CharacterV
                     selectedCharacter = it
                 }
             }
-            Spacer(modifier = Modifier.height(25.dp))
             Text(
                 text = stringResource(id = R.string.on_boarding_character_select),
                 style = HistourTheme.typography.body2Bold.copy(
@@ -176,14 +175,14 @@ fun CharacterPagerViewItem(model: CharacterModel) {
             )
             .padding(
                 top = 38.dp,
-                bottom = 31.dp
+                bottom = 30.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             modifier = Modifier,
             text = model.comment,
-            style = HistourTheme.typography.body1Reg.copy(
+            style = HistourTheme.typography.body2Reg.copy(
                 color = Color(android.graphics.Color.parseColor(model.commentColor))
             )
         )
@@ -205,7 +204,7 @@ fun CharacterPagerViewItem(model: CharacterModel) {
             ) {
                 Text(
                     text = model.description,
-                    style = HistourTheme.typography.body1Reg.copy(
+                    style = HistourTheme.typography.detail2Regular.copy(
                         color = HistourTheme.colors.gray500
                     ),
                     modifier = Modifier
@@ -220,7 +219,7 @@ fun CharacterPagerViewItem(model: CharacterModel) {
             }
             Text(
                 text = model.name,
-                style = HistourTheme.typography.body1Bold.copy(
+                style = HistourTheme.typography.body2Bold.copy(
                     color = HistourTheme.colors.white000
                 ),
                 modifier = Modifier
