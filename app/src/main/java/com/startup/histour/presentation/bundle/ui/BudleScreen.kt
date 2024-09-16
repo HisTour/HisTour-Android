@@ -1,11 +1,11 @@
 package com.startup.histour.presentation.bundle.ui
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,8 +55,11 @@ import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
+@RequiresApi(Build.VERSION_CODES.O)
 fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel = hiltViewModel()) {
 
     fun navigateRecommendedSpotScreen(attraction: Attraction) {
@@ -104,6 +106,7 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
 
 @Preview
 @Composable
+@RequiresApi(Build.VERSION_CODES.O)
 fun PreviewBundleScreen() {
     HistourTheme {
         BundleScreen(navController = rememberNavController())
@@ -180,6 +183,7 @@ private fun RecommendedSpotListItem(
 /** @param list 나중에 Immutable 하도록 변경
  * */
 @Composable
+@RequiresApi(Build.VERSION_CODES.O)
 private fun ToDayHistoryList(list: List<HistoryHoliday>) {
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         LazyColumn(
@@ -198,6 +202,7 @@ private fun ToDayHistoryList(list: List<HistoryHoliday>) {
 /** @param date 나중에 날짜 포맷으로 바꿔야함
  * */
 @Composable
+@RequiresApi(Build.VERSION_CODES.O)
 private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
     Box(
         modifier = Modifier
@@ -215,7 +220,7 @@ private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = historyHoliday.date,
+                text = convertDateUsingTime(historyHoliday.date),
                 style = HistourTheme.typography.detail1Regular.copy(
                     color = HistourTheme.colors.yellow700
                 ),
@@ -241,3 +246,17 @@ private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
         )*/
     }
 }
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun convertDateUsingTime(inputDate: String): String = runCatching {
+    // 입력 형식 (yyyyMMdd)
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    // 출력 형식 (MM.dd)
+    val outputFormatter = DateTimeFormatter.ofPattern("MM.dd")
+
+    // 입력 날짜를 LocalDate로 변환
+    val date = LocalDate.parse(inputDate, inputFormatter)
+    // 원하는 형식으로 변환
+    date.format(outputFormatter)
+}.getOrElse { inputDate }
