@@ -6,4 +6,8 @@ data class Attraction(
     val description: String,
     val imageUrl: String,
     val name: String
-): Serializable
+) : Serializable {
+    companion object {
+        fun orEmpty(): Attraction = Attraction("", "", "")
+    }
+}

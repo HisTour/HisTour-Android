@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +36,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +53,7 @@ import com.startup.histour.R
 import com.startup.histour.presentation.bundle.model.Attraction
 import com.startup.histour.presentation.bundle.model.HistoryHoliday
 import com.startup.histour.presentation.bundle.viewmodel.BundleViewModel
+import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
@@ -70,10 +74,11 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
 
     val attractionList by bundleViewModel.state.attractionList.collectAsState()
     val historyHolidayList by bundleViewModel.state.historyHolidayList.collectAsState()
-
+    val userInfo by bundleViewModel.state.userInfo.collectAsState()
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .wrapContentHeight()
             .background(color = HistourTheme.colors.white000),
     ) {
         HisTourTopBar(model = HistourTopBarModel(titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_bundle)))
@@ -91,7 +96,16 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
             }, painter = painterResource(id = R.drawable.btn_reload), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(12.dp))
-        RecommendedSpotListView(attractionList, ::navigateRecommendedSpotScreen)
+        if (attractionList.isEmpty()) {
+            RecommendedSpotListView(List(4) {
+                Attraction.orEmpty()
+            }) {
+
+            }
+        } else {
+            RecommendedSpotListView(attractionList, ::navigateRecommendedSpotScreen)
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             modifier = Modifier
@@ -100,7 +114,27 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
             style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ToDayHistoryList(historyHolidayList)
+        if (historyHolidayList.isEmpty()) {
+            TodayHistoryEmptyView(userInfo.character)
+        } else {
+            ToDayHistoryList(historyHolidayList)
+        }
+    }
+}
+
+@Composable
+fun TodayHistoryEmptyView(characterInfo: CharacterModel) {
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        AsyncImage(
+            modifier = Modifier.size(180.dp),
+            model = characterInfo.faceImageUrl,
+            contentDescription = null,
+            colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
+                setToSaturation(0f)  // Saturation을 0으로 설정하여 흑백 효과
+            })
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = "오늘은 나만의 역사를 만들어 보아요", style = HistourTheme.typography.body3Medi.copy(color = HistourTheme.colors.gray400))
     }
 }
 
@@ -124,7 +158,8 @@ private fun RecommendedSpotListView(
             .padding(horizontal = 24.dp)
             .wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        userScrollEnabled = false
     ) {
         items(
             items = list,
@@ -187,7 +222,7 @@ private fun RecommendedSpotListItem(
 private fun ToDayHistoryList(list: List<HistoryHoliday>) {
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             itemsIndexed(
                 items = list,
