@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.mission.viewmodel
 
+import com.startup.histour.data.dto.mission.RequestUnlockMission
 import com.startup.histour.domain.usecase.mission.ClearSubMissionUseCase
 import com.startup.histour.domain.usecase.mission.GetMissionOfQuizUseCase
 import com.startup.histour.domain.usecase.mission.GetPlaceOfMissionUseCase
@@ -22,6 +23,8 @@ class MissionClearViewModel @Inject constructor(
         getPlaceOfMissionUseCase.executeOnViewModel(
             params = "1",
             onMap = {
+                val imageUrl = it.selectMissionImageUrl
+                _state.imageUrl.update{ imageUrl ?: "" }
                 val missions = it.missions ?: listOf()
                 _state.missionList.update { missions }
             },
@@ -32,11 +35,14 @@ class MissionClearViewModel @Inject constructor(
         )
     }
 
-    fun clearSubMission(nextMissionId : Int){
+    fun clearAndChoiceSubMission(completeMissionId: Int, nextMissionId: Int) {
         clearSubMissionUseCase.executeOnViewModel(
-            params = "1" ,
+            params = RequestUnlockMission(
+                completedMissionId = completeMissionId.toString(),
+                nextMissionId = nextMissionId.toString()
+            ),
             onMap = {
-                if(it) choiceNextSubMission(nextMissionId)
+
             },
             onEach = { it ->
             },
@@ -44,18 +50,6 @@ class MissionClearViewModel @Inject constructor(
             }
         )
 
-    }
-
-    private fun choiceNextSubMission(nextMissionId: Int){
-        getMissionOfQuizUseCase.executeOnViewModel(
-            params = nextMissionId.toString() ,
-            onMap = {
-            },
-            onEach = { it ->
-            },
-            onError = {
-            }
-        )
     }
 
 

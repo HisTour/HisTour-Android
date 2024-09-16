@@ -151,7 +151,7 @@ fun MissionMapScreen(
                 ) {
                     when (missionData.state) {
                         "PROGRESS" -> {
-                            if (missionData.totalQuizCount == missionData.clearedQuizCount) {
+                            if (missionData.totalQuizCount!! <= missionData.clearedQuizCount!!) {
                                 navController.navigate(MainScreens.SubMissionChoice.route)
                             } else {
                                 navController.navigate(MainScreens.MissionTask.route)

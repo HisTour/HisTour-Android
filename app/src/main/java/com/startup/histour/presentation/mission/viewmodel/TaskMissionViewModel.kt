@@ -1,6 +1,8 @@
 package com.startup.histour.presentation.mission.viewmodel
 
+import com.startup.histour.data.dto.mission.RequestQuizGrade
 import com.startup.histour.domain.usecase.mission.GetMissionOfQuizUseCase
+import com.startup.histour.domain.usecase.mission.GradeQuizUseCase
 import com.startup.histour.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,14 +12,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskMissionViewModel @Inject constructor(
-    getMissionOfQuizUseCase: GetMissionOfQuizUseCase
+    getMissionOfQuizUseCase: GetMissionOfQuizUseCase,
+    private val gradeQuizUseCase: GradeQuizUseCase
 ) : BaseViewModel() {
 
     private val _state = TaskMissionStateImpl()
     override val state: TaskMissionState = _state
-
-    private val _moveEvent = MutableStateFlow<Boolean>(false)
-    val moveEvent = _moveEvent.asStateFlow()
 
     init {
         getMissionOfQuizUseCase.executeOnViewModel(
@@ -28,26 +28,27 @@ class TaskMissionViewModel @Inject constructor(
                 _state.missionList.update { missions }
                 _state.subMissionType.update { subMissionType }
             },
-            onEach = { it->
+            onEach = { it ->
             },
             onError = {
             }
         )
     }
 
-//    private fun checkAnswer(isLast:Boolean, quizId:Int){
-//        useCase.executeOnViewModel(
-//            params = "1",
-//            onMap = {
-//                if(isLast == true) moveEvent.value = true
-//                    _state.correctResponse.update {it}
-//            },
-//            onEach = { it->
-//            },
-//            onError = {
-//            }
-//
-//    }
+    fun checkAnswer(isLast: Boolean, taskId: Int, answer: String = "") {
+        gradeQuizUseCase.executeOnViewModel(
+            params = RequestQuizGrade(quizId = taskId, memberAnswer = answer, isLast),
+            onMap = {
+                _state.correctResponse.update { it }
+                _state.moveEvent.update { isLast }
+            },
+            onEach = { it ->
+            },
+            onError = {
+
+            }
+        )
+    }
 
 
 }
