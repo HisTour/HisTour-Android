@@ -6,10 +6,13 @@ import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.domain.usecase.place.GetTravelRegionsUseCase
 import com.startup.histour.domain.usecase.place.RecommendTravelPlaceUseCase
 import com.startup.histour.presentation.base.BaseViewModel
+import com.startup.histour.presentation.model.UserInfoModel
 import com.startup.histour.presentation.onboarding.model.TravelMapViewEvent
 import com.startup.histour.presentation.onboarding.model.TravelMapViewState
 import com.startup.histour.presentation.onboarding.model.TravelMapViewStateImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +24,13 @@ class TravelMapViewModel @Inject constructor(
     private val userInfoDataStoreProvider: UserInfoDataStoreProvider
 ) :
     BaseViewModel() {
-    private val _state = TravelMapViewStateImpl()
+    private val _state = TravelMapViewStateImpl(
+        userInfo = userInfoDataStoreProvider.getUserInfoFlow().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            UserInfoModel.orEmpty()
+        )
+    )
     override val state: TravelMapViewState get() = _state
 
     init {

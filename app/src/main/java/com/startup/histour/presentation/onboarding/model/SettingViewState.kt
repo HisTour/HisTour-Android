@@ -3,11 +3,9 @@ package com.startup.histour.presentation.onboarding.model
 import com.startup.histour.presentation.base.BaseEvent
 import com.startup.histour.presentation.base.State
 import com.startup.histour.presentation.model.UserInfoModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class SettingViewStateImpl : SettingViewState {
-    override val userInfo = MutableStateFlow<UserInfoModel>(UserInfoModel.orEmpty())
+class SettingViewStateImpl(override val userInfo: StateFlow<UserInfoModel>) : SettingViewState {
 }
 
 interface SettingViewState : State {
@@ -17,4 +15,7 @@ interface SettingViewState : State {
 sealed interface SettingViewMoveEvent : BaseEvent {
     data object None : SettingViewMoveEvent
     data object MoveToLoginActivity : SettingViewMoveEvent
+}
+sealed interface NickNameChangedEvent : BaseEvent {
+    data object OnChangedNickName : NickNameChangedEvent
 }

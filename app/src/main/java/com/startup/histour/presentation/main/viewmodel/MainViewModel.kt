@@ -3,6 +3,7 @@ package com.startup.histour.presentation.main.viewmodel
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.startup.histour.data.datastore.UserInfoDataStoreProvider
+import com.startup.histour.data.util.NoCharacterException
 import com.startup.histour.domain.usecase.member.GetMyUserDataUseCase
 import com.startup.histour.domain.usecase.place.GetMyCurrentTravelPlaceUseCase
 import com.startup.histour.presentation.base.BaseViewModel
@@ -33,21 +34,34 @@ class MainViewModel @Inject constructor(
         getMyUserDataUseCase.executeOnViewModel(
             onEach = { response ->
                 Log.e("LMH", "getMyUserDataUseCase SUCCESS $response")
+                checkUserPlaceData()
             },
             onError = { error ->
+                if(error is NoCharacterException){
+                    notifyEvent(HomeEvent.MoveLoginActivity)
+                }
                 Log.e("LMH", "getMyUserDataUseCase FAIL $error")
             },
         )
+    }
+
+    private fun checkUserPlaceData() {
         viewModelScope.launch {
-            getMyCurrentTravelPlaceUseCase.executeOnViewModel(
-                params = userInfoDataStoreProvider.getPlaceId(),
-                onEach = { place ->
-                    _state.place.update { place }
-                },
-                onError = {
-                    Log.e("LMH", "getMyCurrentTravelPlaceUseCase FAIL $it")
+            if (userInfoDataStoreProvider.getPlaceId() == -1) {
+                notifyEvent(HomeEvent.MovePlaceSetting)
+            } else {
+                viewModelScope.launch {
+                    getMyCurrentTravelPlaceUseCase.executeOnViewModel(
+                        params = userInfoDataStoreProvider.getPlaceId(),
+                        onEach = { place ->
+                            _state.place.update { place }
+                        },
+                        onError = {
+                            Log.e("LMH", "getMyCurrentTravelPlaceUseCase FAIL $it")
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }

@@ -36,6 +36,7 @@
     <string name="on_boarding_map_title">어디로\n떠날까요?</string>
     <string name="on_boarding_request_spot">여행지 요청</string>
     <string name="on_boarding_choice_random">깨비야 골라줘!</string>
+    <string name="on_boarding_choice_place">여행지 입장하기</string>
     <!-- dialog -->
     <string name="dialog_spot_request">여행지 요청하기</string>
     <string name="dialog_spot_request_description">가고 싶은 여행지가 있으신가요?\n여행지의 장소와 원하는 미션을 적어주세요!</string>

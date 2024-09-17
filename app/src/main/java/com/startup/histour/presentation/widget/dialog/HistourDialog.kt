@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.startup.histour.R
+import com.startup.histour.presentation.util.ServiceConst
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.util.extensions.ofMaxLength
 import com.startup.histour.ui.theme.HistourTheme
 
 data class HistourDialogModel(
@@ -157,13 +160,17 @@ private fun TextArea(model: HistourDialogModel) {
 fun CustomTextField(
     onValueChange: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(TextFieldValue("")) }
 
     TextField(
         value = text,
-        onValueChange = {
-            text = it
-            onValueChange(it)
+        onValueChange = { value ->
+            value.ofMaxLength(ServiceConst.MAX_RECOMMEND_LENGTH).let { convertTextValue ->
+                if (text != convertTextValue) {
+                    text = convertTextValue
+                    onValueChange(convertTextValue.text)
+                }
+            }
         },
         placeholder = {
             Text(

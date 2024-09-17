@@ -5,6 +5,7 @@ import CTAImageButtonModel
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +24,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,9 +52,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -57,29 +62,33 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.startup.histour.R
 import com.startup.histour.presentation.login.ui.LoginActivity
 import com.startup.histour.presentation.main.ui.MainActivity
+import com.startup.histour.presentation.onboarding.model.Place
 import com.startup.histour.presentation.onboarding.model.TravelMapViewEvent
 import com.startup.histour.presentation.onboarding.viewmodel.TravelMapViewModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.widget.button.CTAButton
+import com.startup.histour.presentation.widget.button.CTAMode
 import com.startup.histour.presentation.widget.dialog.HistourDialog
 import com.startup.histour.presentation.widget.dialog.HistourDialogModel
 import com.startup.histour.presentation.widget.dialog.TYPE
+import com.startup.histour.presentation.widget.progressbar.HistourProgressBar
+import com.startup.histour.presentation.widget.progressbar.HistourProgressBarModel
+import com.startup.histour.presentation.widget.progressbar.ProgressbarType
 import com.startup.histour.ui.theme.HistourTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun OnBoardingMapScreen(navController: NavController, snackBarHostState: SnackbarHostState, travelMapViewModel: TravelMapViewModel = hiltViewModel()) {
-
+    val userInfo by travelMapViewModel.state.userInfo.collectAsState()
     var selectedButtonPosition by remember { mutableStateOf<Offset?>(null) }
-
+    var selectedPlace by remember { mutableStateOf<Place?>(null) }
     val preLoaderLottieComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.loading)
     )
     var isPlaceSelectSuccess by remember { mutableStateOf(false) }
-
 
     val openRecommendPlaceDialog = remember { mutableStateOf(false) }
 
@@ -100,6 +109,10 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                     }
                 }
         }
+    }
+
+    BackHandler {
+
     }
     Box(
         modifier = Modifier
@@ -169,6 +182,9 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 ) {
                     selectedButtonPosition = Offset(45f, 240f)
                     Log.e("hi", "경복궁")
+                    coroutineScope.launch {
+                        snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
+                    }
                 }
 
                 // 남한산성 버튼
@@ -181,6 +197,9 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 ) {
                     selectedButtonPosition = Offset(190f, 200f)
                     Log.e("hi", "남한산성")
+                    coroutineScope.launch {
+                        snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
+                    }
                 }
 
                 // 수원 버튼
@@ -192,7 +211,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                         .zIndex(1f),
                 ) {
                     selectedButtonPosition = Offset(75f, 370f)
-                    travelMapViewModel.selectPlace(1)
+                    selectedPlace = travelMapViewModel.state.placeList.value.find { it.placeId == 1 }
                     Log.e("hi", "수원")
                 }
 
@@ -206,6 +225,9 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 ) {
                     selectedButtonPosition = Offset(230f, 370f)
                     Log.e("hi", "경주")
+                    coroutineScope.launch {
+                        snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
+                    }
                 }
 
                 // 제주
@@ -218,11 +240,14 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 ) {
                     selectedButtonPosition = Offset(35f, 523f)
                     Log.e("hi", "제주")
+                    coroutineScope.launch {
+                        snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
+                    }
                 }
 
                 selectedButtonPosition?.let { position ->
-                    Image(
-                        painter = painterResource(id = R.drawable.img_chat), // 선택된 위치를 나타내는 이미지 리소스
+                    AsyncImage(
+                        model = userInfo.character.faceImageUrl, // 선택된 위치를 나타내는 이미지 리소스
                         contentDescription = "ggabi_marker",
                         modifier = Modifier
                             .size(40.dp) // 이미지 크기 조정
@@ -232,29 +257,47 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .height(50.dp)
-                    .wrapContentWidth()
-                    .background(color = HistourTheme.colors.green400, shape = CircleShape)
-                    .align(Alignment.BottomEnd)
-                    .noRippleClickable { }
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_dice),
-                    contentDescription = "dice"
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    text = stringResource(R.string.on_boarding_choice_random),
-                    color = HistourTheme.colors.white000,
-                    style = HistourTheme.typography.head4
-                )
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(end = 24.dp, bottom = 45.dp)
+                .height(50.dp)
+                .wrapContentWidth()
+                .background(color = HistourTheme.colors.green400, shape = CircleShape)
+                .align(Alignment.BottomEnd)
+                .noRippleClickable {
+                    selectedPlace = travelMapViewModel.state.placeList.value
+                        .find { it.placeId == 1 }
+                        ?.also {
+                            selectedButtonPosition = Offset(75f, 370f)
+                        }
+                }
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_dice),
+                contentDescription = "dice"
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                text = stringResource(R.string.on_boarding_choice_random),
+                color = HistourTheme.colors.white000,
+                style = HistourTheme.typography.head4
+            )
+        }
+        selectedPlace?.let {
+            PlaceBottomSheetView(it, onDismiss = {
+                selectedButtonPosition = null
+                selectedPlace = null
+            }) { place ->
+                travelMapViewModel.selectPlace(place.placeId)
+                selectedPlace = null
+                selectedButtonPosition = null
             }
         }
     }
@@ -298,7 +341,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
             ),
             onClickPositive = { content ->
                 openRecommendPlaceDialog.value = false
-                content?.let {
+                content?.takeIf { it.isNotBlank() }?.let {
                     travelMapViewModel.callRecommendPlace(content)
                 }
             },
@@ -306,6 +349,59 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 openRecommendPlaceDialog.value = false
             },
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PlaceBottomSheetView(place: Place = Place.orEmpty().copy(name = "수원화성"), onDismiss: () -> Unit, onSelectPlace: (Place) -> Unit) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            sheetState.show()
+            sheetState.expand()
+        }
+    }
+    ModalBottomSheet(
+        contentColor = HistourTheme.colors.white000,
+        containerColor = HistourTheme.colors.white000,
+        sheetState = sheetState,
+        onDismissRequest = { onDismiss.invoke() }
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 18.dp, start = 24.dp, end = 24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(painter = painterResource(id = R.drawable.suwon), contentDescription = null, modifier = Modifier.size(95.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(text = place.name, style = HistourTheme.typography.head3.copy(color = HistourTheme.colors.gray900))
+                    Text(text = place.description, style = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray600))
+                }
+            }
+            HistourProgressBar(
+                histourProgressBarModel = HistourProgressBarModel(
+                    totalStep = place.totalMissionCount,
+                ),
+                progress = kotlin.runCatching { (place.clearedMissionCount.toFloat() / place.totalMissionCount.toFloat()) }.getOrNull().takeIf { it != null && it >= 0F } ?: 0F,
+                currentStep = place.clearedMissionCount,
+                progressbarType = ProgressbarType.DEFAULT
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            CTAButton(text = R.string.on_boarding_choice_place, mode = CTAMode.Enable.instance()) {
+                onSelectPlace.invoke(place)
+            }
+        }
     }
 }
 

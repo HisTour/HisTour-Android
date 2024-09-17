@@ -1,10 +1,10 @@
 package com.startup.histour.data.datasource.remote.auth
 
-import android.util.Log
 import androidx.datastore.preferences.core.Preferences
 import com.startup.histour.data.datastore.ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.REFRESH_ACCESS_TOKEN_KEY_NAME
 import com.startup.histour.data.datastore.TokenDataStoreProvider
+import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.data.dto.auth.RequestLogin
 import com.startup.histour.data.remote.api.AuthApi
 import com.startup.histour.data.remote.api.LoginApi
@@ -18,6 +18,7 @@ import javax.inject.Singleton
 class AuthDataSource @Inject constructor(
     private val authApi: AuthApi, private val loginApi: LoginApi,
     private val tokenDataStoreProvider: TokenDataStoreProvider,
+    private val userInfoDataStoreProvider: UserInfoDataStoreProvider,
     @Named(ACCESS_TOKEN_KEY_NAME) private val accessTokenKey: Preferences.Key<String>,
     @Named(REFRESH_ACCESS_TOKEN_KEY_NAME) private val refreshTokenKey: Preferences.Key<String>
 ) {
@@ -26,9 +27,10 @@ class AuthDataSource @Inject constructor(
             val response = loginApi.login(requestLogin.type, requestLogin.token)
             val body = response.body()
             if (response.isSuccessful && response.code() == HttpURLConnection.HTTP_CREATED && body != null) {
-                val (accessToken, refreshToken) = body.data
+                val (accessToken, refreshToken, userName) = body.data
                 tokenDataStoreProvider.putValue(accessTokenKey, accessToken.orEmpty())
                 tokenDataStoreProvider.putValue(refreshTokenKey, refreshToken.orEmpty())
+                userInfoDataStoreProvider.setUserName(userName.orEmpty())
                 true
             } else {
                 false

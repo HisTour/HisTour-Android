@@ -9,11 +9,14 @@ import com.startup.histour.domain.usecase.auth.WithdrawalAccountUseCase
 import com.startup.histour.domain.usecase.member.ChangeUserNickNameUseCase
 import com.startup.histour.domain.usecase.member.GetMyUserDataUseCase
 import com.startup.histour.presentation.base.BaseViewModel
+import com.startup.histour.presentation.model.UserInfoModel
+import com.startup.histour.presentation.onboarding.model.NickNameChangedEvent
 import com.startup.histour.presentation.onboarding.model.SettingViewMoveEvent
 import com.startup.histour.presentation.onboarding.model.SettingViewState
 import com.startup.histour.presentation.onboarding.model.SettingViewStateImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,12 +29,14 @@ class SettingViewModel @Inject constructor(
     private val withdrawalAccountUseCase: WithdrawalAccountUseCase,
     private val getMyUserDataUseCase: GetMyUserDataUseCase
 ) : BaseViewModel() {
-    private val _state = SettingViewStateImpl()
+    private val _state = SettingViewStateImpl(
+        userInfo = userInfoDataStoreProvider.getUserInfoFlow().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            UserInfoModel.orEmpty()
+        )
+    )
     override val state: SettingViewState = _state
-
-    init {
-        collectUserInfo()
-    }
 
     fun changeUserNickName(name: String) {
         Log.e("LMH", "CHANGE NAME! $name")
@@ -39,6 +44,7 @@ class SettingViewModel @Inject constructor(
             params = name,
             onEach = {
                 fetchMyUserData()
+                notifyEvent(NickNameChangedEvent.OnChangedNickName)
             },
             onError = {}
         )
@@ -47,7 +53,7 @@ class SettingViewModel @Inject constructor(
     fun withdrawalAccount() {
         Log.e("LMH", "MoveToLoginActivity")
         notifyEvent(SettingViewMoveEvent.MoveToLoginActivity)
-        /* withdrawalAccountUseCase.executeOnViewModel(
+         withdrawalAccountUseCase.executeOnViewModel(
              onEach = {
                  Log.e("LMH", "SUCCESS WITHDRAWAL")
                  viewModelScope.launch {
@@ -60,13 +66,13 @@ class SettingViewModel @Inject constructor(
              onError = {
 
              }
-         )*/
+         )
     }
 
     fun logout() {
         logoutUseCase.executeOnViewModel(
             onEach = {
-                Log.e("LMH", "SUCCESS WITHDRAWAL")
+                Log.e("LMH", "SUCCESS logoutUseCase")
                 viewModelScope.launch {
                     tokenDataStoreProvider.clearAllData()
                     userInfoDataStoreProvider.clearAllData()
@@ -75,24 +81,14 @@ class SettingViewModel @Inject constructor(
                 }
             },
             onError = {
-
+                Log.e("LMH", "ERROR logoutUseCase")
             }
         )
     }
 
-    private fun collectUserInfo() {
-        viewModelScope.launch {
-            userInfoDataStoreProvider.getUserInfoFlow().collect { userData ->
-                _state.userInfo.update { userData }
-            }
-        }
-    }
-
     private fun fetchMyUserData() {
         getMyUserDataUseCase.executeOnViewModel(
-            onEach = { userData ->
-                _state.userInfo.update { userData }
-            },
+            onEach = {},
             onError = {}
         )
     }

@@ -19,11 +19,13 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,10 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
-import com.startup.histour.presentation.login.viewmodel.LoginViewEvent
 import com.startup.histour.presentation.main.model.CharacterViewEvent
 import com.startup.histour.presentation.main.viewmodel.CharacterViewModel
 import com.startup.histour.presentation.model.CharacterModel
@@ -61,11 +61,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun CharacterSettingScreen(
     navController: NavController,
+    snackBarHostState: SnackbarHostState,
+    previousCharacter: CharacterModel,
     characterViewModel: CharacterViewModel = hiltViewModel()
 ) {
     var selectedCharacter by remember {
-        mutableStateOf<CharacterModel>(characterViewModel.state.currentCharacter.value)
+        mutableStateOf<CharacterModel>(previousCharacter)
     }
+    Log.e("LMH", "CHARACTER $previousCharacter")
+    val characterList by characterViewModel.state.characterList.collectAsState()
+    val openDialog = remember { mutableStateOf(false) }
+
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -73,19 +79,17 @@ fun CharacterSettingScreen(
             characterViewModel.event
                 .filterIsInstance<CharacterViewEvent>()
                 .collectLatest { event ->
-                    when(event){
+                    when (event) {
                         CharacterViewEvent.SuccessChangedCharacter -> {
                             navController.popBackStack()
+                            snackBarHostState.showSnackbar("캐릭터가 변경되었어요!")
                         }
+
                         else -> {}
                     }
                 }
         }
     }
-    val characterList by characterViewModel.state.characterList.collectAsState()
-    val previousCharacter by characterViewModel.state.currentCharacter.collectAsState()
-    val openDialog = remember { mutableStateOf(false) }
-
     Column(modifier = Modifier.fillMaxSize()) {
         HisTourTopBar(
             model = HistourTopBarModel(
@@ -97,7 +101,7 @@ fun CharacterSettingScreen(
                 ),
                 rightSectionType = HistourTopBarModel.RightSectionType.Text(
                     stringResId = R.string.save,
-                    state = if (previousCharacter != selectedCharacter) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
+                    state = if (previousCharacter.id != selectedCharacter.id) HistourTopBarModel.RightSectionType.Text.State.SAVE else HistourTopBarModel.RightSectionType.Text.State.INACTIVE,
                     onClickRightTextArea = {
                         // TODO 저장
                         characterViewModel.selectCharacter(selectedCharacter.id, false)
@@ -196,7 +200,11 @@ fun SelectedCharacterDisplayView(character: CharacterModel) {
 @Composable
 fun SelectableCharacterPager(beforeSelectedItem: CharacterModel, list: List<CharacterModel>, onSelectItem: (CharacterModel) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(initialPage = list.indexOf(beforeSelectedItem).takeIf { it != -1 } ?: 0, pageCount = { list.size })
+    val index by remember {
+        mutableIntStateOf(list.indexOfLast { it.id == beforeSelectedItem.id }.takeIf { it != -1 } ?: 0)
+    }
+
+    val pagerState = rememberPagerState(initialPage = index, pageCount = { list.size })
     val localConfiguration = LocalConfiguration.current
     Box(
         modifier = Modifier
@@ -293,6 +301,6 @@ fun SelectableCharacterPagerItem(isSelected: Boolean, character: CharacterModel,
 @Composable
 fun PreviewCharacterSettingScreen() {
     HistourTheme {
-        CharacterSettingScreen(navController = rememberNavController())
+//        CharacterSettingScreen(navController = rememberNavController(), SnackbarHostState())
     }
 }

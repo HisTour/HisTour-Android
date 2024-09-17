@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserInfoDataStoreProvider {
     suspend fun setCharacterInfo(characterInfo: CharacterInfo)
     suspend fun setPlaceId(placeId: String)
+    suspend fun setUserName(userName: String)
     suspend fun setUserInfo(userName: String, profileImageUrl: String, characterInfo: CharacterInfo)
     suspend fun getUserInfo(): UserInfoModel
     suspend fun getPlaceId(): Int
