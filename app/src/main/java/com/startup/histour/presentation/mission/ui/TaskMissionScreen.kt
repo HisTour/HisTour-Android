@@ -2,6 +2,7 @@ package com.startup.histour.presentation.mission.ui
 
 import CTAImageButton
 import CTAImageButtonModel
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,6 +79,10 @@ fun TaskMissionScreen(
     initialQuizCount: Int = 0
 ) {
 
+    BackHandler {
+        navController.popBackStack()
+    }
+
     LaunchedEffect(submissionId) {
         taskMissionViewModel.getTasks(submissionId)
     }
@@ -151,17 +156,16 @@ fun TaskMissionScreen(
 
         when (taskType) {
             READING_TASK -> {
-                Column(
+                Box(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .height(72.dp)
-                        .padding(end = 24.dp),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.Center
+                        .padding(end = 24.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.End)
+                            .align(Alignment.TopEnd)
+                            .padding(top = 29.dp)
                             .border(
                                 1.dp,
                                 color = HistourTheme.colors.gray400,
@@ -180,63 +184,48 @@ fun TaskMissionScreen(
             }
 
             KEYWORD_TASK -> {
-                Row(
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Start)
                         .fillMaxWidth()
                         .height(72.dp)
-                        .padding(top = 24.dp, start = 24.dp, bottom = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .padding(horizontal = 24.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        CTAImageButton(
-                            modifier = Modifier,
-                            model = CTAImageButtonModel(
-                                textId = R.string.chat_bot,
-                                drawableId = R.drawable.ic_ggabi
-                            )
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // 챗봇 클릭 이벤트 처리
-                        }
-                        CTAImageButton(
-                            modifier = Modifier,
-                            model = CTAImageButtonModel(
-                                textId = R.string.dialog_hint,
-                                drawableId = R.drawable.ic_hint_gray
-                            )
-                        ) {
-                            showHintDialog = true
-                        }
-
-                        if (showHintDialog) {
-                            MissionHintDialog(
-                                dialogContent = tasksData.value[currentTaskNumber - 1].hint,
-                                onClickAnswer = {
-                                    showAnswerDialog = true
-                                    showHintDialog = false
-                                },
-                                onClickClose = { showHintDialog = false },
-                                missionContentData = null,
-                                missionDialogType = MissionDialogType.HINT
-                            )
-                        }
-
-                        if (showAnswerDialog) {
-                            MissionHintDialog(
-                                dialogContent = tasksData.value[currentTaskNumber - 1].answer,
-                                onClickAnswer = { },
-                                onClickClose = { showAnswerDialog = false },
-                                missionContentData = null,
-                                missionDialogType = MissionDialogType.ANSWER
-                            )
+                            CTAImageButton(
+                                modifier = Modifier,
+                                model = CTAImageButtonModel(
+                                    textId = R.string.chat_bot,
+                                    drawableId = R.drawable.ic_ggabi
+                                )
+                            ) {
+                                //TODO 챗봇
+                            }
+                            CTAImageButton(
+                                modifier = Modifier,
+                                model = CTAImageButtonModel(
+                                    textId = R.string.dialog_hint,
+                                    drawableId = R.drawable.ic_hint_gray
+                                )
+                            ) {
+                                showHintDialog = true
+                            }
                         }
                     }
+
                     Box(
                         modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 29.dp, end = 24.dp)
                             .border(
                                 1.dp,
                                 color = HistourTheme.colors.gray400,
@@ -251,7 +240,29 @@ fun TaskMissionScreen(
                             style = HistourTheme.typography.detail2Semi
                         )
                     }
-                    Spacer(modifier = Modifier.width(24.dp))
+                }
+
+                if (showHintDialog) {
+                    MissionHintDialog(
+                        dialogContent = tasksData.value[currentTaskNumber - 1].hint,
+                        onClickAnswer = {
+                            showAnswerDialog = true
+                            showHintDialog = false
+                        },
+                        onClickClose = { showHintDialog = false },
+                        missionContentData = null,
+                        missionDialogType = MissionDialogType.HINT
+                    )
+                }
+
+                if (showAnswerDialog) {
+                    MissionHintDialog(
+                        dialogContent = tasksData.value[currentTaskNumber - 1].answer,
+                        onClickAnswer = { },
+                        onClickClose = { showAnswerDialog = false },
+                        missionContentData = null,
+                        missionDialogType = MissionDialogType.ANSWER
+                    )
                 }
             }
         }

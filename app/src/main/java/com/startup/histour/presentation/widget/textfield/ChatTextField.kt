@@ -53,6 +53,13 @@ fun ChatTextField(
     var currentText by remember {
         mutableStateOf(TextFieldValue(text))
     }
+
+    LaunchedEffect(text) {
+        if (text != currentText.text) {
+            currentText = TextFieldValue(text)
+        }
+    }
+
     val interactionSource: MutableInteractionSource = remember {
         MutableInteractionSource()
     }

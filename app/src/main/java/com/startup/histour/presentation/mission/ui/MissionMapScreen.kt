@@ -2,11 +2,12 @@ package com.startup.histour.presentation.mission.ui
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.text.Html
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,11 +57,6 @@ fun MissionMapScreen(
     missionViewModel: MissionViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-
-    val subtitle = Html.fromHtml(
-        stringResource(R.string.submission_subtitle, "수원 화성"),
-        Html.FROM_HTML_MODE_COMPACT
-    )
 
     val placeState by mainViewModel.state.place.collectAsState()
 
@@ -121,32 +119,54 @@ fun MissionMapScreen(
             ),
 
         ) {
-
         Column(
             modifier = Modifier
-                .background(color = Color.White)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color.White.copy(alpha = 0f)
+                        ),
+                        startY = with(LocalDensity.current) { 145.dp.toPx() * 0.89f },
+                        endY = with(LocalDensity.current) { 145.dp.toPx() }
+                    )
+                )
                 .fillMaxWidth()
-                .padding(24.dp)
-                .height(100.dp),
+                .padding(start = 24.dp, end = 24.dp)
+                .height(145.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
+                modifier = Modifier.height(72.dp),
                 text = stringResource(id = R.string.submission_title, userInfo.userName),
                 style = HistourTheme.typography.head1,
                 color = HistourTheme.colors.black
             )
-            Text(
-                text = subtitle.toString(),
-                style = HistourTheme.typography.body2Reg,
-                color = HistourTheme.colors.gray600
-            )
+            Row {
+                Text(
+                    text = stringResource(id = R.string.submission_subtitle_1),
+                    style = HistourTheme.typography.body2Reg,
+                    color = HistourTheme.colors.gray600
+                )
+                Text(
+                    text = stringResource(id = R.string.submission_subtitle_2, " 수원 화성 "),
+                    style = HistourTheme.typography.body2Reg,
+                    color = HistourTheme.colors.green400
+                )
+                Text(
+                    text = stringResource(id = R.string.submission_subtitle_3),
+                    style = HistourTheme.typography.body2Reg,
+                    color = HistourTheme.colors.gray600
+                )
+            }
         }
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             reverseLayout = true
         ) {
             items(sortedList.size) { index ->
@@ -165,6 +185,7 @@ fun MissionMapScreen(
 
                     else -> null
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 SubMissionItem(
                     subMissionTitle = missionData.name?.split(":")?.last()?.trim()
                         ?: "수원 화성",
@@ -192,6 +213,7 @@ fun MissionMapScreen(
                         else -> Unit
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

@@ -50,7 +50,6 @@ enum class MissionDialogType {
 
 enum class MissionType {
     PHOTO
-    //TODO 추가
 }
 
 data class MissionContentDataModel(
@@ -308,15 +307,15 @@ private fun HintDialogPreview() {
     HistourTheme {
 //        MissionHintDialog(
 //            dialogContent = "춘천에서 가장 유명한 닭갈비 집에서 닭갈비 먹고 인증샷을 남겨주세요. 맛있는 볶음밥은 필수!",
-//            onClickAnswer = { /*TODO*/ },
-//            onClickClose = { /*TODO*/ },
+//            onClickAnswer = {  },
+//            onClickClose = {  },
 //            missionContentData = null,
 //            missionDialogType = MissionDialogType.HINT
 //        )
         MissionHintDialog(
             dialogContent = "춘천에서 가장 유명한 닭갈비 집에서 닭갈비 먹고 인증샷을 남겨주세요. 맛있는 볶음밥은 필수",
-            onClickAnswer = { /*TODO*/ },
-            onClickClose = { /*TODO*/ },
+            onClickAnswer = {  },
+            onClickClose = {  },
             missionContentData = missionData,
             missionDialogType = MissionDialogType.MISSION_CONTENT
         )

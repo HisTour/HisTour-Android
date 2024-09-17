@@ -55,7 +55,7 @@ fun BottomNavigationScreen(navController: NavController) {
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 NavigationBarItem(
-                    modifier = Modifier.size(58.dp),
+                    modifier = Modifier.padding(0.dp),
                     selected = currentRoute == MainScreens.MissionMap.route,
                     onClick = {
                         bottomNavController.navigate(MainScreens.MissionMap.route) {
@@ -191,7 +191,17 @@ fun BottomNavigationScreen(navController: NavController) {
             Modifier.padding(innerPadding)
         ) {
             composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
-            composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
+            composable(MainScreens.Home.route) {
+                HomeMissionScreen(navController, onNavigateToMissionMap = {
+                    bottomNavController.navigate(MainScreens.MissionMap.route) {
+                        popUpTo(bottomNavController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                })
+            }
             composable(MainScreens.Bundle.route) { BundleScreen(navController) }
         }
     }

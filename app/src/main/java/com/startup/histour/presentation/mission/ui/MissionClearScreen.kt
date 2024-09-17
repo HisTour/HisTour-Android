@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.mission.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,10 @@ fun MissionClearScreen(
         }
     }
 
+    BackHandler {
+        navController.popBackStack()
+    }
+
     val userInfo by missionClearViewModel.state.userInfo.collectAsState()
     val progress = runCatching {
         (clearedMissionCount.toFloat() / totalMissionCount.toFloat()).takeIf { it >= 0F } ?: 0F
@@ -89,7 +94,7 @@ fun MissionClearScreen(
     }
 
     val spaceHeight = when (clearType) {
-        LAST_SUBMISSION, FINAL_MISSION -> 54
+        LAST_SUBMISSION, FINAL_MISSION -> 52
         else -> 24
     }
 
@@ -105,7 +110,7 @@ fun MissionClearScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(108.dp))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -126,19 +131,21 @@ fun MissionClearScreen(
                 )
             }
             Text(
+                modifier = Modifier.height(33.dp),
                 text = stringResource(id = descriptionText),
                 style = HistourTheme.typography.head2,
                 color = HistourTheme.colors.gray900
             )
         }
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(14.dp))
         AsyncImage(
             modifier = Modifier
                 .size(277.dp),
             model = userInfo.character.normalImageUrl,
+            contentScale = ContentScale.Crop,
             contentDescription = "character"
         )
-
+        Spacer(modifier = Modifier.height(43.dp))
         Column {
             HistourProgressBar(
                 histourProgressBarModel =
@@ -160,33 +167,18 @@ fun MissionClearScreen(
                         }
                     }
                 } else {
-                    //TODO match userinfo placeid
-                    navController.navigate(MainScreens.MissionMap.route) {
-                        popUpTo(
-                            navController.currentBackStackEntry?.destination?.id ?: return@navigate
-                        ) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         if (clearType == SUBMISSION) {
             CTAButton(
                 text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
             ) {
-                //TODO match userinfo placeid
-                navController.navigate(MainScreens.MissionMap.route) {
-                    popUpTo(
-                        navController.currentBackStackEntry?.destination?.id ?: return@navigate
-                    ) {
-                        inclusive = true
-                    }
-                }
+                navController.popBackStack()
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(18.dp))
     }
 }
 

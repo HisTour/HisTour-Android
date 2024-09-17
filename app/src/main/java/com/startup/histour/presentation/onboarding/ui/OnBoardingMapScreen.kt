@@ -373,7 +373,7 @@ fun PlaceBottomSheetView(place: Place = Place.orEmpty().copy(name = "수원화�
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 18.dp, start = 24.dp, end = 24.dp),
+                .padding(top = 8.dp, bottom = 60.dp , start = 24.dp, end = 24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
