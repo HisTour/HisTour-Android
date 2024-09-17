@@ -1,6 +1,5 @@
 package com.startup.histour.presentation.mission.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,13 +7,16 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,10 +27,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.mission.util.MissionValues.FINAL_MISSION
+import com.startup.histour.presentation.mission.util.MissionValues.INTRO_TYPE
+import com.startup.histour.presentation.mission.util.MissionValues.LAST_SUBMISSION
+import com.startup.histour.presentation.mission.util.MissionValues.SUBMISSION
+import com.startup.histour.presentation.mission.viewmodel.MissionClearViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.widget.button.CTAButton
 import com.startup.histour.presentation.widget.button.CTAMode
@@ -37,45 +45,52 @@ import com.startup.histour.presentation.widget.progressbar.HistourProgressBarMod
 import com.startup.histour.presentation.widget.progressbar.ProgressbarType
 import com.startup.histour.ui.theme.HistourTheme
 
-enum class CLEAR {
-    SUBMISSION,
-    LASTSUBMISSION,
-    MISSION
-}
 
 @Composable
 fun MissionClearScreen(
     navController: NavController,
-    clearType: CLEAR = CLEAR.SUBMISSION,
-    place: String? = null,
-    missionId:Int = 1,
+    missionClearViewModel: MissionClearViewModel = hiltViewModel(),
+    clearType: String = SUBMISSION,
+    subMissionType: String = INTRO_TYPE,
+    completedMissionId: Int = 1,
     clearedMissionCount: Int = 0,
     totalMissionCount: Int = 1,
+    place: String? = "수원 화성",
 ) {
-    //TODO 진입 하자마자 PATCH /api/v1/missions/unlock 호출
 
+    LaunchedEffect(clearType) {
+        when (clearType) {
+            LAST_SUBMISSION -> missionClearViewModel.choiceFinalSubMission(completedMissionId)
+            FINAL_MISSION -> missionClearViewModel.clearFinalMission()
+        }
+    }
+
+    val userInfo by missionClearViewModel.state.userInfo.collectAsState()
+    val progress = runCatching {
+        (clearedMissionCount.toFloat() / totalMissionCount.toFloat()).takeIf { it >= 0F } ?: 0F
+    }.getOrElse { 0F }
     val titleText = when (clearType) {
-        CLEAR.SUBMISSION, CLEAR.LASTSUBMISSION -> stringResource(
+        SUBMISSION, LAST_SUBMISSION -> stringResource(
             id = R.string.mission_clear_step,
             clearedMissionCount
         )
 
-        CLEAR.MISSION -> stringResource(R.string.mission_clear_place, place ?: "강릉")
+        else -> stringResource(R.string.mission_clear_place, place ?: "수원 화성")
     }
     val descriptionText = when (clearType) {
-        CLEAR.SUBMISSION, CLEAR.LASTSUBMISSION -> R.string.mission_clear_submission
-        CLEAR.MISSION -> R.string.mission_clear_mission
+        SUBMISSION, LAST_SUBMISSION -> R.string.mission_clear_submission
+        else -> R.string.mission_clear_mission
     }
 
     val catButtonText = when (clearType) {
-        CLEAR.SUBMISSION -> R.string.mission_clear_choice_submission
-        CLEAR.LASTSUBMISSION -> R.string.mission_clear_move_to_final
-        CLEAR.MISSION -> R.string.dialog_close
+        SUBMISSION -> R.string.mission_clear_choice_submission
+        LAST_SUBMISSION -> R.string.mission_clear_move_to_final
+        else -> R.string.dialog_close
     }
 
     val spaceHeight = when (clearType) {
-        CLEAR.SUBMISSION -> 24
-        CLEAR.LASTSUBMISSION, CLEAR.MISSION -> 54
+        LAST_SUBMISSION, FINAL_MISSION -> 54
+        else -> 24
     }
 
     Column(
@@ -117,43 +132,64 @@ fun MissionClearScreen(
             )
         }
         Spacer(modifier = Modifier.height(18.dp))
-        Image(
+        AsyncImage(
             modifier = Modifier
-                .height(271.dp)
-                .fillMaxWidth(),
-            painter = painterResource(id = R.drawable.img_main), contentDescription = "character"
+                .size(277.dp),
+            model = userInfo.character.normalImageUrl,
+            contentDescription = "character"
         )
 
         Column {
             HistourProgressBar(
                 histourProgressBarModel =
-                HistourProgressBarModel(totalStep = 5),
-                progress = if (clearType == CLEAR.MISSION) 1.0f else (clearedMissionCount / totalMissionCount).toFloat(),
-                currentStep = 0,
+                HistourProgressBarModel(totalStep = totalMissionCount),
+                progress = progress,
+                currentStep = clearedMissionCount,
                 progressbarType = ProgressbarType.TOOLTIP
             )
             Spacer(modifier = Modifier.height(spaceHeight.dp))
             CTAButton(
                 text = catButtonText, mode = CTAMode.Enable.instance()
             ) {
-                if (clearType == CLEAR.SUBMISSION) {
-                    navController.navigate(MainScreens.SubMissionChoice.route)
+                if (clearType == SUBMISSION) {
+                    navController.navigate(MainScreens.SubMissionChoice.route + "/${subMissionType}" + "/${completedMissionId}") {
+                        popUpTo(
+                            navController.currentBackStackEntry?.destination?.id ?: return@navigate
+                        ) {
+                            inclusive = true
+                        }
+                    }
                 } else {
-                    navController.navigate(MainScreens.MissionMap.route)
+                    //TODO match userinfo placeid
+                    navController.navigate(MainScreens.MissionMap.route) {
+                        popUpTo(
+                            navController.currentBackStackEntry?.destination?.id ?: return@navigate
+                        ) {
+                            inclusive = true
+                        }
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            if (clearType == CLEAR.SUBMISSION) {
-                CTAButton(
-                    text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
-                ) {
-                    navController.navigate(MainScreens.MissionMap.route)
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        if (clearType == SUBMISSION) {
+            CTAButton(
+                text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
+            ) {
+                //TODO match userinfo placeid
+                navController.navigate(MainScreens.MissionMap.route) {
+                    popUpTo(
+                        navController.currentBackStackEntry?.destination?.id ?: return@navigate
+                    ) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
 
 @Composable
 @Preview(Devices.PHONE)
@@ -161,8 +197,8 @@ fun PreviewMissionClearScreen() {
     HistourTheme {
         MissionClearScreen(
             navController = rememberNavController(),
-            clearType = CLEAR.LASTSUBMISSION,
-            place = "강릉",
+            clearType = LAST_SUBMISSION,
+            place = "수원 화성",
             clearedMissionCount = 1,
             totalMissionCount = 5
         )

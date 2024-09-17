@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import coil.compose.AsyncImage
 import com.startup.histour.R
 import com.startup.histour.presentation.util.extensions.noRippleClickable
 import com.startup.histour.presentation.widget.progressbar.HistourProgressBar
@@ -59,6 +60,7 @@ data class ProgressingTaskDataModel(
 fun SubMissionItem(
     subMissionTitle: String,
     state: SUBMISSIONSTATE = SUBMISSIONSTATE.BEFORE,
+    characterImageUrl: String,
     data: ProgressingTaskDataModel? = null,
     onContinueClick: (() -> Unit)? = null
 ) {
@@ -80,12 +82,12 @@ fun SubMissionItem(
         SUBMISSIONSTATE.BEFORE -> HistourTheme.colors.gray200
     }
 
-    val height = when(state){
+    val height = when (state) {
         SUBMISSIONSTATE.PROGRESS -> 166.dp
         else -> 140.dp
     }
 
-    val width = when(state){
+    val width = when (state) {
         SUBMISSIONSTATE.PROGRESS -> 260.dp
         else -> 240.dp
     }
@@ -101,11 +103,13 @@ fun SubMissionItem(
         when (state) {
             SUBMISSIONSTATE.BEFORE -> BeforeSubMission(
                 submissionTitle = R.string.submission_before,
+                characterImageUrl = characterImageUrl,
                 textColor = textColor
             )
 
             SUBMISSIONSTATE.PROGRESS -> ProgressSubMission(
                 submissionTitle = subMissionTitle,
+                characterImageUrl = characterImageUrl,
                 textColor = textColor,
                 data = data,
                 onContinueClick,
@@ -113,6 +117,7 @@ fun SubMissionItem(
 
             SUBMISSIONSTATE.COMPLETE -> CompleteSubMission(
                 submissionTitle = subMissionTitle,
+                characterImageUrl = characterImageUrl,
                 textColor = textColor,
             )
         }
@@ -120,7 +125,7 @@ fun SubMissionItem(
 }
 
 @Composable
-fun BeforeSubMission(submissionTitle: Int, textColor: Color) {
+fun BeforeSubMission(submissionTitle: Int, characterImageUrl: String, textColor: Color) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier = Modifier
@@ -143,13 +148,15 @@ fun BeforeSubMission(submissionTitle: Int, textColor: Color) {
             tint = HistourTheme.colors.gray300
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Image(
+        AsyncImage(
+            model = characterImageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .width(108.dp)
                 .height(95.dp)
                 .align(Alignment.BottomEnd),
-            painter = painterResource(id = R.drawable.img_submission_character),
-            contentDescription = "Character",
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
         )
     }
@@ -158,6 +165,7 @@ fun BeforeSubMission(submissionTitle: Int, textColor: Color) {
 @Composable
 fun ProgressSubMission(
     submissionTitle: String,
+    characterImageUrl: String,
     textColor: Color,
     data: ProgressingTaskDataModel?,
     onContinueClick: (() -> Unit)?
@@ -182,10 +190,11 @@ fun ProgressSubMission(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Image(
-                painter = painterResource(id = R.drawable.img_submission_character),
-                contentScale = ContentScale.FillBounds,
-                contentDescription = "Character",
+            AsyncImage(
+                model = characterImageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.TopCenter,
                 modifier = Modifier
                     .width(108.dp)
                     .height(95.dp)
@@ -196,14 +205,14 @@ fun ProgressSubMission(
                 .padding(horizontal = 16.dp)
                 .align(Alignment.TopCenter)
         ) {
-            val progress = (data?.completedMissions ?: 0) / (data?.totalMissions ?: 1)
+            val progress = runCatching { (data?.completedMissions!!.toFloat() / data?.totalMissions!!.toFloat()).takeIf { it >= 0F } ?: 0F }.getOrElse { 0F }
             Spacer(modifier = Modifier.height(90.dp))
             HistourProgressBar(
                 histourProgressBarModel = HistourProgressBarModel(
                     totalStep = data?.totalMissions ?: 5
                 ),
                 currentStep = data?.completedMissions ?: 0,
-                progress = 0.0f,
+                progress = progress,
                 progressbarType = ProgressbarType.SUBMISSION
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -235,7 +244,7 @@ fun ProgressSubMission(
 }
 
 @Composable
-fun CompleteSubMission(submissionTitle: String, textColor: Color) {
+fun CompleteSubMission(submissionTitle: String, characterImageUrl: String, textColor: Color) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier = Modifier
@@ -261,9 +270,11 @@ fun CompleteSubMission(submissionTitle: String, textColor: Color) {
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.img_submission_character),
-            contentDescription = "Character",
+        AsyncImage(
+            model = characterImageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .width(108.dp)
                 .height(95.dp)
@@ -284,15 +295,24 @@ private fun SubMissionItemPreview() {
     HistourTheme {
         Column {
             Spacer(modifier = Modifier.height(12.dp))
-            SubMissionItem(subMissionTitle = "수원화성에서 사진찍기", state = SUBMISSIONSTATE.BEFORE)
+            SubMissionItem(
+                subMissionTitle = "수원화성에서 사진찍기",
+                characterImageUrl = "",
+                state = SUBMISSIONSTATE.BEFORE
+            )
             Spacer(modifier = Modifier.height(12.dp))
             SubMissionItem(
                 subMissionTitle = "글자영역이 168이상 넘어가면 어떻게 되어야 할까요??????",
+                characterImageUrl = "",
                 state = SUBMISSIONSTATE.PROGRESS,
                 data = subMissionData
             )
             Spacer(modifier = Modifier.height(12.dp))
-            SubMissionItem(subMissionTitle = "수원화성에서 사진찍기", state = SUBMISSIONSTATE.COMPLETE)
+            SubMissionItem(
+                subMissionTitle = "수원화성에서 사진찍기",
+                characterImageUrl = "",
+                state = SUBMISSIONSTATE.COMPLETE
+            )
         }
     }
 }

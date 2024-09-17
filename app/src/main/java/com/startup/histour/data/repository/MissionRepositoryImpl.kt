@@ -17,10 +17,10 @@ class MissionRepositoryImpl @Inject constructor(private val missionDataSource: M
         emit(missionDataSource.getMissions(placeId))
     }
 
-    override suspend fun clearMission(
+    override suspend fun unlockAndChoiceMission(
         request: RequestUnlockMission
-    ): Flow<Boolean> = flow {
-        emit(missionDataSource.clearSubMission(request))
+    ) {
+        missionDataSource.clearSubMission(request)
     }
 
     override suspend fun getQuiz(missionId: String): Flow<ResponseQuizDto> = flow {

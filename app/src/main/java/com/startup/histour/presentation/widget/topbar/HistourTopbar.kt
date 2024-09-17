@@ -93,9 +93,13 @@ data class HistourTopBarModel(
     }
 
     sealed interface TitleStyle {
-
+        data class SubMissionText(val title: String) : TitleStyle
         data class Text(@StringRes val titleResId: Int) : TitleStyle
-        data class TextWithIcon(val titleResId: String, @DrawableRes val icon: Int, val onClickTitle: () -> Unit = {}) :
+        data class TextWithIcon(
+            val titleResId: String,
+            @DrawableRes val icon: Int,
+            val onClickTitle: () -> Unit = {}
+        ) :
             TitleStyle
 
         data class Image(val resId: Int) : TitleStyle
@@ -142,6 +146,17 @@ private fun HisTourTopBarTitleSection(
         contentAlignment = Alignment.Center
     ) {
         when (titleStyle) {
+            is HistourTopBarModel.TitleStyle.SubMissionText -> {
+                Text(
+                    modifier = Modifier,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = titleStyle.title,
+                    style = HistourTheme.typography.body1Bold
+                )
+            }
+
             is HistourTopBarModel.TitleStyle.Text -> {
                 Text(
                     modifier = Modifier,

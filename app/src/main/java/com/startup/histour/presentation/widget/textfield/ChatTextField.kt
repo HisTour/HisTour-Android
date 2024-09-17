@@ -109,14 +109,16 @@ fun ChatTextField(
             enabled = enabled,
         )
         if (currentText.text.isNotBlank()) {
-            Image(
-                painter = painterResource(id = R.drawable.btn_delete),
-                contentDescription = null,
-                modifier = Modifier.rippleClickable {
-                    currentText = TextFieldValue("")
-                    onValueChange("")
-                },
-            )
+            if(enabled){
+                Image(
+                    painter = painterResource(id = R.drawable.btn_delete),
+                    contentDescription = null,
+                    modifier = Modifier.rippleClickable {
+                        currentText = TextFieldValue("")
+                        onValueChange("")
+                    },
+                )
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ class MissionDataSource @Inject constructor(private val missionApi: MissionApi) 
         }
     }
 
-    suspend fun clearSubMission(requestUnlockMission: RequestUnlockMission): Boolean {
+    suspend fun clearSubMission(requestUnlockMission: RequestUnlockMission){
         return handleExceptionIfNeed {
             missionApi.clearSubMission(requestUnlockMission).data
         }

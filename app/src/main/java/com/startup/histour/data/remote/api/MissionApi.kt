@@ -17,7 +17,7 @@ interface MissionApi {
     suspend fun getMissions(@Path("placeId") placeId: String): BaseResponse<ResponseMissionDto>
 
     @PATCH("missions/unlock")
-    suspend fun clearSubMission(@Body requestUnlockMission: RequestUnlockMission): BaseResponse<Boolean>
+    suspend fun clearSubMission(@Body requestUnlockMission: RequestUnlockMission): BaseResponse<Unit>
 
     @GET("quizzes/mission/{missionId}")
     suspend fun getQuiz(@Path("missionId") missionId: String): BaseResponse<ResponseQuizDto>
