@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.onboarding.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -73,6 +74,10 @@ fun CharacterScreen(navController: NavController, characterViewModel: CharacterV
                     }
                 }
         }
+    }
+
+    BackHandler {
+
     }
     Column(
         modifier = Modifier

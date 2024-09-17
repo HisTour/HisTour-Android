@@ -76,6 +76,7 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
             settingViewModel.event
                 .filterIsInstance<SettingViewMoveEvent>()
                 .collectLatest { event ->
+                    Log.e("LMH", "GET SETTING EVENT")
                     if (event is SettingViewMoveEvent.MoveToLoginActivity) {
                         val intent = Intent(context, LoginActivity::class.java)
                         context.startActivity(intent)
@@ -95,14 +96,16 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
             model = HistourTopBarModel(
                 leftSectionType = HistourTopBarModel.LeftSectionType.Icons(
                     leftIcons = listOf(HistourTopBarModel.TopBarIcon.BACK),
-                    onClickLeftIcon = {}
+                    onClickLeftIcon = {
+                        navController.popBackStack()
+                    }
                 ),
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_setting)
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
-        ProfileItem(profilePath = userInfo.profileImageUrl, userName = userInfo.userName) {
-            navController.navigate(MainScreens.NickNameChange.route)
+        ProfileItem(profilePath = userInfo.character.faceImageUrl, userName = userInfo.userName) {
+            navController.navigate(MainScreens.NickNameChange.route + "/${userInfo.userName}")
         }
         Spacer(modifier = Modifier.height(18.dp))
         Column(
@@ -204,10 +207,10 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                     ),
                     onClickPositive = {
                         // TODO 로그아웃
+                        settingViewModel.logout()
                         openLogOutDialog.value = false
                     },
                     onClickNegative = {
-                        settingViewModel.logout()
                         openLogOutDialog.value = false
                     }
                 )

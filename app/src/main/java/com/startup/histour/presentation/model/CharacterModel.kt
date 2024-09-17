@@ -1,6 +1,7 @@
 package com.startup.histour.presentation.model
 
 import com.startup.histour.UserInfo.CharacterInfo
+import java.io.Serializable
 
 data class CharacterModel(
     val id: Int,
@@ -12,7 +13,7 @@ data class CharacterModel(
     val description: String,
     val normalImageUrl: String,
     val faceImageUrl: String
-) {
+) : Serializable {
     fun toCharacterInfo(): CharacterInfo =
         CharacterInfo.newBuilder()
             .setId(id.toString())

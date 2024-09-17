@@ -32,6 +32,15 @@ class UserInfoDataStoreProviderImpl @Inject constructor(private val userInfoData
         }
     }
 
+    override suspend fun setUserName(userName: String) {
+        userInfoDataStore.updateData { preferences ->
+            preferences
+                .toBuilder()
+                .setUserName(userName)
+                .build()
+        }
+    }
+
     override suspend fun setUserInfo(
         userName: String,
         profileImageUrl: String,

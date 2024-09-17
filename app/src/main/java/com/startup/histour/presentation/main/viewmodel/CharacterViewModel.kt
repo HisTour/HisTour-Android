@@ -1,6 +1,5 @@
 package com.startup.histour.presentation.main.viewmodel
 
-import androidx.lifecycle.viewModelScope
 import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.domain.usecase.character.GetAllCharactersUseCase
 import com.startup.histour.domain.usecase.member.ChangeCharacterOfUserUseCase
@@ -11,13 +10,11 @@ import com.startup.histour.presentation.main.model.CharacterViewState
 import com.startup.histour.presentation.main.model.CharacterViewStateImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CharacterViewModel @Inject constructor(
     getAllCharactersUseCase: GetAllCharactersUseCase,
-    userInfoDataStoreProvider: UserInfoDataStoreProvider,
     private val changeCharacterOfUserUseCase: ChangeCharacterOfUserUseCase,
     private val getMyUserDataUseCase: GetMyUserDataUseCase
 ) : BaseViewModel() {
@@ -30,15 +27,8 @@ class CharacterViewModel @Inject constructor(
                 _state.characterList.update { characters }
             },
             onError = {
-
             }
         )
-        viewModelScope.launch {
-            val character = userInfoDataStoreProvider.getCharacterInfo()
-            if (character.id != -1) {
-                _state.currentCharacter.update { character }
-            }
-        }
     }
 
     fun selectCharacter(characterId: Int, isFirst: Boolean) {

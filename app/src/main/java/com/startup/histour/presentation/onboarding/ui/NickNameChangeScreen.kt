@@ -1,6 +1,5 @@
 package com.startup.histour.presentation.onboarding.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,13 +14,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
+import com.startup.histour.presentation.onboarding.model.NickNameChangedEvent
 import com.startup.histour.presentation.onboarding.viewmodel.SettingViewModel
 import com.startup.histour.presentation.util.ServiceConst
 import com.startup.histour.presentation.util.extensions.noRippleClickable
@@ -46,22 +46,39 @@ import com.startup.histour.presentation.util.extensions.ofMaxLength
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun NickNameChangeScreen(navController: NavController, settingViewModel: SettingViewModel = hiltViewModel()) {
-    val userInfo by settingViewModel.state.userInfo.collectAsState()
+fun NickNameChangeScreen(navController: NavController, snackBarHostState: SnackbarHostState, beforeNickName: String, settingViewModel: SettingViewModel = hiltViewModel()) {
     var currentText by remember {
-        mutableStateOf(TextFieldValue(userInfo.userName))
+        mutableStateOf(TextFieldValue(beforeNickName))
     }
-    Log.e("LMH", "USER INFO $userInfo")
     val interactionSource: MutableInteractionSource = remember {
         MutableInteractionSource()
+    }
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            settingViewModel.event
+                .filterIsInstance<NickNameChangedEvent>()
+                .collectLatest { event ->
+                    when (event) {
+                        NickNameChangedEvent.OnChangedNickName -> {
+                            navController.popBackStack()
+                            snackBarHostState.showSnackbar("이름이 변경되었어요")
+                        }
+                    }
+                }
+        }
     }
     val focusRequester = FocusRequester()
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
+
     Column(
         modifier = Modifier
             .background(HistourTheme.colors.white000)
@@ -79,7 +96,6 @@ fun NickNameChangeScreen(navController: NavController, settingViewModel: Setting
                     state = HistourTopBarModel.RightSectionType.Text.State.SAVE,
                     onClickRightTextArea = {
                         settingViewModel.changeUserNickName(currentText.text)
-                        navController.popBackStack()
                     },
                 ),
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_setting)
@@ -172,11 +188,6 @@ fun NickNameChangeScreen(navController: NavController, settingViewModel: Setting
 @Composable
 private fun PreviewNickNameChangeScreen() {
     HistourTheme {
-        NickNameChangeScreen(navController = rememberNavController())
+        /*NickNameChangeScreen(navController = rememberNavController())*/
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun Editor() {
 }

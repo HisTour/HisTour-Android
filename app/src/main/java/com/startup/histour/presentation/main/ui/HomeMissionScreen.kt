@@ -2,6 +2,9 @@ package com.startup.histour.presentation.main.ui
 
 import CTAImageButton
 import CTAImageButtonModel
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,12 +24,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -36,8 +42,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import com.startup.histour.R
+import com.startup.histour.presentation.login.ui.LoginActivity
+import com.startup.histour.presentation.main.model.CharacterViewEvent
+import com.startup.histour.presentation.main.viewmodel.HomeEvent
 import com.startup.histour.presentation.main.viewmodel.MainViewModel
+import com.startup.histour.presentation.navigation.LoginScreens
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.widget.button.CTAButton
 import com.startup.histour.presentation.widget.button.CTAMode
@@ -47,6 +58,9 @@ import com.startup.histour.presentation.widget.progressbar.ProgressbarType
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel = hiltViewModel()) {
@@ -54,6 +68,29 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
     val userInfo by mainViewModel.state.userInfo.collectAsState()
     val place by mainViewModel.state.place.collectAsState()
     val progress = runCatching { (place.clearedMissionCount.toFloat() / place.totalMissionCount.toFloat()).takeIf { it >= 0F } ?: 0F }.getOrElse { 0F }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            mainViewModel.event
+                .filterIsInstance<HomeEvent>()
+                .collectLatest { event ->
+                    when (event) {
+                        HomeEvent.MovePlaceSetting -> {
+                            navController.navigate(MainScreens.Map.route)
+                        }
+
+                        HomeEvent.MoveLoginActivity -> {
+                            Intent(context, LoginActivity::class.java).run {
+                                (context as ComponentActivity?)?.startActivity(this)
+                                (context as ComponentActivity?)?.finish()
+                            }
+                        }
+                    }
+                }
+        }
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -122,7 +159,8 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                         drawableId = R.drawable.ic_ggabi
                     )
                 ) {
-                    navController.navigate(MainScreens.CharacterSetting.route)
+                    val characterJson = Uri.encode(Gson().toJson(userInfo.character))
+                    navController.navigate(MainScreens.CharacterSetting.route + "/${characterJson}")
                 }
             }
             Spacer(modifier = Modifier.height(13.dp))
@@ -154,7 +192,7 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                             Text(
                                 text = stringResource(
                                     id = R.string.home_mission_user_progress,
-                                    "깨비"
+                                    userInfo.userName
                                 ),
                                 style = HistourTheme.typography.head4,
                                 color = HistourTheme.colors.black

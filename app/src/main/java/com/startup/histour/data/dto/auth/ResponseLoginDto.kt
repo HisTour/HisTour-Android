@@ -6,5 +6,7 @@ data class ResponseLoginDto(
     @SerializedName("accessToken")
     val accessToken: String?,
     @SerializedName("refreshToken")
-    val refreshToken: String?
+    val refreshToken: String?,
+    @SerializedName("username")
+    val userName: String?
 )

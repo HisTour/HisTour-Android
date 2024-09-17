@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.main.viewmodel
 
+import com.startup.histour.presentation.base.BaseEvent
 import com.startup.histour.presentation.base.State
 import com.startup.histour.presentation.model.UserInfoModel
 import com.startup.histour.presentation.onboarding.model.Place
@@ -13,4 +14,8 @@ class HomeStateImpl(override val userInfo: StateFlow<UserInfoModel>) : HomeState
 interface HomeState : State {
     val userInfo: StateFlow<UserInfoModel>
     val place: StateFlow<Place>
+}
+sealed interface HomeEvent : BaseEvent {
+    data object MovePlaceSetting : HomeEvent
+    data object MoveLoginActivity : HomeEvent
 }

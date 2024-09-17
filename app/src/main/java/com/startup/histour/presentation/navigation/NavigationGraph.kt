@@ -29,6 +29,7 @@ import com.startup.histour.presentation.mission.ui.MissionClearScreen
 import com.startup.histour.presentation.mission.ui.MissionMapScreen
 import com.startup.histour.presentation.mission.ui.TaskMissionScreen
 import com.startup.histour.presentation.mission.ui.SubMissionChoiceScreen
+import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.onboarding.ui.CharacterScreen
 import com.startup.histour.presentation.onboarding.ui.NickNameChangeScreen
 import com.startup.histour.presentation.onboarding.ui.OnBoardingMapScreen
@@ -37,6 +38,7 @@ import com.startup.histour.presentation.onboarding.ui.SettingScreen
 import com.startup.histour.presentation.onboarding.viewmodel.OnBoardingViewModel
 import com.startup.histour.presentation.widget.snack.HistourSnackBar
 import com.startup.histour.ui.theme.HistourTheme
+import java.io.Serializable
 
 @Composable
 fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
@@ -107,9 +109,22 @@ fun MainNavigationGraph() {
                     RecommendedSpotScreen(navController, attraction)
                 }
                 composable(MainScreens.Character.route) { CharacterScreen(navController) }
-                composable(MainScreens.CharacterSetting.route) { CharacterSettingScreen(navController) }
+                composable(
+                    route = MainScreens.CharacterSetting.route + "/{character}",
+                    arguments = listOf(navArgument("character") { type = NavType.StringType })
+                ) {  navBackStackEntry ->
+                    val characterJson = Uri.decode(navBackStackEntry.arguments?.getString("character"))
+                    val character = Gson().fromJson(characterJson, CharacterModel::class.java)
+
+                    CharacterSettingScreen(navController, snackBarHostState, character) }
                 composable(MainScreens.Setting.route) { SettingScreen(navController) }
-                composable(MainScreens.NickNameChange.route) { NickNameChangeScreen(navController) }
+                composable(
+                    route = MainScreens.NickNameChange.route + "/{nickname}",
+                    arguments = listOf(navArgument("nickname") { type = NavType.StringType })
+                ) { navBackStackEntry ->
+                    val nickName = navBackStackEntry.arguments?.getString("nickname").orEmpty()
+                    NickNameChangeScreen(navController, snackBarHostState, beforeNickName = nickName)
+                }
                 composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
                 composable(MainScreens.Map.route) { OnBoardingMapScreen(navController, snackBarHostState) }
             }
