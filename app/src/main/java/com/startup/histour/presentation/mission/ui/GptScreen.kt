@@ -1,21 +1,18 @@
 package com.startup.histour.presentation.mission.ui
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,9 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,25 +51,30 @@ import com.startup.histour.presentation.mission.viewmodel.ChatViewModel
 import com.startup.histour.presentation.mission.viewmodel.ChatViewModelEvent
 import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.widget.dialog.HistourDialog
+import com.startup.histour.presentation.widget.dialog.HistourDialogModel
+import com.startup.histour.presentation.widget.dialog.TYPE
+import com.startup.histour.presentation.widget.textfield.ChatTextField
+import com.startup.histour.presentation.widget.topbar.HisTourTopBar
+import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
+import com.startup.histour.presentation.widget.topbar.HistourTopBarModel.RightSectionType.Text.State
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltViewModel()) {
-    val chatList = chatViewModel.state.chatList.collectAsState()
-    val characterModel = chatViewModel.state.characterModel.collectAsState()
+    val chatList by chatViewModel.state.chatList.collectAsState()
+    val characterModel by chatViewModel.state.characterModel.collectAsState()
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    // 메시지가 추가될 때 마지막 아이템으로 스크롤
-    LaunchedEffect(chatList.value.size) {
-        if (chatList.value.isNotEmpty()) {
-            coroutineScope.launch {
-                listState.animateScrollToItem(chatList.value.size - 1) // 마지막 아이템으로 스크롤
-            }
-        }
-    }
+
+    var isKeyboardVisible by remember { mutableStateOf(false) }
+
+    val finishChatDialog = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,36 +83,102 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        LaunchedEffect(isKeyboardVisible) {
+            Log.e("LMH", "FOCUS KEYBOARD $isKeyboardVisible")
+            coroutineScope.launch {
+                delay(500)
+                if (isKeyboardVisible && chatList.isNotEmpty()) {
+                    listState.animateScrollToItem(chatList.size - 1) // 마지막 아이템으로 스크롤
+                }
+            }
+        }
+        // 메시지가 추가될 때 마지막 아이템으로 스크롤
+        LaunchedEffect(chatList.size) {
+            if (chatList.isNotEmpty()) {
+                coroutineScope.launch {
+                    listState.animateScrollToItem(chatList.size - 1) // 마지막 아이템으로 스크롤
+                }
+            }
+        }
+        HisTourTopBar(
+            model = HistourTopBarModel(
+                leftSectionType = HistourTopBarModel.LeftSectionType.Empty,
+                titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.dialog_gpt_title),
+                rightSectionType = HistourTopBarModel.RightSectionType.Text(stringResId = R.string.finish, State.FINISH) {
+                    finishChatDialog.value = true
+                }
+            )
+        )
         LazyColumn(
             modifier = Modifier.weight(1F),
             state = listState
         ) {
-            items(chatList.value) { item ->
-                ChatItem(item, characterModel.value)
+            items(chatList) { item ->
+                ChatItem(item, characterModel)
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             var text by remember { mutableStateOf("") }
-            TextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                },
-                placeholder = { Text(stringResource(id = R.string.chatting_placeholder)) },
+            Row(
                 modifier = Modifier
-                    .weight(1F)
-                    .padding(8.dp)
-            )
-            Button(onClick = {
-                if (chatViewModel.canSend()) {
-                    keyboardController?.hide()
-                    chatViewModel.notifyViewModelEvent(ChatViewModelEvent.SendMessage(text))
-                    text = ""
+                    .background(HistourTheme.colors.green200)
+                    .padding(top = 12.dp, start = 24.dp, end = 24.dp, bottom = 12.dp)
+                    .height(50.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                ChatTextField(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = text,
+                    enabled = true,
+                    textStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
+                    placeHolderStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray400),
+                    placeHolder = R.string.chatting_placeholder,
+                    onValueChange = {
+                        text = it
+                    }
+                ) {
+
                 }
-            }) {
-                Text("Send")
+                if (text.isNotBlank()) Image(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .noRippleClickable {
+                            if (chatViewModel.canSend()) {
+                                keyboardController?.hide()
+                                chatViewModel.notifyViewModelEvent(ChatViewModelEvent.SendMessage(text))
+                                /*text = ""*/
+                            }
+                        },
+                    painter = painterResource(id = R.drawable.btn_send_enabled),
+                    contentDescription = "enabled"
+                )
+                else Image(
+                    modifier = Modifier
+                        .size(42.dp),
+                    painter = painterResource(id = R.drawable.btn_send_disabled),
+                    contentDescription = "disenabled"
+                )
             }
         }
+    }
+    if (finishChatDialog.value) {
+        HistourDialog(
+            histourDialogModel = HistourDialogModel(
+                titleRes = R.string.dialog_title_finish_gpt,
+                positiveButtonRes = R.string.finish,
+                negativeButtonRes = R.string.dialog_cancel,
+                type = TYPE.DEFAULT
+            ),
+            onClickPositive = { content ->
+                finishChatDialog.value = false
+                navController.popBackStack()
+            },
+            onClickNegative = {
+                finishChatDialog.value = false
+            },
+        )
     }
 }
 
