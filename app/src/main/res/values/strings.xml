@@ -25,7 +25,7 @@
     <string name="setting_menu_item_version">서비스 버전</string>
     <string name="setting_menu_item_terms">서비스이용약관</string>
     <string name="setting_menu_item_policy">개인정보처리방침</string>
-    <string name="setting_menu_item_instagram">나들ai 인스타그램</string>
+    <string name="setting_menu_item_service_introduce">나들 ai 서비스 소개</string>
     <string name="setting_menu_item_logout">로그아웃</string>
     <string name="setting_menu_item_leave">회원 탈퇴</string>
 

@@ -128,22 +128,22 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
 
                     MenuType.Policy -> {
                         MenuItem(type = it, titleStrResId = R.string.setting_menu_item_policy, rightMenuType = RightMenuType.Icon()) {
-                            /* TODO Move To 이용약관 */
-                            context.openBrowser("https://zippy-cake-826.notion.site/4de57a048ffa4b078a72ae2c676789d9?pvs=4")
+                            /* TODO Move To 개인정보 처리 방침 */
+                            context.openBrowser("https://zippy-cake-826.notion.site/88e8a4673ad74e88a2221079602828e3?pvs=4")
                         }
                     }
 
                     MenuType.Terms -> {
                         MenuItem(type = it, titleStrResId = R.string.setting_menu_item_terms, rightMenuType = RightMenuType.Icon()) {
-                            /* TODO Move To 개인정보 처리 방침 */
-                            context.openBrowser("https://zippy-cake-826.notion.site/8214d9b45a42437682c8ff50e660f34b")
+                            /* TODO Move To 이용 약관 */
+                            context.openBrowser("https://zippy-cake-826.notion.site/23904f07fa0e442c9a577ebd9fbe57ec?pvs=4")
                         }
                     }
 
                     MenuType.Instagram -> {
-                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_instagram, rightMenuType = RightMenuType.Icon()) {
+                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_service_introduce, rightMenuType = RightMenuType.Icon()) {
                             /* TODO Move To 인스타그램 */
-                            context.openBrowser("https://zippy-cake-826.notion.site/ai-936923800f68461abda90b56e01d1b42")
+                            context.openBrowser("https://zippy-cake-826.notion.site/ai-30f93c7b5484441cb816e40a3bffea39?pvs=4")
                         }
                     }
 
