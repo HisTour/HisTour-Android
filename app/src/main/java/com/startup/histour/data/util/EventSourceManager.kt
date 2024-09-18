@@ -1,5 +1,6 @@
 package com.startup.histour.data.util
 
+import android.net.Uri
 import android.util.Log
 import com.google.gson.Gson
 import com.startup.histour.annotation.SSEHttpClient
@@ -58,12 +59,13 @@ class EventSourceManager(
         }
     }
 
-    fun initEventSource(query: String) {
+    fun initEventSource(url: String) {
         //RequestSSE 래핑해서 사용 key-value 쌍을 위함
+        Log.e("LMH", "CONNECT URL $url")
         eventSource = EventSources.createFactory(client)
             .newEventSource(
                 request = Request.Builder()
-                    .url("${SSE_SERVER_DOMAIN}/sse")
+                    .url(url)
                     .addHeader("Accept", "application/json")
                     .addHeader("Accept", "text/event-stream")
                     .build(),

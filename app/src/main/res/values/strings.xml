@@ -93,4 +93,5 @@
 
     <!-- chatting -->
     <string name="chatting_placeholder">깨비에게 뭐든 물어봐!</string>
+    <string name="chatting_intro_message">안녕! %s\n물어볼 내용을 직접 보내주면 뭐든 대답할게!</string>
 </resources>

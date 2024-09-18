@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltViewModel()) {
     val chatList by chatViewModel.state.chatList.collectAsState()
-    val characterModel by chatViewModel.state.characterModel.collectAsState()
+    val userInfo by chatViewModel.state.userInfo.collectAsState()
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -110,11 +110,13 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
             )
         )
         LazyColumn(
-            modifier = Modifier.weight(1F),
+            modifier = Modifier
+                .weight(1F)
+                .padding(bottom = 24.dp),
             state = listState
         ) {
             items(chatList) { item ->
-                ChatItem(item, characterModel)
+                ChatItem(item, userInfo.character)
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -148,7 +150,7 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
                             if (chatViewModel.canSend()) {
                                 keyboardController?.hide()
                                 chatViewModel.notifyViewModelEvent(ChatViewModelEvent.SendMessage(text))
-                                /*text = ""*/
+                                text = ""
                             }
                         },
                     painter = painterResource(id = R.drawable.btn_send_enabled),
