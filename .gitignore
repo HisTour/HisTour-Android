@@ -8,6 +8,7 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .idea/
+/.app/keystore/*
 .DS_Store
 /build
 /captures
@@ -16,7 +17,7 @@
 local.properties
 .kotlin/
 # Gradle files
-keystore_file/
+keystore/
 release/
 # Log/OS Files
 *.log
