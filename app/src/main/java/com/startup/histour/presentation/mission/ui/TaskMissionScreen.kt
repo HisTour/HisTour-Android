@@ -23,7 +23,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -47,6 +50,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
+import com.startup.histour.presentation.mission.util.MissionValues
+import com.startup.histour.presentation.mission.util.MissionValues.KEYWORD_TASK
+import com.startup.histour.presentation.mission.util.MissionValues.READING_TASK
+import com.startup.histour.presentation.mission.viewmodel.TaskMissionEvent
 import com.startup.histour.presentation.mission.viewmodel.TaskMissionViewModel
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
@@ -58,38 +65,66 @@ import com.startup.histour.presentation.widget.textfield.ChatTextField
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskMissionScreen(
     navController: NavController,
+    snackBarHostState: SnackbarHostState,
     taskMissionViewModel: TaskMissionViewModel = hiltViewModel(),
-    placeId: Int = 1,
-    initialClearedQuizCount: Int = 0
+    submissionId: Int = 1,
+    initialQuizCount: Int = 0
 ) {
 
+    LaunchedEffect(submissionId) {
+        taskMissionViewModel.getTasks(submissionId)
+    }
 
+    LaunchedEffect(taskMissionViewModel) {
+        taskMissionViewModel.initClearedQuizCount(initialQuizCount)
+
+        taskMissionViewModel.event.collectLatest { event ->
+            when (event) {
+                is TaskMissionEvent.MoveToClearScreen -> {
+                    navController.navigate(MainScreens.MissionClear.route + "/${event.clearType}" + "/${event.subMissionType}" + "/${submissionId}" + "/${event.completedCount + 1}" + "/${event.requiredCount}") {
+                        popUpTo(
+                            navController.currentBackStackEntry?.destination?.id ?: return@navigate
+                        ) {
+                            inclusive = true
+                        }
+                    }
+                }
+
+                is TaskMissionEvent.ShowToast -> {
+                    snackBarHostState.showSnackbar(event.msg)
+                }
+            }
+        }
+    }
+
+    var showHintDialog by remember { mutableStateOf(false) }
+    var showAnswerDialog by remember { mutableStateOf(false) }
     var enabled by remember { mutableStateOf(false) }
-    var taskNumber by remember { mutableIntStateOf(1) }
-    val tasksData = taskMissionViewModel.state.missionList.collectAsState()
-    val correctInfo = taskMissionViewModel.state.correctResponse.collectAsState()
+
+    val tasksData = taskMissionViewModel.state.quizzesList.collectAsState()
+    val submissionName = taskMissionViewModel.state.subMissionName.collectAsState()
 
     var taskType by remember {
-        mutableStateOf("READING")
+        mutableStateOf(READING_TASK)
     }
 
     var answer by remember {
         mutableStateOf("")
     }
+    var isAnswerSubmitted by remember { mutableStateOf(false) }
 
-    var clearedQuizCount by remember { mutableIntStateOf(initialClearedQuizCount) }
 
-    var showHintDialog by remember { mutableStateOf(false) }
-    var showAnswerDialog by remember { mutableStateOf(false) }
-
-    var isLast = (initialClearedQuizCount == tasksData.value.size - 1)
-    val moveEvent = taskMissionViewModel.state.moveEvent.collectAsState()
+    // 퀴즈가 얼마나 클리어 되었는가 중복 채점시에는 올라가면 안되고 해당 숫자 기준으로 뷰페이저 페이지 최대치가 설정됨
+    val clearedQuizCount = taskMissionViewModel.clearedQuizCount.collectAsState()
+    // 현재 번호 기준, 페이지넘버, 채점 api id, 페이지 데이터 로드에 쓰임
+    var currentTaskNumber by remember { mutableIntStateOf(initialQuizCount) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -106,26 +141,16 @@ fun TaskMissionScreen(
                     },
                 ),
                 rightSectionType = HistourTopBarModel.RightSectionType.Empty,
-                titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_character),
+                titleStyle = HistourTopBarModel.TitleStyle.SubMissionText(
+                    submissionName.value.split(
+                        ":"
+                    ).last().trim()
+                ),
             ),
         )
 
-        if (moveEvent.value) {
-            //TODO clear type LASTSUBMISSION
-            if (correctInfo.value.clearedMissionCount == correctInfo.value.requiredMissionCount - 1) {
-                navController.navigate(MainScreens.MissionClear.route)
-            }
-            // TODO clear type MISSION
-            if (correctInfo.value.clearedMissionCount == correctInfo.value.requiredMissionCount) {
-                navController.navigate(MainScreens.MissionClear.route)
-            } else {
-                //  TODO clear tyep SUBMISSION
-                navController.navigate(MainScreens.MissionClear.route)
-            }
-        }
-
         when (taskType) {
-            "READING" -> {
+            READING_TASK -> {
                 Column(
                     modifier = Modifier
                         .height(72.dp)
@@ -135,8 +160,8 @@ fun TaskMissionScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()  // 이 줄을 추가
-                            .wrapContentWidth(Alignment.End)  // 이 줄을 추가
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.End)
                             .border(
                                 1.dp,
                                 color = HistourTheme.colors.gray400,
@@ -146,7 +171,7 @@ fun TaskMissionScreen(
                             .wrapContentSize()
                     ) {
                         Text(
-                            text = stringResource(id = R.string.task_number, taskNumber),
+                            text = stringResource(id = R.string.task_number, currentTaskNumber),
                             color = HistourTheme.colors.green400,
                             style = HistourTheme.typography.detail2Semi
                         )
@@ -154,7 +179,7 @@ fun TaskMissionScreen(
                 }
             }
 
-            "KEYWORD" -> {
+            KEYWORD_TASK -> {
                 Row(
                     modifier = Modifier
                         .align(Alignment.Start)
@@ -175,7 +200,7 @@ fun TaskMissionScreen(
                                 drawableId = R.drawable.ic_ggabi
                             )
                         ) {
-                            // 클릭 이벤트 처리
+                            // 챗봇 클릭 이벤트 처리
                         }
                         CTAImageButton(
                             modifier = Modifier,
@@ -189,7 +214,7 @@ fun TaskMissionScreen(
 
                         if (showHintDialog) {
                             MissionHintDialog(
-                                dialogContent = tasksData.value[taskNumber - 1].hint,
+                                dialogContent = tasksData.value[currentTaskNumber - 1].hint,
                                 onClickAnswer = {
                                     showAnswerDialog = true
                                     showHintDialog = false
@@ -202,7 +227,7 @@ fun TaskMissionScreen(
 
                         if (showAnswerDialog) {
                             MissionHintDialog(
-                                dialogContent = tasksData.value[taskNumber - 1].answer,
+                                dialogContent = tasksData.value[currentTaskNumber - 1].answer,
                                 onClickAnswer = { },
                                 onClickClose = { showAnswerDialog = false },
                                 missionContentData = null,
@@ -221,13 +246,12 @@ fun TaskMissionScreen(
                             .wrapContentSize()
                     ) {
                         Text(
-                            text = stringResource(id = R.string.task_number, taskNumber),
+                            text = stringResource(id = R.string.task_number, currentTaskNumber),
                             color = HistourTheme.colors.green400,
                             style = HistourTheme.typography.detail2Semi
                         )
                     }
-                    Spacer(modifier = Modifier.width(24.dp))  // 오른쪽 여백 추가
-
+                    Spacer(modifier = Modifier.width(24.dp))
                 }
             }
         }
@@ -241,14 +265,33 @@ fun TaskMissionScreen(
 
         ) {
             val pagerState = rememberPagerState(
-                initialPage = 0,
-                pageCount = { tasksData.value.size }
+                initialPage = clearedQuizCount.value,
+                pageCount = {
+                    minOf(clearedQuizCount.value + 1, tasksData.value.size)
+                }
             )
 
-            LaunchedEffect(clearedQuizCount) {
-                // 현재 페이지가 clearedQuizCount보다 크면 clearedQuizCount로 이동
-                if (pagerState.currentPage > clearedQuizCount) {
-                    pagerState.animateScrollToPage(clearedQuizCount)
+            LaunchedEffect(clearedQuizCount.value, tasksData.value.size) {
+                val targetPage = minOf(clearedQuizCount.value, tasksData.value.size - 1)
+                if (pagerState.currentPage != targetPage) {
+                    pagerState.animateScrollToPage(targetPage)
+                }
+            }
+
+            LaunchedEffect(pagerState.currentPage) {
+                taskType = tasksData.value.getOrNull(pagerState.currentPage)?.type
+                    ?: MissionValues.READING_TASK
+
+                // 현재 페이지가 이미 정답을 맞춘 퀴즈인지 확인
+                isAnswerSubmitted = pagerState.currentPage < clearedQuizCount.value
+
+                // 이미 정답을 맞춘 퀴즈라면 정답을 미리 채움
+                if (isAnswerSubmitted && taskType == KEYWORD_TASK) {
+                    answer = tasksData.value[pagerState.currentPage].answer
+                    enabled = true
+                } else {
+                    answer = ""
+                    enabled = false
                 }
             }
 
@@ -257,10 +300,9 @@ fun TaskMissionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = HistourTheme.colors.white000),
-                userScrollEnabled = pagerState.currentPage < clearedQuizCount
+                userScrollEnabled = clearedQuizCount.value < tasksData.value.size
             ) { page ->
-                taskNumber = pagerState.currentPage + 1
-                taskType = tasksData.value[taskNumber - 1].type
+                currentTaskNumber = pagerState.currentPage + 1
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         Modifier
@@ -269,7 +311,8 @@ fun TaskMissionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AsyncImage(
-                            model = tasksData.value[taskNumber - 1].imageUrl,
+                            modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                            model = tasksData.value[page].imageUrl,
                             contentDescription = "task_mission",
                             contentScale = ContentScale.Fit
                         )
@@ -277,24 +320,23 @@ fun TaskMissionScreen(
                 }
             }
         }
+
         when (taskType) {
-            "READING" -> {
+            READING_TASK -> {
                 Row(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 ) {
                     CTAButton(R.string.next, CTAMode.Enable.instance()) {
-                        taskMissionViewModel.checkAnswer(isLast, clearedQuizCount + 1)
-                        if (correctInfo.value.isCorrect) {
-                            clearedQuizCount++
-                            if (clearedQuizCount == tasksData.value.size - 1) {
-                                isLast = true
-                            }
-                        }
+                        taskMissionViewModel.checkAnswer(
+                            isLast = currentTaskNumber == tasksData.value.size,
+                            taskId = tasksData.value[currentTaskNumber - 1].id
+                        )
                     }
                 }
+
             }
 
-            "KEYWORD" -> {
+            KEYWORD_TASK -> {
                 Column(modifier = Modifier.align(Alignment.End)) {
                     Row(
                         modifier = Modifier
@@ -325,44 +367,42 @@ fun TaskMissionScreen(
                     ) {
                         ChatTextField(
                             modifier = Modifier.weight(1f),
-                            text = "",
-                            enabled = true,
+                            text = answer,
+                            enabled = !isAnswerSubmitted,
                             textStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
                             placeHolderStyle = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray400),
                             placeHolder = R.string.mission_textfield_hint,
                             onValueChange = {
                                 enabled = it.isNotEmpty()
                                 answer = it
-                            }
-                        ) {
-
-                        }
-                        if (enabled) Image(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .noRippleClickable {
-                                    taskMissionViewModel.checkAnswer(
-                                        isLast,
-                                        clearedQuizCount + 1,
-                                        answer
-                                    )
-                                    if (correctInfo.value.isCorrect) {
-                                        clearedQuizCount++
-                                        if (clearedQuizCount == tasksData.value.size - 1) {
-                                            isLast = true
+                            },
+                            onComplete = {}
+                        )
+                        if (enabled) {
+                            Image(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .noRippleClickable {
+                                        if (isAnswerSubmitted) {
+                                            taskMissionViewModel.showAlreadyAnsweredToast()
+                                        } else {
+                                            taskMissionViewModel.checkAnswer(
+                                                isLast = currentTaskNumber == tasksData.value.size,
+                                                taskId = tasksData.value[currentTaskNumber - 1].id,
+                                                answer
+                                            )
                                         }
-                                    }
-
-                                },
-                            painter = painterResource(id = R.drawable.btn_send_enabled),
-                            contentDescription = "enabled"
-                        )
-                        else Image(
-                            modifier = Modifier
-                                .size(42.dp),
-                            painter = painterResource(id = R.drawable.btn_send_disabled),
-                            contentDescription = "disenabled"
-                        )
+                                    },
+                                painter = painterResource(id = R.drawable.btn_send_enabled),
+                                contentDescription = "enabled"
+                            )
+                        } else {
+                            Image(
+                                modifier = Modifier.size(42.dp),
+                                painter = painterResource(id = R.drawable.btn_send_disabled),
+                                contentDescription = "disabled"
+                            )
+                        }
                     }
                 }
             }
@@ -370,10 +410,15 @@ fun TaskMissionScreen(
     }
 }
 
+
 @Preview(Devices.PHONE)
 @Composable
 fun PreviewTaskMissionScreen() {
     HistourTheme {
-        TaskMissionScreen(navController = rememberNavController())
+        TaskMissionScreen(
+            navController = rememberNavController(),
+            snackBarHostState = SnackbarHostState(),
+            taskMissionViewModel = hiltViewModel()
+        )
     }
 }

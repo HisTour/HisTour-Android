@@ -28,6 +28,8 @@ import com.startup.histour.presentation.mission.ui.MissionClearScreen
 import com.startup.histour.presentation.mission.ui.MissionMapScreen
 import com.startup.histour.presentation.mission.ui.SubMissionChoiceScreen
 import com.startup.histour.presentation.mission.ui.TaskMissionScreen
+import com.startup.histour.presentation.mission.util.MissionValues.INTRO_TYPE
+import com.startup.histour.presentation.mission.util.MissionValues.SUBMISSION
 import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.onboarding.ui.CharacterScreen
 import com.startup.histour.presentation.onboarding.ui.NickNameChangeScreen
@@ -62,12 +64,7 @@ fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
                 composable(LoginScreens.OnBoarding.route) { OnBoardingScreen(navController) }
                 composable(LoginScreens.Setting.route) { SettingScreen(navController) }
                 composable(LoginScreens.Character.route) { CharacterScreen(navController) }
-                composable(LoginScreens.Map.route) {
-                    OnBoardingMapScreen(
-                        navController,
-                        snackBarHostState
-                    )
-                }
+                composable(LoginScreens.Map.route) { OnBoardingMapScreen(navController, snackBarHostState) }
             }
         }
     }
@@ -94,19 +91,73 @@ fun MainNavigationGraph() {
                 navController = navController,
                 startDestination = MainScreens.BottomNavigation.route
             ) {
-                composable(MainScreens.BottomNavigation.route) {
-                    BottomNavigationScreen(
-                        navController
-                    )
-                }
+                composable(MainScreens.BottomNavigation.route) { BottomNavigationScreen(navController) }
                 composable(MainScreens.Home.route) { HomeMissionScreen(navController) }
                 composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
-                composable(MainScreens.MissionTask.route) { TaskMissionScreen(navController) }
-                composable(MainScreens.SubMissionChoice.route) {
-                    SubMissionChoiceScreen(
-                        navController
+                composable(MainScreens.MissionTask.route + "/{missionId}/{initialQuizCount}",
+                    arguments = listOf(navArgument("missionId") { type = NavType.IntType },
+                        navArgument("initialQuizCount") { type = NavType.IntType }
+                    )) { navBackStackEntry ->
+                    val missionId = navBackStackEntry.arguments?.getInt("missionId") ?: 1
+                    val initialQuizCount =
+                        navBackStackEntry.arguments?.getInt("initialQuizCount") ?: 0
+                    TaskMissionScreen(
+                        navController = navController,
+                        snackBarHostState = snackBarHostState,
+                        submissionId = missionId,
+                        initialQuizCount = initialQuizCount
                     )
                 }
+                composable(
+                    MainScreens.MissionClear.route + "/{clearType}/{subMissionType}/{completedMissionId}/{clearedMissionCount}/{totalMissionCount}",
+                    arguments = listOf(
+                        navArgument("clearType") { type = NavType.StringType },
+                        navArgument("subMissionType") { type = NavType.StringType },
+                        navArgument("completedMissionId") { type = NavType.IntType },
+                        navArgument("clearedMissionCount") { type = NavType.IntType },
+                        navArgument("totalMissionCount") { type = NavType.IntType }
+                    )
+                )
+                { navBackStackEntry ->
+                    val clearType =
+                        navBackStackEntry.arguments?.getString("clearType") ?: SUBMISSION
+                    val subMissionType =
+                        navBackStackEntry.arguments?.getString("subMissionType") ?: INTRO_TYPE
+                    val completedMissionId =
+                        navBackStackEntry.arguments?.getInt("completedMissionId") ?: 1
+                    val clearedMissionCount =
+                        navBackStackEntry.arguments?.getInt("clearedMissionCount") ?: 1
+                    val totalMissionCount =
+                        navBackStackEntry.arguments?.getInt("totalMissionCount") ?: 4
+                    MissionClearScreen(
+                        navController,
+                        clearType = clearType,
+                        subMissionType = subMissionType,
+                        completedMissionId = completedMissionId,
+                        clearedMissionCount = clearedMissionCount,
+                        totalMissionCount = totalMissionCount
+                    )
+                }
+
+                composable(
+                    MainScreens.SubMissionChoice.route + "/{subMissionType}/{completedMissionId}",
+                    arguments = listOf(
+                        navArgument("subMissionType") { type = NavType.StringType },
+                        navArgument("completedMissionId") { type = NavType.IntType },
+                    )
+                )
+                { navBackStackEntry ->
+                    val subMissionType =
+                        navBackStackEntry.arguments?.getString("subMissionType") ?: INTRO_TYPE
+                    val completedMissionId =
+                        navBackStackEntry.arguments?.getInt("completedMissionId") ?: 1
+                    SubMissionChoiceScreen(
+                        navController,
+                        subMissionType = subMissionType,
+                        completedMissionId = completedMissionId
+                    )
+                }
+
                 composable(MainScreens.Camera.route) { CameraScreen(navController) }
                 composable(MainScreens.GPT.route) { GptScreen(navController) }
                 composable(MainScreens.Bundle.route) { BundleScreen(navController) }
@@ -124,32 +175,21 @@ fun MainNavigationGraph() {
                 composable(
                     route = MainScreens.CharacterSetting.route + "/{character}",
                     arguments = listOf(navArgument("character") { type = NavType.StringType })
-                ) { navBackStackEntry ->
-                    val characterJson =
-                        Uri.decode(navBackStackEntry.arguments?.getString("character"))
+                ) {  navBackStackEntry ->
+                    val characterJson = Uri.decode(navBackStackEntry.arguments?.getString("character"))
                     val character = Gson().fromJson(characterJson, CharacterModel::class.java)
 
-                    CharacterSettingScreen(navController, snackBarHostState, character)
-                }
+                    CharacterSettingScreen(navController, snackBarHostState, character) }
                 composable(MainScreens.Setting.route) { SettingScreen(navController) }
                 composable(
                     route = MainScreens.NickNameChange.route + "/{nickname}",
                     arguments = listOf(navArgument("nickname") { type = NavType.StringType })
                 ) { navBackStackEntry ->
                     val nickName = navBackStackEntry.arguments?.getString("nickname").orEmpty()
-                    NickNameChangeScreen(
-                        navController,
-                        snackBarHostState,
-                        beforeNickName = nickName
-                    )
+                    NickNameChangeScreen(navController, snackBarHostState, beforeNickName = nickName)
                 }
                 composable(MainScreens.MissionClear.route) { MissionClearScreen(navController) }
-                composable(MainScreens.Map.route) {
-                    OnBoardingMapScreen(
-                        navController,
-                        snackBarHostState
-                    )
-                }
+                composable(MainScreens.Map.route) { OnBoardingMapScreen(navController, snackBarHostState) }
             }
         }
     }

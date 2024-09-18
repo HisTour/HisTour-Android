@@ -80,7 +80,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
     ) {
         Image(
             modifier = Modifier.weight(1F),
-            painter = painterResource(id = R.drawable.img_submission_character),
+            //TODO set Logo
+            painter = painterResource(id = R.drawable.img_chat),
             contentDescription = null
         )
         Row(

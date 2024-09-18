@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,23 +33,44 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.startup.histour.R
 import com.startup.histour.data.dto.mission.ResponseMission
-import com.startup.histour.presentation.mission.viewmodel.MissionClearViewModel
+import com.startup.histour.presentation.mission.util.MissionValues.BEFORE_STATE
+import com.startup.histour.presentation.mission.util.MissionValues.INTRO_TYPE
+import com.startup.histour.presentation.mission.util.MissionValues.NORMAL_TYPE
+import com.startup.histour.presentation.mission.viewmodel.SubMissionChoiceEvent
+import com.startup.histour.presentation.mission.viewmodel.SubMissionChoiceViewModel
+import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
-import com.startup.histour.presentation.util.extensions.rippleClickable
 import com.startup.histour.presentation.widget.topbar.HisTourTopBar
 import com.startup.histour.presentation.widget.topbar.HistourTopBarModel
 import com.startup.histour.ui.theme.HistourTheme
+import kotlinx.coroutines.flow.collectLatest
+
 
 @Composable
 fun SubMissionChoiceScreen(
     navController: NavController,
-    missionClearViewModel: MissionClearViewModel = hiltViewModel()
+    subMissionChoiceViewModel: SubMissionChoiceViewModel = hiltViewModel(),
+    subMissionType: String = INTRO_TYPE,
+    completedMissionId: Int = 1,
 ) {
+    subMissionChoiceViewModel.getNextSubmissionList()
 
-    val curMissionType = "INTRO"
-    val subMissionId = 1
-    val list = missionClearViewModel.state.missionList.collectAsState()
-    val imageUrl = missionClearViewModel.state.imageUrl.collectAsState()
+    val list = subMissionChoiceViewModel.state.missionList.collectAsState()
+    val imageUrl = subMissionChoiceViewModel.state.imageUrl.collectAsState()
+
+    LaunchedEffect(subMissionChoiceViewModel) {
+        subMissionChoiceViewModel.event.collectLatest { event ->
+            when (event) {
+                is SubMissionChoiceEvent.MoveToMissionMap -> {
+                    navController.navigate(MainScreens.MissionMap.route){
+                        popUpTo(navController.currentBackStackEntry?.destination?.id ?: return@navigate) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -80,22 +101,24 @@ fun SubMissionChoiceScreen(
         )
 
         SubMissionList(
-            missionClearViewModel,
             modifier = Modifier.weight(1f),
-            list.value,
-            curMissionType,
-            subMissionId
-        )
+            list.value.sortedBy { it.name },
+            subMissionType,
+        ) {
+            subMissionChoiceViewModel.completeAndChoiceNextMission(
+                completeMissionId = completedMissionId,
+                nextMissionId = it
+            )
+        }
     }
 }
 
 @Composable
 private fun SubMissionList(
-    viewModel: MissionClearViewModel,
     modifier: Modifier,
     list: List<ResponseMission>,
     currentMissionType: String,
-    currentMissionId: Int
+    onClick: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -108,22 +131,16 @@ private fun SubMissionList(
                 items = list,
                 key = { index, _ -> index },
             ) { _, item ->
-                if (currentMissionType == "INTRO") {
-                    if (item.type == "NORMAL") {
+                if (currentMissionType == INTRO_TYPE) {
+                    if (item.type == NORMAL_TYPE) {
                         SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
-                            viewModel.clearAndChoiceSubMission(
-                                completeMissionId = currentMissionId,
-                                nextMissionId = item.id ?: 1
-                            )
+                            onClick(item.id ?: 1)
                         }
                     }
-                } else if (currentMissionType == "NORMAL") {
-                    if (item.state != "COMPLETE" && item.type == "NORMAL") {
+                } else if (currentMissionType == NORMAL_TYPE) {
+                    if (item.state == BEFORE_STATE && item.type == NORMAL_TYPE) {
                         SubMissionItem(item.id ?: 1, item.name ?: "수원 화성") {
-                            viewModel.clearAndChoiceSubMission(
-                                completeMissionId = currentMissionId,
-                                nextMissionId = item.id ?: 1
-                            )
+                            onClick(item.id ?: 1)
                         }
                     }
                 }

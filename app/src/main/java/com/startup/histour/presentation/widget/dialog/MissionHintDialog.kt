@@ -76,6 +76,8 @@ fun MissionHintDialog(
         MissionDialogType.MISSION_CONTENT, MissionDialogType.ANSWER -> screenHeight * 0.6f
         MissionDialogType.HINT -> screenHeight * 0.8f
     }
+    val bgDrawable =
+        if (missionDialogType == MissionDialogType.MISSION_CONTENT) R.drawable.bg_paper_large else R.drawable.bg_paper_small
 
     Dialog(
         onDismissRequest = { onClickClose() },
@@ -113,7 +115,7 @@ fun MissionHintDialog(
                             .wrapContentHeight()
                             .paint(
                                 painter = painterResource(
-                                    id = R.drawable.bg_paper_small,
+                                    id = bgDrawable,
                                 ),
                                 contentScale = ContentScale.FillBounds
                             ),
@@ -134,7 +136,7 @@ fun MissionHintDialog(
                             .wrapContentHeight()
                             .paint(
                                 painter = painterResource(
-                                    id = R.drawable.bg_paper_large,
+                                    id = bgDrawable,
                                 ),
                                 contentScale = ContentScale.FillBounds
                             ),

@@ -9,23 +9,25 @@ import com.startup.histour.domain.repository.MissionRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @ViewModelScoped
-class ClearSubMissionUseCase @Inject constructor(
+class UnlockAndChoiceSubMissionUseCase @Inject constructor(
     private val missionRepository: MissionRepository,
     @IOScope coroutineScope: CoroutineScope,
     @IO preExecutionContext: CoroutineContext,
     @Main postExecutionContext: CoroutineContext,
-) : BaseUseCase<Boolean, RequestUnlockMission>(
+) : BaseUseCase<Unit, RequestUnlockMission>(
     coroutineScope = coroutineScope,
     preExecutionContext = preExecutionContext,
     postExecutionContext = postExecutionContext
 ) {
     override suspend fun buildUseCase(
-        params : RequestUnlockMission
-    ): Flow<Boolean> = missionRepository.clearMission(
-        params
-    )
+        params: RequestUnlockMission
+    ): Flow<Unit> = flow {
+        missionRepository.unlockAndChoiceMission(request = params)
+        emit(Unit)
+    }
 }

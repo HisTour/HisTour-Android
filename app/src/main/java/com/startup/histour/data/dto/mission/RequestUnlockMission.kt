@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class RequestUnlockMission(
     @SerializedName("completedMissionId")
-    val completedMissionId: String,
+    val completedMissionId: Int? = null,
     @SerializedName("nextMissionId")
-    val nextMissionId: String
+    val nextMissionId: Int? = null
 )
