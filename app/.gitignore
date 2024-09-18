@@ -25,6 +25,8 @@ deploymentTargetDropDown.xml
 render.experimental.xml
 
 # Keystore files
+/keystore
+/keystore/histour
 *.jks
 *.keystore
 

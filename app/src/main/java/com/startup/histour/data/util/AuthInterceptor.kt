@@ -37,6 +37,7 @@ class AuthInterceptor @Inject constructor(
         val response = chain.proceed(request)
         Log.e("LMH", "accessToken $accessToken")
         return if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            response.close()
             refreshTokenUpdate(chain, context)
         } else {
             response

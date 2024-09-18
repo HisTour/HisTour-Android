@@ -24,3 +24,14 @@
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep class * extends com.google.gson.TypeAdapter
 -keep interface com.kakao.sdk.**.*Api
+
+# Proto DataStore 관련된 클래스는 난독화하지 않도록 설정
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.google.protobuf.** { *; }
+-keep class kotlinx.coroutines.flow.FlowKt__BuildersKt {
+    public <methods>;
+}

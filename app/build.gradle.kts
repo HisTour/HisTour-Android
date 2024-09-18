@@ -25,6 +25,14 @@ android {
     namespace = "com.startup.histour"
     compileSdk = deps.versions.android.compileSdk.get().toInt()
 
+    signingConfigs {
+        create("release") {
+            keyAlias = properties.getProperty("MY_KEY_ALIAS")
+            keyPassword = properties.getProperty("MY_KEY_PASSWORD")
+            storeFile = file(properties.getProperty("MY_KEYSTORE_PATH"))
+            storePassword = properties.getProperty("MY_STORE_PASSWORD")
+        }
+    }
     defaultConfig {
         applicationId = "com.startup.histour"
         minSdk = deps.versions.android.minSdk.get().toInt()
@@ -43,7 +51,8 @@ android {
         debug {
             aaptOptions.cruncherEnabled = false
         }
-        release {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
