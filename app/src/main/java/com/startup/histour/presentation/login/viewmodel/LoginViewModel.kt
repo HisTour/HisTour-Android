@@ -4,12 +4,10 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.data.dto.auth.RequestLogin
-import com.startup.histour.data.util.ClientException
 import com.startup.histour.data.util.NoCharacterException
 import com.startup.histour.domain.usecase.auth.LoginUseCase
 import com.startup.histour.domain.usecase.member.GetMyUserDataUseCase
 import com.startup.histour.presentation.base.BaseViewModel
-import com.startup.histour.presentation.model.UserInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

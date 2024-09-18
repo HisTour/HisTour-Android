@@ -44,6 +44,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.startup.histour.R
 import com.startup.histour.presentation.mission.viewmodel.Author
 import com.startup.histour.presentation.mission.viewmodel.ChatMessage
@@ -71,6 +76,9 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val preLoaderLottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.text_loading)
+    )
     var isKeyboardVisible by remember { mutableStateOf(false) }
 
     val finishChatDialog = remember { mutableStateOf(false) }
@@ -116,7 +124,7 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
             state = listState
         ) {
             items(chatList) { item ->
-                ChatItem(item, userInfo.character)
+                ChatItem(item, userInfo.character, preLoaderLottieComposition)
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -185,7 +193,7 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
 }
 
 @Composable
-fun ChatItem(message: ChatMessage, characterModel: CharacterModel) {
+fun ChatItem(message: ChatMessage, characterModel: CharacterModel, lottieComposition: LottieComposition?) {
     Spacer(modifier = Modifier.height(24.dp))
     Row(
         modifier = Modifier
@@ -198,7 +206,7 @@ fun ChatItem(message: ChatMessage, characterModel: CharacterModel) {
             }
 
             Author.CHAT_BOT -> {
-                ReceiveItem(message = message, characterModel)
+                ReceiveItem(message = message, characterModel, lottieComposition)
             }
         }
     }
@@ -206,7 +214,11 @@ fun ChatItem(message: ChatMessage, characterModel: CharacterModel) {
 
 @Preview(showBackground = true)
 @Composable
-fun ReceiveItem(message: ChatMessage = ChatMessage(id = 0, Author.CHAT_BOT, message = "안녕!", time = System.currentTimeMillis()), characterModel: CharacterModel = CharacterModel.orEmpty()) {
+fun ReceiveItem(
+    message: ChatMessage = ChatMessage(id = 0, Author.CHAT_BOT, message = "안녕!", time = System.currentTimeMillis()),
+    characterModel: CharacterModel = CharacterModel.orEmpty(),
+    lottieComposition: LottieComposition? = null
+) {
     HistourTheme {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -238,20 +250,25 @@ fun ReceiveItem(message: ChatMessage = ChatMessage(id = 0, Author.CHAT_BOT, mess
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .background(HistourTheme.colors.gray100)
-                    .padding(16.dp)
             ) {
                 if (message.isLoading) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        repeat(3) {
-                            Box(
-                                modifier = Modifier
-                                    .size(5.dp)
-                                    .background(HistourTheme.colors.D9DD9D9, CircleShape)
-                            )
-                        }
-                    }
+                    LottieAnimation(
+                        composition = lottieComposition,
+                        iterations = LottieConstants.IterateForever,
+                        restartOnPlay = true,
+                        modifier = Modifier
+                            .width(57.dp)
+                            .height(37.dp)
+                    )
                 } else {
-                    Text(text = message.message, style = HistourTheme.typography.body3Reg.copy(color = HistourTheme.colors.gray900))
+                    Text(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        text = message.message,
+                        style = HistourTheme.typography.body3Reg.copy(
+                            color = HistourTheme.colors.gray900
+                        )
+                    )
                 }
             }
         }
