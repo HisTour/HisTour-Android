@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +37,7 @@ import com.startup.histour.presentation.login.viewmodel.LoginViewModel
 import com.startup.histour.presentation.main.ui.MainActivity
 import com.startup.histour.presentation.navigation.LoginScreens
 import com.startup.histour.presentation.util.extensions.noRippleClickable
+import com.startup.histour.presentation.util.extensions.openBrowser
 import com.startup.histour.ui.theme.HistourTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
@@ -99,6 +102,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Kakao 로 계속하기", style = HistourTheme.typography.body1Bold.copy(color = HistourTheme.colors.gray900))
         }
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(
+            text = stringResource(id = R.string.setting_menu_item_policy),
+            textDecoration = TextDecoration.Underline,
+            style = HistourTheme.typography.detail1Regular,
+            modifier = Modifier.noRippleClickable {
+                context.openBrowser("https://zippy-cake-826.notion.site/88e8a4673ad74e88a2221079602828e3?pvs=4")
+            })
         Spacer(modifier = Modifier.height(18.dp))
     }
 }
