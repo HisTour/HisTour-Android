@@ -8,9 +8,11 @@ import com.startup.histour.annotation.CommonRetrofit
 import com.startup.histour.annotation.RefreshTokenHttpClient
 import com.startup.histour.annotation.RefreshTokenRetrofit
 import com.startup.histour.annotation.SSEHttpClient
+import com.startup.histour.annotation.TempRetrofit
 import com.startup.histour.data.remote.api.AttractionApi
 import com.startup.histour.data.remote.api.AuthApi
 import com.startup.histour.data.remote.api.CharacterApi
+import com.startup.histour.data.remote.api.ChatApi
 import com.startup.histour.data.remote.api.HistoryApi
 import com.startup.histour.data.remote.api.LoginApi
 import com.startup.histour.data.remote.api.MemberApi
@@ -92,7 +94,7 @@ object ApiModule {
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(50, TimeUnit.SECONDS)
             .build()
 
     @Provides
@@ -137,6 +139,18 @@ object ApiModule {
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
             .build()
+    @Provides
+    @Singleton
+    @TempRetrofit
+    fun providesTempTokenRetrofit(
+        @SSEHttpClient okHttpClient: OkHttpClient,
+        converterFactory: GsonConverterFactory
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("${BuildConfig.SSE_SERVER_DOMAIN}/api/v1/")
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .build()
 
     @Provides
     @Singleton
@@ -173,4 +187,7 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideTokenUpdateApi(@RefreshTokenRetrofit retrofit: Retrofit): TokenUpdateApi = retrofit.create(TokenUpdateApi::class.java)
+    @Provides
+    @Singleton
+    fun provideChatApi(@TempRetrofit retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
 }
