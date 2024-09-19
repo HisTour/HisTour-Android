@@ -1,6 +1,7 @@
 package com.startup.histour.presentation.mission.ui
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -83,6 +84,10 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
 
     val finishChatDialog = remember { mutableStateOf(false) }
 
+    BackHandler {
+        finishChatDialog.value = true
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -157,7 +162,11 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
                         .noRippleClickable {
                             if (chatViewModel.canSend()) {
                                 keyboardController?.hide()
-                                chatViewModel.notifyViewModelEvent(ChatViewModelEvent.SendMessage(text))
+                                chatViewModel.notifyViewModelEvent(
+                                    ChatViewModelEvent.SendMessage(
+                                        text
+                                    )
+                                )
                                 text = ""
                             }
                         },
