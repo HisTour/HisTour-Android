@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.Splash" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- 각 엔터 폴더를 따라감 -->
+        <item name="android:windowBackground">@drawable/logo_splash</item>
+        <item name="android:windowSplashScreenBackground">#00CC47</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+</resources>

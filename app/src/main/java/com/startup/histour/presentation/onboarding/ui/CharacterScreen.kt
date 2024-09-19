@@ -151,9 +151,12 @@ fun CharacterPagerView(
 ) {
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { list.size })
     HorizontalPager(
+        state = pagerState,
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()), pageSpacing = 12.dp, beyondBoundsPageCount = 3, state = rememberPagerState(pageCount = { list.size }),
+            .verticalScroll(rememberScrollState()),
+        pageSpacing = 12.dp,
+        beyondBoundsPageCount = 3,
         verticalAlignment = Alignment.Top,
         contentPadding = PaddingValues(horizontal = 24.dp)
     ) { page ->

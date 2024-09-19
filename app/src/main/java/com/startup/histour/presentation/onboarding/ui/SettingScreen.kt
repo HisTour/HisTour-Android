@@ -100,6 +100,7 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                         navController.popBackStack()
                     }
                 ),
+                rightSectionType = HistourTopBarModel.RightSectionType.Empty,
                 titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_setting)
             )
         )

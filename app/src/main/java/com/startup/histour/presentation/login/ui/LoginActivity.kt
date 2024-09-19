@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.view.WindowInsetsControllerCompat
 import com.startup.histour.presentation.login.viewmodel.LoginViewModel
 import com.startup.histour.presentation.main.ui.MainActivity
 import com.startup.histour.presentation.navigation.LoginNavigationGraph
@@ -26,6 +27,13 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 상태바를 투명하게 만들기
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
+        // 상태바 아이콘 색상을 제어할 수 있는 WindowInsetsController 생성
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        insetsController.isAppearanceLightStatusBars = true // 상태바 아이콘을 밝게 설정
+
         setContent {
             HistourTheme {
                 val navigateToMain by onBoardingViewModel.state.valid.collectAsState()
