@@ -20,14 +20,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -152,11 +152,13 @@ fun BeforeSubMission(submissionTitle: Int, characterImageUrl: String, textColor:
             model = characterImageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .width(108.dp)
-                .height(95.dp)
-                .align(Alignment.BottomEnd),
+                .height(190.dp)
+                .align(Alignment.BottomEnd)
+                .graphicsLayer {
+                    translationY = 92f
+                },
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
         )
     }
@@ -190,22 +192,16 @@ fun ProgressSubMission(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            AsyncImage(
-                model = characterImageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.TopCenter,
-                modifier = Modifier
-                    .width(108.dp)
-                    .height(95.dp)
-            )
         }
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .align(Alignment.TopCenter)
         ) {
-            val progress = runCatching { (data?.completedMissions!!.toFloat() / data?.totalMissions!!.toFloat()).takeIf { it >= 0F } ?: 0F }.getOrElse { 0F }
+            val progress = runCatching {
+                (data?.completedMissions!!.toFloat() / data?.totalMissions!!.toFloat()).takeIf { it >= 0F }
+                    ?: 0F
+            }.getOrElse { 0F }
             Spacer(modifier = Modifier.height(90.dp))
             HistourProgressBar(
                 histourProgressBarModel = HistourProgressBarModel(
@@ -237,7 +233,27 @@ fun ProgressSubMission(
                 )
             }
         }
-
+        AsyncImage(
+            model = characterImageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .width(108.dp)
+                .height(135.dp)
+                .align(Alignment.TopEnd)
+                .drawWithContent {
+                    val clipBottom = size.height - 37.dp.toPx()
+                    clipRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = clipBottom
+                    ) {
+                        this@drawWithContent.drawContent()
+                    }
+                }
+                .zIndex(-1f)
+        )
         Spacer(modifier = Modifier.height(16.dp))
     }
 
@@ -267,18 +283,20 @@ fun CompleteSubMission(submissionTitle: String, characterImageUrl: String, textC
             painter = painterResource(id = R.drawable.img_stamp),
             contentScale = ContentScale.FillBounds,
             contentDescription = "Clear",
-            colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+            colorFilter = ColorFilter.tint(color = Color(0xFF9CD040))
         )
         Spacer(modifier = Modifier.height(8.dp))
         AsyncImage(
             model = characterImageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alignment = Alignment.TopCenter,
             modifier = Modifier
                 .width(108.dp)
-                .height(95.dp)
+                .height(190.dp)
                 .align(Alignment.BottomEnd)
+                .graphicsLayer {
+                    translationY = 92f
+                }
         )
     }
 }

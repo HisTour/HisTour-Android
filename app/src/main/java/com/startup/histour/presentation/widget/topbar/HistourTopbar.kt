@@ -194,9 +194,7 @@ private fun HisTourTopBarTitleSection(
                 }
             }
 
-            is HistourTopBarModel.TitleStyle.Image -> {
-                // todo
-            }
+            is HistourTopBarModel.TitleStyle.Image -> {}
         }
     }
 }

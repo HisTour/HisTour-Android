@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.mission.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,14 +64,14 @@ fun SubMissionChoiceScreen(
         subMissionChoiceViewModel.event.collectLatest { event ->
             when (event) {
                 is SubMissionChoiceEvent.MoveToMissionMap -> {
-                    navController.navigate(MainScreens.MissionMap.route){
-                        popUpTo(navController.currentBackStackEntry?.destination?.id ?: return@navigate) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             }
         }
+    }
+
+    BackHandler {
+        navController.popBackStack()
     }
 
     Column(
@@ -97,6 +99,7 @@ fun SubMissionChoiceScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .clip(RoundedCornerShape(10.dp))
                 .padding(all = 24.dp),
         )
 

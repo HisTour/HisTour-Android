@@ -86,7 +86,6 @@ fun HistourProgressBar(
 
     Box(
         modifier = Modifier
-            .padding(horizontal = if (progressbarType == ProgressbarType.SUBMISSION) 0.dp else 20.dp)
             .height(height.dp)
             .fillMaxWidth()
             .onGloballyPositioned { coordinates ->
@@ -162,6 +161,9 @@ private fun ProgressIndicator(
     dotImage: Int,
     modifier: Modifier = Modifier
 ) {
+    val imageSize = progressDefaultHeight.dp
+    val progressBarWidth = boxWidth.toFloat()
+
     Box(
         modifier = modifier
             .fillMaxHeight()
@@ -169,14 +171,14 @@ private fun ProgressIndicator(
     ) {
         Box(
             modifier = Modifier
-                .width(tooltipWidth.dp)
+                .width(imageSize)
                 .fillMaxHeight()
                 .align(Alignment.CenterStart)
                 .graphicsLayer {
-                    val maxOffset = boxWidth - 30.dp.toPx()
+                    val maxOffset = progressBarWidth - imageSize.toPx()
                     translationX = animatedProgress * maxOffset
-                    translationY = 20.0f
-                } // 이미지(ex 방망이의 x축과 y축을 움직이는 부분)
+                    translationY = 24.0f
+                }
         ) {
             Column {
                 if (progressbarType == ProgressbarType.TOOLTIP) {
@@ -260,7 +262,9 @@ private fun ProgressImage(imageRes: Int) {
     Image(
         painter = painterResource(id = imageRes),
         contentDescription = "Progress Indicator",
-        modifier = Modifier.size(progressDefaultHeight.dp)
+        modifier = Modifier
+            .size(44.dp)
+            .offset(y = 6.dp)
     )
 }
 

@@ -45,10 +45,8 @@ import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.startup.histour.R
 import com.startup.histour.presentation.login.ui.LoginActivity
-import com.startup.histour.presentation.main.model.CharacterViewEvent
 import com.startup.histour.presentation.main.viewmodel.HomeEvent
 import com.startup.histour.presentation.main.viewmodel.MainViewModel
-import com.startup.histour.presentation.navigation.LoginScreens
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.widget.button.CTAButton
 import com.startup.histour.presentation.widget.button.CTAMode
@@ -63,11 +61,18 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel = hiltViewModel()) {
+fun HomeMissionScreen(
+    navController: NavController,
+    mainViewModel: MainViewModel = hiltViewModel(),
+    onNavigateToMissionMap: () -> Unit
+) {
 
     val userInfo by mainViewModel.state.userInfo.collectAsState()
     val place by mainViewModel.state.place.collectAsState()
-    val progress = runCatching { (place.clearedMissionCount.toFloat() / place.totalMissionCount.toFloat()).takeIf { it >= 0F } ?: 0F }.getOrElse { 0F }
+    val progress = runCatching {
+        (place.clearedMissionCount.toFloat() / place.totalMissionCount.toFloat()).takeIf { it >= 0F }
+            ?: 0F
+    }.getOrElse { 0F }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -147,9 +152,10 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                 AsyncImage(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .width(190.dp)
-                        .height(230.dp),
+                        .width(210.dp)
+                        .height(210.dp),
                     model = userInfo.character.normalImageUrl,
+                    contentScale = ContentScale.Crop,
                     contentDescription = "character"
                 )
                 CTAImageButton(
@@ -225,7 +231,8 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
 
                                     else -> Text(
                                         text = stringResource(
-                                            id = R.string.home_mission_progress, (progress * 100).toInt()
+                                            id = R.string.home_mission_progress,
+                                            (progress * 100).toInt()
                                         ),
                                         style = HistourTheme.typography.detail1Regular,
                                         color = HistourTheme.colors.gray500,
@@ -242,12 +249,12 @@ fun HomeMissionScreen(navController: NavController, mainViewModel: MainViewModel
                         currentStep = 0,
                         progressbarType = ProgressbarType.IMAGE
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(22.dp))
                     CTAButton(
                         text = R.string.home_mission_doing,
                         mode = CTAMode.Enable.instance()
                     ) {
-                        navController.navigate(MainScreens.MissionTask.route)
+                        onNavigateToMissionMap()
                     }
                 }
             }
@@ -272,6 +279,6 @@ fun DD() {
 @Preview(Devices.PHONE)
 fun PreviewMissionHomeScreen() {
     HistourTheme {
-        HomeMissionScreen(navController = rememberNavController())
+        HomeMissionScreen(navController = rememberNavController()) {}
     }
 }
