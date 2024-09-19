@@ -105,6 +105,10 @@ fun TaskMissionScreen(
                 is TaskMissionEvent.ShowToast -> {
                     snackBarHostState.showSnackbar(event.msg)
                 }
+
+                is TaskMissionEvent.MoveToNextPage -> {
+                    taskMissionViewModel.moveToNextTask()
+                }
             }
         }
     }
@@ -129,7 +133,7 @@ fun TaskMissionScreen(
     // 퀴즈가 얼마나 클리어 되었는가 중복 채점시에는 올라가면 안되고 해당 숫자 기준으로 뷰페이저 페이지 최대치가 설정됨
     val clearedQuizCount = taskMissionViewModel.clearedQuizCount.collectAsState()
     // 현재 번호 기준, 페이지넘버, 채점 api id, 페이지 데이터 로드에 쓰임
-    var currentTaskNumber by remember { mutableIntStateOf(initialQuizCount) }
+    val currentTaskNumber by taskMissionViewModel.currentTaskNumber.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -290,19 +294,31 @@ fun TaskMissionScreen(
             }
 
             LaunchedEffect(pagerState.currentPage) {
+                val newTaskNumber = pagerState.currentPage + 1
+                if (newTaskNumber != currentTaskNumber) {
+                    taskMissionViewModel.updateCurrentTaskNumber(newTaskNumber)
+                }
+
                 taskType = tasksData.value.getOrNull(pagerState.currentPage)?.type
                     ?: MissionValues.READING_TASK
 
-                // 현재 페이지가 이미 정답을 맞춘 퀴즈인지 확인
                 isAnswerSubmitted = pagerState.currentPage < clearedQuizCount.value
 
-                // 이미 정답을 맞춘 퀴즈라면 정답을 미리 채움
                 if (isAnswerSubmitted && taskType == KEYWORD_TASK) {
                     answer = tasksData.value[pagerState.currentPage].answer
                     enabled = true
                 } else {
                     answer = ""
                     enabled = false
+                }
+            }
+
+            LaunchedEffect(currentTaskNumber) {
+                if (currentTaskNumber > 0 && currentTaskNumber <= tasksData.value.size) {
+                    val targetPage = currentTaskNumber - 1
+                    if (pagerState.currentPage != targetPage) {
+                        pagerState.animateScrollToPage(targetPage)
+                    }
                 }
             }
 
@@ -313,7 +329,6 @@ fun TaskMissionScreen(
                     .background(color = HistourTheme.colors.white000),
                 userScrollEnabled = clearedQuizCount.value < tasksData.value.size
             ) { page ->
-                currentTaskNumber = pagerState.currentPage + 1
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         Modifier
@@ -344,7 +359,6 @@ fun TaskMissionScreen(
                         )
                     }
                 }
-
             }
 
             KEYWORD_TASK -> {

@@ -21,4 +21,5 @@ interface TaskMissionState : State {
 sealed interface TaskMissionEvent : BaseEvent {
     data class MoveToClearScreen(val clearType: String, val subMissionType:String, val requiredCount:Int, val completedCount:Int) : TaskMissionEvent
     data class ShowToast(val msg: String) : TaskMissionEvent
+    data object MoveToNextPage: TaskMissionEvent
 }
