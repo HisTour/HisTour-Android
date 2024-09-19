@@ -191,7 +191,7 @@ fun HomeMissionScreen(
                         )
                         Column(
                             modifier = Modifier
-                                .height(65.dp)
+                                .wrapContentHeight()
                                 .padding(top = 8.dp, bottom = 5.dp),
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {

@@ -3,8 +3,12 @@ package com.startup.histour.presentation.navigation
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -50,12 +54,16 @@ fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
         snackbarHost = {
             HistourSnackBar(snackBarHostState = snackBarHostState)
         },
+        containerColor = HistourTheme.colors.white000,
+        contentColor = HistourTheme.colors.white000
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(HistourTheme.colors.white000)
                 .fillMaxSize()
-                .padding(innerPadding),
+                .background(HistourTheme.colors.white000)
+                .windowInsetsPadding( // 내비게이션 바 인셋을 처리
+                    WindowInsets.systemBars.only(WindowInsetsSides.Vertical)
+                ),
         ) {
             NavHost(
                 navController = navController,
@@ -85,13 +93,15 @@ fun MainNavigationGraph() {
     Scaffold(
         snackbarHost = {
             HistourSnackBar(snackBarHostState = snackBarHostState)
-        },
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(HistourTheme.colors.white000)
                 .fillMaxSize()
-                .padding(innerPadding),
+                .background(HistourTheme.colors.white000)
+                .windowInsetsPadding( // 내비게이션 바 인셋을 처리
+                    WindowInsets.systemBars.only(WindowInsetsSides.Vertical)
+                ),
         ) {
             NavHost(
                 navController = navController,

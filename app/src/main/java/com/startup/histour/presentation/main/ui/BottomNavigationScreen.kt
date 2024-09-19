@@ -1,6 +1,7 @@
 package com.startup.histour.presentation.main.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,7 +30,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.startup.histour.R
 import com.startup.histour.presentation.bundle.ui.BundleScreen
-import com.startup.histour.presentation.main.ui.HomeMissionScreen
 import com.startup.histour.presentation.mission.ui.MissionMapScreen
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.ui.theme.HistourTheme
@@ -188,7 +188,9 @@ fun BottomNavigationScreen(navController: NavController) {
         NavHost(
             bottomNavController,
             startDestination = MainScreens.Home.route,
-            Modifier.padding(innerPadding)
+            Modifier
+                .background(HistourTheme.colors.white000)
+                .padding(innerPadding)
         ) {
             composable(MainScreens.MissionMap.route) { MissionMapScreen(navController) }
             composable(MainScreens.Home.route) {

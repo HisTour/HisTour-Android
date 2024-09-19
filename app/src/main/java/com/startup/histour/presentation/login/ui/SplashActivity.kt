@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.view.WindowInsetsControllerCompat
 import com.startup.histour.presentation.login.viewmodel.SplashEvent
 import com.startup.histour.presentation.login.viewmodel.SplashViewModel
 import com.startup.histour.presentation.main.ui.MainActivity
@@ -21,6 +22,13 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 상태바를 투명하게 만들기
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
+        // 상태바 아이콘 색상을 제어할 수 있는 WindowInsetsController 생성
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        insetsController.isAppearanceLightStatusBars = true // 상태바 아이콘을 밝게 설정
+
         collectEvent()
         setContent {
             HistourTheme {
