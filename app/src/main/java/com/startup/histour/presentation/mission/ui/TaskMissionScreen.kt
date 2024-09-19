@@ -213,6 +213,7 @@ fun TaskMissionScreen(
                                 )
                             ) {
                                 //TODO 챗봇
+                                navController.navigate(MainScreens.GPT.route)
                             }
                             CTAImageButton(
                                 modifier = Modifier,
