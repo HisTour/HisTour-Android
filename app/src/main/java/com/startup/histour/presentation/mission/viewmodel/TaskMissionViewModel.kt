@@ -27,8 +27,17 @@ class TaskMissionViewModel @Inject constructor(
     private val _clearedQuizCount = MutableStateFlow(0)
     val clearedQuizCount: StateFlow<Int> = _clearedQuizCount.asStateFlow()
 
+    private val _currentTaskNumber = MutableStateFlow(0)
+    val currentTaskNumber: StateFlow<Int> = _currentTaskNumber.asStateFlow()
+
+
     fun initClearedQuizCount(initialCount: Int) {
         _clearedQuizCount.value = initialCount
+        _currentTaskNumber.value = initialCount
+    }
+
+    fun updateCurrentTaskNumber(value: Int) {
+        _currentTaskNumber.value = value
     }
 
     fun getTasks(missionId: Int) {
@@ -109,8 +118,19 @@ class TaskMissionViewModel @Inject constructor(
             onEach = { it ->
             },
             onError = {
-
+                // 중복퀴즈인데 정답을 채점했을 경우 (== ReadingTask 밖에없음 이미 맞춘 KEYWORD에서는 해당 api를 호출 못함)다음과 같이 다음페이지로 이동
+                viewModelScope.launch {
+                    notifyEvent(TaskMissionEvent.MoveToNextPage)
+                }
             }
         )
+    }
+
+
+    fun moveToNextTask() {
+        val nextTask = _currentTaskNumber.value + 1
+        if (nextTask <= _state.quizzesList.value.size) {
+            _currentTaskNumber.value = nextTask
+        }
     }
 }
