@@ -1,9 +1,7 @@
 package com.startup.histour.presentation.bundle.ui
 
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -63,13 +60,11 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-@RequiresApi(Build.VERSION_CODES.O)
 fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel = hiltViewModel()) {
 
     fun navigateRecommendedSpotScreen(attraction: Attraction) {
         val attractionJson = Uri.encode(Gson().toJson(attraction))
         navController.navigate(MainScreens.RecommendedSpot.route + "/${attractionJson}")
-        Log.e("LMH", "NAVIGATE")
     }
 
     val attractionList by bundleViewModel.state.attractionList.collectAsState()
@@ -77,47 +72,49 @@ fun BundleScreen(navController: NavController, bundleViewModel: BundleViewModel 
     val userInfo by bundleViewModel.state.userInfo.collectAsState()
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(color = HistourTheme.colors.white000),
-    ) {
+            .fillMaxSize()
+            .background(color = HistourTheme.colors.white000)) {
         HisTourTopBar(model = HistourTopBarModel(titleStyle = HistourTopBarModel.TitleStyle.Text(R.string.title_bundle)))
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = R.string.bundle_recommended_spot_title),
-                style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
-            )
-            Image(modifier = Modifier.noRippleClickable {
-                bundleViewModel.fetchAttraction()
-            }, painter = painterResource(id = R.drawable.btn_reload), contentDescription = null)
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        if (attractionList.isEmpty()) {
-            RecommendedSpotListView(List(4) {
-                Attraction.orEmpty()
-            }) {
-
+        LazyColumn {
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.bundle_recommended_spot_title),
+                        style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
+                    )
+                    Image(modifier = Modifier.noRippleClickable {
+                        bundleViewModel.fetchAttraction()
+                    }, painter = painterResource(id = R.drawable.btn_reload), contentDescription = null)
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                // LazyGrid
+                if (attractionList.isEmpty()) {
+                    RecommendedSpotListView(List(4) { Attraction.orEmpty() }) {}
+                } else {
+                    RecommendedSpotListView(attractionList, ::navigateRecommendedSpotScreen)
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp),
+                    text = stringResource(id = R.string.bundle_today_history),
+                    style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                if (historyHolidayList.isEmpty()) {
+                    TodayHistoryEmptyView(userInfo.character)
+                }
             }
-        } else {
-            RecommendedSpotListView(attractionList, ::navigateRecommendedSpotScreen)
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 24.dp),
-            text = stringResource(id = R.string.bundle_today_history),
-            style = HistourTheme.typography.head2.copy(color = HistourTheme.colors.gray900)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        if (historyHolidayList.isEmpty()) {
-            TodayHistoryEmptyView(userInfo.character)
-        } else {
-            ToDayHistoryList(historyHolidayList)
+            itemsIndexed(historyHolidayList) { index, item ->
+                ToDayHistoryItem(item)
+                if (index != historyHolidayList.size - 1) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+            }
         }
     }
 }
@@ -140,7 +137,6 @@ fun TodayHistoryEmptyView(characterInfo: CharacterModel) {
 
 @Preview
 @Composable
-@RequiresApi(Build.VERSION_CODES.O)
 fun PreviewBundleScreen() {
     HistourTheme {
         BundleScreen(navController = rememberNavController())
@@ -156,7 +152,7 @@ private fun RecommendedSpotListView(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .padding(horizontal = 24.dp)
-            .wrapContentHeight(),
+            .height(228.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         userScrollEnabled = false
@@ -168,7 +164,6 @@ private fun RecommendedSpotListView(
         }
     }
 }
-
 
 @Composable
 private fun RecommendedSpotListItem(
@@ -215,34 +210,15 @@ private fun RecommendedSpotListItem(
     }
 }
 
-/** @param list 나중에 Immutable 하도록 변경
- * */
-@Composable
-@RequiresApi(Build.VERSION_CODES.O)
-private fun ToDayHistoryList(list: List<HistoryHoliday>) {
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            itemsIndexed(
-                items = list,
-                key = { index, _ -> index },
-            ) { _, item ->
-                ToDayHistoryItem(item)
-            }
-        }
-    }
-}
-
 /** @param date 나중에 날짜 포맷으로 바꿔야함
  * */
 @Composable
-@RequiresApi(Build.VERSION_CODES.O)
 private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
     Box(
         modifier = Modifier
-            .background(HistourTheme.colors.yellow100, shape = RoundedCornerShape(4.dp))
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .background(HistourTheme.colors.yellow100, shape = RoundedCornerShape(4.dp))
             .padding(start = 16.dp)
             .height(40.dp)
             .noRippleClickable {
@@ -272,19 +248,10 @@ private fun ToDayHistoryItem(historyHoliday: HistoryHoliday) {
                 maxLines = 1,
             )
         }
-
-        /*Image(
-            painter = painterResource(id = R.drawable.btn_enter_history),
-            contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-        )*/
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun convertDateUsingTime(inputDate: String): String = runCatching {
+private fun convertDateUsingTime(inputDate: String): String = runCatching {
     // 입력 형식 (yyyyMMdd)
     val inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     // 출력 형식 (MM.dd)

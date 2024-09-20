@@ -50,7 +50,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @SuppressLint("StateFlowValueCalledInComposition")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MissionMapScreen(
     navController: NavController,

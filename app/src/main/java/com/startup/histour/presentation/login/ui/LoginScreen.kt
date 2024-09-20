@@ -103,6 +103,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
                 .fillMaxWidth()
                 .heightIn(160.dp, 200.dp)
         )
+        Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "여행 속 즐거운 미션과 함께 배우는\n역사 이야기",
             style = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
