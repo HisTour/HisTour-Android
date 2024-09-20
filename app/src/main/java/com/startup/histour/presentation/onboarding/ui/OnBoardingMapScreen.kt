@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -246,14 +247,21 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                 }
 
                 selectedButtonPosition?.let { position ->
-                    AsyncImage(
-                        model = userInfo.character.faceImageUrl, // 선택된 위치를 나타내는 이미지 리소스
-                        contentDescription = "ggabi_marker",
+                    Box(
                         modifier = Modifier
-                            .size(40.dp) // 이미지 크기 조정
                             .offset(x = position.x.dp, y = position.y.dp)
-                            .zIndex(2f)
-                    )
+                            .paint(painter = painterResource(id = R.drawable.ic_spot))
+                            .size(60.dp, 65.dp)
+                            .zIndex(2f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        AsyncImage(
+                            model = userInfo.character.faceImageUrl, // 선택된 위치를 나타내는 이미지 리소스
+                            contentDescription = "ggabi_marker",
+                            modifier = Modifier
+                                .size(60.dp) // 이미지 크기 조정
+                        )
+                    }
                 }
             }
 
