@@ -86,7 +86,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
     var selectedButtonPosition by remember { mutableStateOf<Offset?>(null) }
     var selectedPlace by remember { mutableStateOf<Place?>(null) }
     val preLoaderLottieComposition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.loading)
+        LottieCompositionSpec.RawRes(R.raw.loading_2)
     )
     var isPlaceSelectSuccess by remember { mutableStateOf(false) }
 
@@ -323,8 +323,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
             LottieAnimation(
                 composition = preLoaderLottieComposition,
                 iterations = LottieConstants.IterateForever,
-                restartOnPlay = true,
-                modifier = Modifier.size(247.dp)
+                modifier = Modifier.size(247.dp),
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(text = "나를 따르라~", style = HistourTheme.typography.head2.copy(HistourTheme.colors.white000))
@@ -373,7 +372,7 @@ fun PlaceBottomSheetView(place: Place = Place.orEmpty().copy(name = "수원화�
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 60.dp , start = 24.dp, end = 24.dp),
+                .padding(top = 8.dp, bottom = 60.dp, start = 24.dp, end = 24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
