@@ -3,6 +3,7 @@ package com.startup.histour.presentation.mission.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -21,9 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.startup.histour.R
 import com.startup.histour.presentation.mission.util.MissionValues.FINAL_MISSION
 import com.startup.histour.presentation.mission.util.MissionValues.INTRO_TYPE
@@ -70,6 +73,9 @@ fun MissionClearScreen(
         navController.popBackStack()
     }
 
+    val preLoaderLottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.particle)
+    )
     val userInfo by missionClearViewModel.state.userInfo.collectAsState()
     val progress = runCatching {
         (clearedMissionCount.toFloat() / totalMissionCount.toFloat()).takeIf { it >= 0F } ?: 0F
@@ -98,87 +104,95 @@ fun MissionClearScreen(
         else -> 24
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
-            .background(HistourTheme.colors.white000)
-            .paint(
-                painter = painterResource(id = R.drawable.bg_fanfare),
-                contentScale = ContentScale.Fit
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(108.dp))
+        LottieAnimation(
+            composition = preLoaderLottieComposition,
+            iterations = LottieConstants.IterateForever,
+            contentScale = ContentScale.Crop,
+            restartOnPlay = true,
+            modifier = Modifier
+                .size(277.dp)
+                .align(Alignment.TopCenter)
+        )
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(111.dp))
-                    .height(27.dp)
-                    .width(IntrinsicSize.Max)
-                    .background(HistourTheme.colors.green200),
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.height(88.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                Row(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(111.dp))
+                        .height(27.dp)
+                        .width(IntrinsicSize.Max)
+                        .background(HistourTheme.colors.green200),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        text = titleText,
+                        style = HistourTheme.typography.body1Bold,
+                        color = HistourTheme.colors.green400
+                    )
+                }
                 Text(
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    text = titleText,
-                    style = HistourTheme.typography.body1Bold,
-                    color = HistourTheme.colors.green400
+                    modifier = Modifier.height(33.dp),
+                    text = stringResource(id = descriptionText),
+                    style = HistourTheme.typography.head2,
+                    color = HistourTheme.colors.gray900
                 )
             }
-            Text(
-                modifier = Modifier.height(33.dp),
-                text = stringResource(id = descriptionText),
-                style = HistourTheme.typography.head2,
-                color = HistourTheme.colors.gray900
+            Spacer(modifier = Modifier.height(14.dp))
+            AsyncImage(
+                modifier = Modifier
+                    .size(277.dp),
+                model = userInfo.character.normalImageUrl,
+                contentScale = ContentScale.Crop,
+                contentDescription = "character"
             )
-        }
-        Spacer(modifier = Modifier.height(14.dp))
-        AsyncImage(
-            modifier = Modifier
-                .size(277.dp),
-            model = userInfo.character.normalImageUrl,
-            contentScale = ContentScale.Crop,
-            contentDescription = "character"
-        )
-        Spacer(modifier = Modifier.height(43.dp))
-        Column {
-            HistourProgressBar(
-                histourProgressBarModel =
-                HistourProgressBarModel(totalStep = totalMissionCount),
-                progress = progress,
-                currentStep = clearedMissionCount,
-                progressbarType = ProgressbarType.TOOLTIP
-            )
-            Spacer(modifier = Modifier.height(spaceHeight.dp))
-            CTAButton(
-                text = catButtonText, mode = CTAMode.Enable.instance()
-            ) {
-                if (clearType == SUBMISSION) {
-                    navController.navigate(MainScreens.SubMissionChoice.route + "/${subMissionType}" + "/${completedMissionId}") {
-                        popUpTo(
-                            navController.currentBackStackEntry?.destination?.id ?: return@navigate
-                        ) {
-                            inclusive = true
+            Column {
+                HistourProgressBar(
+                    histourProgressBarModel =
+                    HistourProgressBarModel(totalStep = totalMissionCount),
+                    progress = progress,
+                    currentStep = clearedMissionCount,
+                    progressbarType = ProgressbarType.TOOLTIP
+                )
+                Spacer(modifier = Modifier.height(spaceHeight.dp))
+                CTAButton(
+                    text = catButtonText, mode = CTAMode.Enable.instance()
+                ) {
+                    if (clearType == SUBMISSION) {
+                        navController.navigate(MainScreens.SubMissionChoice.route + "/${subMissionType}" + "/${completedMissionId}") {
+                            popUpTo(
+                                navController.currentBackStackEntry?.destination?.id ?: return@navigate
+                            ) {
+                                inclusive = true
+                            }
                         }
+                    } else {
+                        navController.popBackStack()
                     }
-                } else {
+                }
+            }
+            if (clearType == SUBMISSION) {
+                CTAButton(
+                    text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
+                ) {
                     navController.popBackStack()
                 }
             }
+            Spacer(modifier = Modifier.height(18.dp))
         }
-        if (clearType == SUBMISSION) {
-            CTAButton(
-                text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
-            ) {
-                navController.popBackStack()
-            }
-        }
-        Spacer(modifier = Modifier.height(18.dp))
     }
 }
 

@@ -68,7 +68,6 @@ fun HomeMissionScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     onNavigateToMissionMap: () -> Unit
 ) {
-
     val userInfo by mainViewModel.state.userInfo.collectAsState()
     val place by mainViewModel.state.place.collectAsState()
     val progress = runCatching {
@@ -77,6 +76,10 @@ fun HomeMissionScreen(
     }.getOrElse { 0F }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(place) {
+        mainViewModel.checkUserPlaceData()
+    }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
