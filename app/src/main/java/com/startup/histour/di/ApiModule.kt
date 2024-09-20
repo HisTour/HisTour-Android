@@ -189,5 +189,5 @@ object ApiModule {
     fun provideTokenUpdateApi(@RefreshTokenRetrofit retrofit: Retrofit): TokenUpdateApi = retrofit.create(TokenUpdateApi::class.java)
     @Provides
     @Singleton
-    fun provideChatApi(@TempRetrofit retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
+    fun provideChatApi(@AuthRetrofit retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
 }

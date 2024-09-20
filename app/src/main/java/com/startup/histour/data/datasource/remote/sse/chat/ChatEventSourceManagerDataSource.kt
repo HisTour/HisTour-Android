@@ -12,9 +12,9 @@ import javax.inject.Singleton
 class ChatEventSourceManagerDataSource @Inject constructor(
     @SSEHttpClient private val okHttpClient: OkHttpClient
 ) {
-    fun connect(query: String): Flow<ResponseEventSource> {
+    fun connect(url: String): Flow<ResponseEventSource> {
         return EventSourceManager(okHttpClient).run {
-            initEventSource(query)
+            initEventSource(url)
             responseFlow
         }
     }

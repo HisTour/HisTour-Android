@@ -214,8 +214,7 @@ fun TaskMissionScreen(
                                     drawableId = R.drawable.ic_ggabi
                                 )
                             ) {
-                                //TODO 챗봇
-                                navController.navigate(MainScreens.GPT.route)
+                                navController.navigate(MainScreens.GPT.route + "/${tasksData.value[currentTaskNumber - 1].id}")
                             }
                             CTAImageButton(
                                 modifier = Modifier,

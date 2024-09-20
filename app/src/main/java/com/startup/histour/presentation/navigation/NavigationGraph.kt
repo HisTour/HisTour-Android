@@ -191,7 +191,12 @@ fun MainNavigationGraph() {
                 }
 
                 composable(MainScreens.Camera.route) { CameraScreen(navController) }
-                composable(MainScreens.GPT.route) { GptScreen(navController) }
+                composable(MainScreens.GPT.route + "/{taskId}",
+                    arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+                ) { navBackStackEntry ->
+                    val taskId = navBackStackEntry.arguments?.getInt("taskId") ?: return@composable
+                    GptScreen(navController, taskId)
+                }
                 composable(MainScreens.Bundle.route) { BundleScreen(navController) }
 //                composable(MainScreens.HistoryStory.route) { HistoryStoryScreen(navController) }
                 composable(

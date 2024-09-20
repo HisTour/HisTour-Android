@@ -1,9 +1,7 @@
 package com.startup.histour.presentation.mission.viewmodel
 
-import com.startup.histour.presentation.base.BaseEvent
 import com.startup.histour.presentation.base.Event
 import com.startup.histour.presentation.base.State
-import com.startup.histour.presentation.model.CharacterModel
 import com.startup.histour.presentation.model.UserInfoModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,11 +10,8 @@ enum class Author {
     CHAT_BOT, USER
 }
 
-sealed interface ChatViewEvent : BaseEvent {
-}
-
 sealed interface ChatViewModelEvent : Event {
-    data class SendMessage(val msg: String) : ChatViewModelEvent
+    data class SendMessage(val msg: String, val taskId: Int) : ChatViewModelEvent
 }
 
 data class ChatMessage(

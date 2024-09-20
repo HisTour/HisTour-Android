@@ -9,7 +9,6 @@ import com.startup.histour.data.datastore.UserInfoDataStoreProvider
 import com.startup.histour.data.dto.sse.EventSourceStatus
 import com.startup.histour.data.dto.sse.RequestGetUrl
 import com.startup.histour.data.remote.api.ChatApi
-import com.startup.histour.data.util.handleExceptionIfNeed
 import com.startup.histour.domain.base.BaseUseCase
 import com.startup.histour.domain.usecase.chat.ConnectEventSourceUseCase
 import com.startup.histour.presentation.base.BaseViewModel
@@ -28,7 +27,6 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val connectEventSourceUseCase: ConnectEventSourceUseCase,
     private val userInfoDataStoreProvider: UserInfoDataStoreProvider,
-    private val chatApi: ChatApi,
     @ApplicationContext context: Context,
 ) : BaseViewModel() {
     private val _state = ChatViewStateImpl(
@@ -81,75 +79,60 @@ class ChatViewModel @Inject constructor(
                 Log.e("LMH", "NEXTCHATID Bot $botChatId")
                 viewModelScope.launch {
                     _state.chatList.update { it + ChatMessage(id = (it.lastOrNull()?.id ?: 0) + 1, author = Author.USER, message = chatViewModelEvent.msg, time = System.currentTimeMillis()) }
-                    val response = kotlin.runCatching {
-                        handleExceptionIfNeed {
-                            val request = RequestGetUrl(
-                                qa = _state.chatList.value.filterNot { it.isDummy }.map { it.message },
-                                character = _state.userInfo.value.character.id,
-                            )
-                            Log.e("LMH", "REQUEST $request")
-                            chatApi.getUrl(
-                                request
-                            ).data.url.orEmpty()
-                        }
-                    }.getOrElse {
-                        Log.e("LMH", "ERROR $it")
-                        ""
-                    }
-                    response.takeIf { it.isNotBlank() }?.let {
-                        connectEventSourceUseCase.executeOnViewModel(
-                            launchPolicy = BaseUseCase.LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
-                            params = response,
-                            onEach = { event ->
-                                when (event.status) {
-                                    EventSourceStatus.OPEN -> {
-                                        _state.chatList.update { it + ChatMessage(id = botChatId, author = Author.CHAT_BOT, message = "", time = System.currentTimeMillis(), isLoading = true) }
-                                    }
+                    connectEventSourceUseCase.executeOnViewModel(
+                        launchPolicy = BaseUseCase.LaunchPolicy.RUN_EXIST_JOB_IF_LAUNCHED,
+                        params = RequestGetUrl(
+                            qa = _state.chatList.value.filterNot { it.isDummy }.map { it.message },
+                            characterId = _state.userInfo.value.character.id,
+                            taskId = chatViewModelEvent.taskId
+                        ),
+                        onEach = { event ->
+                            when (event.status) {
+                                EventSourceStatus.OPEN -> {
+                                    _state.chatList.update { it + ChatMessage(id = botChatId, author = Author.CHAT_BOT, message = "", time = System.currentTimeMillis(), isLoading = true) }
+                                }
 
-                                    EventSourceStatus.CLOSED -> {
-                                        connectEventSourceUseCase.cancelJob()
-                                    }
+                                EventSourceStatus.CLOSED -> {
+                                    connectEventSourceUseCase.cancelJob()
+                                }
 
-                                    EventSourceStatus.ERROR -> {
-                                        val list = _state.chatList.value
-                                        list.findLast { it.id == botChatId }?.let {
-                                            _state.chatList.update { list -> list.map { if (it.id == botChatId) it.copy(message = characterIdOfFailMessage(), isLoading = false) else it } }
-                                        }
-                                        connectEventSourceUseCase.cancelJob()
+                                EventSourceStatus.ERROR -> {
+                                    val list = _state.chatList.value
+                                    list.findLast { it.id == botChatId }?.let {
+                                        _state.chatList.update { list -> list.map { if (it.id == botChatId) it.copy(message = characterIdOfFailMessage(), isLoading = false) else it } }
                                     }
+                                    connectEventSourceUseCase.cancelJob()
+                                }
 
-                                    EventSourceStatus.SUCCESS -> {
-                                        event.msg?.let { msg ->
-                                            safeLet(msg.type, msg.contents) { type, contents ->
-                                                if (type == "model_output") {
-                                                    val list = _state.chatList.value
-                                                    list.findLast { it.id == botChatId }?.let {
-                                                        _state.chatList.update { list -> list.map { if (it.id == botChatId) it.copy(message = contents, isLoading = false) else it } }
-                                                    }
+                                EventSourceStatus.SUCCESS -> {
+                                    event.msg?.let { msg ->
+                                        safeLet(msg.type, msg.contents) { type, contents ->
+                                            if (type == "model_output") {
+                                                val list = _state.chatList.value
+                                                list.findLast { it.id == botChatId }?.let {
+                                                    _state.chatList.update { list -> list.map { if (it.id == botChatId) it.copy(message = contents, isLoading = false) else it } }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                Log.e("LMH", "RESPONSE $event")
-                            },
-                            onError = {
-                                Log.e("LMH", "STOP?? $it")
-                            },
-                        )
-                    } ?: run {
-                        _state.chatList.update {
-                            it + ChatMessage(
-                                id = botChatId,
-                                author = Author.CHAT_BOT,
-                                message = characterIdOfFailMessage(),
-                                time = System.currentTimeMillis(),
-                                isLoading = false
-                            )
-                        }
-                    }
+                            }
+                            Log.e("LMH", "RESPONSE $event")
+                        },
+                        onError = {
+                            _state.chatList.update { list ->
+                                list + ChatMessage(
+                                    id = botChatId,
+                                    author = Author.CHAT_BOT,
+                                    message = characterIdOfFailMessage(),
+                                    time = System.currentTimeMillis(),
+                                    isLoading = false
+                                )
+                            }
+                            Log.e("LMH", "STOP?? $it")
+                        },
+                    )
                 }
-
             }
         }
     }
