@@ -173,7 +173,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                     contentScale = ContentScale.FillBounds
                 )
 
-                // 경복궁 버튼
+                // 광화문 버튼
                 TransParentMapButton(
                     modifier = Modifier
                         .width(120.dp)
@@ -181,7 +181,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                         .offset(x = 45.dp, y = 240.dp)
                         .zIndex(1f),
                 ) {
-                    selectedButtonPosition = Offset(45f, 240f)
+                    selectedButtonPosition = Offset(76f, 190f)
                     Log.e("hi", "경복궁")
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
@@ -196,7 +196,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                         .offset(x = 190.dp, y = 200.dp)
                         .zIndex(1f),
                 ) {
-                    selectedButtonPosition = Offset(190f, 200f)
+                    selectedButtonPosition = Offset(217f, 150f)
                     Log.e("hi", "남한산성")
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
@@ -211,7 +211,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                         .offset(x = 75.dp, y = 370.dp)
                         .zIndex(1f),
                 ) {
-                    selectedButtonPosition = Offset(75f, 370f)
+                    selectedButtonPosition = Offset(105f, 315f)
                     selectedPlace = travelMapViewModel.state.placeList.value.find { it.placeId == 1 }
                     Log.e("hi", "수원")
                 }
@@ -224,7 +224,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                         .offset(x = 230.dp, y = 370.dp)
                         .zIndex(1f),
                 ) {
-                    selectedButtonPosition = Offset(230f, 370f)
+                    selectedButtonPosition = Offset(246f, 330f)
                     Log.e("hi", "경주")
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
@@ -236,10 +236,10 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                     modifier = Modifier
                         .width(160.dp)
                         .height(90.dp)
-                        .offset(x = 35.dp, y = 523.dp)
+                        .offset(x = 35.dp, y = 525.dp)
                         .zIndex(1f),
                 ) {
-                    selectedButtonPosition = Offset(35f, 523f)
+                    selectedButtonPosition = Offset(77f, 460f)
                     Log.e("hi", "제주")
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar("아직 준비 중이에요! \uD83D\uDEA7")
@@ -278,7 +278,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
                     selectedPlace = travelMapViewModel.state.placeList.value
                         .find { it.placeId == 1 }
                         ?.also {
-                            selectedButtonPosition = Offset(75f, 370f)
+                            selectedButtonPosition = Offset(105f, 315f)
                         }
                 }
                 .padding(horizontal = 24.dp, vertical = 12.dp),
