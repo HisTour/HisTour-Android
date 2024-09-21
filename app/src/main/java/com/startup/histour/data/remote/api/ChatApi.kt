@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ChatApi {
-    @POST("assign")
+    @POST("assistant")
     suspend fun getUrl(@Body body: RequestGetUrl): BaseResponse<ResponseGetUrlDto>
 }

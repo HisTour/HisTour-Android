@@ -69,7 +69,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltViewModel()) {
+fun GptScreen(navController: NavController, taskId: Int, chatViewModel: ChatViewModel = hiltViewModel()) {
     val chatList by chatViewModel.state.chatList.collectAsState()
     val userInfo by chatViewModel.state.userInfo.collectAsState()
 
@@ -80,7 +80,7 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
     val preLoaderLottieComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.text_loading)
     )
-    var isKeyboardVisible by remember { mutableStateOf(false) }
+    val isKeyboardVisible by remember { mutableStateOf(false) }
 
     val finishChatDialog = remember { mutableStateOf(false) }
 
@@ -164,7 +164,8 @@ fun GptScreen(navController: NavController, chatViewModel: ChatViewModel = hiltV
                                 keyboardController?.hide()
                                 chatViewModel.notifyViewModelEvent(
                                     ChatViewModelEvent.SendMessage(
-                                        text
+                                        text,
+                                        taskId
                                     )
                                 )
                                 text = ""
@@ -304,5 +305,5 @@ fun SendItem(message: ChatMessage = ChatMessage(id = 0, Author.USER, message = "
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewGptScreen() {
-    GptScreen(navController = rememberNavController(), chatViewModel = hiltViewModel())
+    GptScreen(navController = rememberNavController(), 0, chatViewModel = hiltViewModel())
 }
