@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -93,59 +94,62 @@ fun LoginScreen(
                 }
         }
     }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(modifier = Modifier.height(111.dp))
-        LottieAnimation(
-            composition = preLoaderLottieComposition,
-            iterations = LottieConstants.IterateForever,
-            contentScale = ContentScale.Crop,
-            restartOnPlay = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(160.dp, 200.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "여행 속 즐거운 미션과 함께 배우는\n역사 이야기",
-            style = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Image(
-            painter = painterResource(id = R.drawable.logo_login),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.weight(1F))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .background(Color(0xFFFEE500), RoundedCornerShape(12.dp))
-                .noRippleClickable {
-                    loginViewModel.sendKakaoEvent()
-                }
-                .padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Center
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(painter = painterResource(id = R.drawable.ic_kakao), contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Kakao 로 계속하기",
-                style = HistourTheme.typography.body1Bold.copy(color = HistourTheme.colors.gray900)
+            Spacer(modifier = Modifier.height(111.dp))
+            LottieAnimation(
+                composition = preLoaderLottieComposition,
+                iterations = LottieConstants.IterateForever,
+                contentScale = ContentScale.Crop,
+                restartOnPlay = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(160.dp, 200.dp)
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "여행 속 즐거운 미션과 함께 배우는\n역사 이야기",
+                style = HistourTheme.typography.body2Reg.copy(color = HistourTheme.colors.gray900),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Image(
+                painter = painterResource(id = R.drawable.logo_login),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .background(Color(0xFFFEE500), RoundedCornerShape(12.dp))
+                    .noRippleClickable {
+                        loginViewModel.sendKakaoEvent()
+                    }
+                    .padding(vertical = 15.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(painter = painterResource(id = R.drawable.ic_kakao), contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Kakao 로 계속하기",
+                    style = HistourTheme.typography.body1Bold.copy(color = HistourTheme.colors.gray900)
+                )
+            }
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = stringResource(id = R.string.setting_menu_item_policy),
+                textDecoration = TextDecoration.Underline,
+                style = HistourTheme.typography.detail1Regular,
+                modifier = Modifier
+                    .noRippleClickable {
+                        context.openBrowser("https://zippy-cake-826.notion.site/88e8a4673ad74e88a2221079602828e3?pvs=4")
+                    })
+            Spacer(modifier = Modifier.height(18.dp))
         }
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = stringResource(id = R.string.setting_menu_item_policy),
-            textDecoration = TextDecoration.Underline,
-            style = HistourTheme.typography.detail1Regular,
-            modifier = Modifier.noRippleClickable {
-                context.openBrowser("https://zippy-cake-826.notion.site/88e8a4673ad74e88a2221079602828e3?pvs=4")
-            })
-        Spacer(modifier = Modifier.height(18.dp))
     }
 }
 
