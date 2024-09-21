@@ -338,10 +338,12 @@ fun TaskMissionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AsyncImage(
-                            modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(10.dp)),
                             model = tasksData.value[page].imageUrl,
                             contentDescription = "task_mission",
-                            contentScale = ContentScale.Fit
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
