@@ -10,7 +10,6 @@ import dagger.hilt.android.HiltAndroidApp
 class HisTourApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-
-        //KakaoSdk.init(this, NATIVE_APP_KEY)
+        KakaoSdk.init(this, NATIVE_APP_KEY)
     }
 }

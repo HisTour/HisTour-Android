@@ -46,7 +46,9 @@ import com.startup.histour.presentation.widget.snack.HistourSnackBar
 import com.startup.histour.ui.theme.HistourTheme
 
 @Composable
-fun LoginNavigationGraph(viewModel: OnBoardingViewModel) {
+fun LoginNavigationGraph(
+    viewModel: OnBoardingViewModel
+) {
 
     val navController = rememberNavController()
     val snackBarHostState = SnackbarHostState()
