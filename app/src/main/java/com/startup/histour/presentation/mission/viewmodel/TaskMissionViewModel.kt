@@ -32,8 +32,10 @@ class TaskMissionViewModel @Inject constructor(
 
 
     fun initClearedQuizCount(initialCount: Int) {
-        _clearedQuizCount.value = initialCount
-        _currentTaskNumber.value = initialCount
+        if (_clearedQuizCount.value == 0) {
+            _clearedQuizCount.value = initialCount
+            _currentTaskNumber.value = initialCount
+        }
     }
 
     fun updateCurrentTaskNumber(value: Int) {
