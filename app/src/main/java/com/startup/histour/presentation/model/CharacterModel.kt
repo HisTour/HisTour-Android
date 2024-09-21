@@ -1,17 +1,29 @@
 package com.startup.histour.presentation.model
 
+import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 import com.startup.histour.UserInfo.CharacterInfo
 import java.io.Serializable
 
+@Keep
 data class CharacterModel(
+    @SerializedName("id")
     val id: Int,
+    @SerializedName("name")
     val name: String,
+    @SerializedName("backgroundEnd")
     val backgroundEnd: String,
+    @SerializedName("backgroundStart")
     val backgroundStart: String,
+    @SerializedName("commentColor")
     val commentColor: String,
+    @SerializedName("comment")
     val comment: String,
+    @SerializedName("description")
     val description: String,
+    @SerializedName("normalImageUrl")
     val normalImageUrl: String,
+    @SerializedName("faceImageUrl")
     val faceImageUrl: String
 ) : Serializable {
     fun toCharacterInfo(): CharacterInfo =
