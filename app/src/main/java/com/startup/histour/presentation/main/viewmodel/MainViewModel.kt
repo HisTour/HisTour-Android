@@ -45,7 +45,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun checkUserPlaceData() {
+    fun checkUserPlaceData() {
         viewModelScope.launch {
             if (userInfoDataStoreProvider.getPlaceId() == -1) {
                 notifyEvent(HomeEvent.MovePlaceSetting)
