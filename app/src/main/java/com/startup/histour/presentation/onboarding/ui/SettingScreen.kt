@@ -47,7 +47,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.kakao.sdk.user.UserApiClient
 import com.startup.histour.R
+import com.startup.histour.presentation.login.KaKaoLoginClient
 import com.startup.histour.presentation.login.ui.LoginActivity
 import com.startup.histour.presentation.navigation.MainScreens
 import com.startup.histour.presentation.onboarding.model.SettingViewMoveEvent
@@ -65,10 +67,16 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingScreen(navController: NavController, settingViewModel: SettingViewModel = hiltViewModel()) {
+fun SettingScreen(
+    navController: NavController,
+    settingViewModel: SettingViewModel = hiltViewModel()
+) {
     val userInfo by settingViewModel.state.userInfo.collectAsState()
     val context = LocalContext.current
     val activity = context as? ComponentActivity
+    val kaKaoLoginClient =
+        activity?.baseContext?.let { KaKaoLoginClient(it, UserApiClient.instance) }
+
 
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
@@ -123,33 +131,56 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                         MenuItem(
                             type = it,
                             titleStrResId = R.string.setting_menu_item_version,
-                            rightMenuType = RightMenuType.Text("v${context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()}")
+                            rightMenuType = RightMenuType.Text(
+                                "v${
+                                    context.packageManager.getPackageInfo(
+                                        context.packageName,
+                                        0
+                                    ).versionName.orEmpty()
+                                }"
+                            )
                         )
                     }
 
                     MenuType.Policy -> {
-                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_policy, rightMenuType = RightMenuType.Icon()) {
+                        MenuItem(
+                            type = it,
+                            titleStrResId = R.string.setting_menu_item_policy,
+                            rightMenuType = RightMenuType.Icon()
+                        ) {
                             /* TODO Move To 개인정보 처리 방침 */
                             context.openBrowser("https://zippy-cake-826.notion.site/88e8a4673ad74e88a2221079602828e3?pvs=4")
                         }
                     }
 
                     MenuType.Terms -> {
-                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_terms, rightMenuType = RightMenuType.Icon()) {
+                        MenuItem(
+                            type = it,
+                            titleStrResId = R.string.setting_menu_item_terms,
+                            rightMenuType = RightMenuType.Icon()
+                        ) {
                             /* TODO Move To 이용 약관 */
                             context.openBrowser("https://zippy-cake-826.notion.site/23904f07fa0e442c9a577ebd9fbe57ec?pvs=4")
                         }
                     }
 
                     MenuType.Instagram -> {
-                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_service_introduce, rightMenuType = RightMenuType.Icon()) {
+                        MenuItem(
+                            type = it,
+                            titleStrResId = R.string.setting_menu_item_service_introduce,
+                            rightMenuType = RightMenuType.Icon()
+                        ) {
                             /* TODO Move To 인스타그램 */
                             context.openBrowser("https://zippy-cake-826.notion.site/ai-30f93c7b5484441cb816e40a3bffea39?pvs=4")
                         }
                     }
 
                     MenuType.Logout -> {
-                        MenuItem(type = it, titleStrResId = R.string.setting_menu_item_logout, rightMenuType = RightMenuType.Not) {
+                        MenuItem(
+                            type = it,
+                            titleStrResId = R.string.setting_menu_item_logout,
+                            rightMenuType = RightMenuType.Not
+                        ) {
                             /* TODO Move To 로그아웃 */
                             openLogOutDialog.value = true
                         }
@@ -175,8 +206,14 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                         openWithdrawalDialog.value = true
                     },
             ) {
-                Text(stringResource(id = R.string.setting_menu_item_leave), style = HistourTheme.typography.detail2Regular.copy(color = HistourTheme.colors.gray400))
-                Image(painter = painterResource(id = R.drawable.ic_unsubscribe), contentDescription = null)
+                Text(
+                    stringResource(id = R.string.setting_menu_item_leave),
+                    style = HistourTheme.typography.detail2Regular.copy(color = HistourTheme.colors.gray400)
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_unsubscribe),
+                    contentDescription = null
+                )
             }
 
             if (openWithdrawalDialog.value) {
@@ -189,7 +226,9 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                         type = TYPE.DEFAULT
                     ),
                     onClickPositive = {
-                        // TODO 탈퇴하기
+                        coroutineScope.launch {
+                            kaKaoLoginClient?.unLink()
+                        }
                         settingViewModel.withdrawalAccount()
                         openWithdrawalDialog.value = false
                     },
@@ -207,7 +246,9 @@ fun SettingScreen(navController: NavController, settingViewModel: SettingViewMod
                         type = TYPE.DEFAULT
                     ),
                     onClickPositive = {
-                        // TODO 로그아웃
+                        coroutineScope.launch {
+                            kaKaoLoginClient?.logout()
+                        }
                         settingViewModel.logout()
                         openLogOutDialog.value = false
                     },
@@ -245,7 +286,11 @@ fun ProfileItem(profilePath: String, userName: String, onClickNickNameEdit: () -
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .border(width = (1.5F).dp, color = HistourTheme.colors.green400, shape = CircleShape)
+                .border(
+                    width = (1.5F).dp,
+                    color = HistourTheme.colors.green400,
+                    shape = CircleShape
+                )
                 .background(color = HistourTheme.colors.gray200, shape = CircleShape),
             contentDescription = null
         )
@@ -255,7 +300,8 @@ fun ProfileItem(profilePath: String, userName: String, onClickNickNameEdit: () -
                 start.linkTo(profileImage.start)
                 end.linkTo(profileImage.end)
             },
-            text = userName, style = HistourTheme.typography.head4.copy(color = HistourTheme.colors.gray900),
+            text = userName,
+            style = HistourTheme.typography.head4.copy(color = HistourTheme.colors.gray900),
             textAlign = TextAlign.Center
         )
 
@@ -288,7 +334,10 @@ fun MenuItemView(list: List<MenuItem>) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = HistourTheme.colors.white000, shape = RoundedCornerShape(6.dp))
+                    .background(
+                        color = HistourTheme.colors.white000,
+                        shape = RoundedCornerShape(6.dp)
+                    )
                     .padding(horizontal = 24.dp)
                     .noRippleClickable {
                         item.clickEvent.invoke()
@@ -297,7 +346,8 @@ fun MenuItemView(list: List<MenuItem>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.padding(vertical = 14.dp), text = stringResource(id = item.titleStrResId),
+                    modifier = Modifier.padding(vertical = 14.dp),
+                    text = stringResource(id = item.titleStrResId),
                     style = HistourTheme.typography.body1Reg.copy(color = if (item.type == MenuType.Logout) HistourTheme.colors.red300 else HistourTheme.colors.gray900)
                 )
                 when (item.rightMenuType) {
@@ -310,7 +360,10 @@ fun MenuItemView(list: List<MenuItem>) {
                     }
 
                     is RightMenuType.Icon -> {
-                        Image(painter = painterResource(id = item.rightMenuType.iconResId), contentDescription = null)
+                        Image(
+                            painter = painterResource(id = item.rightMenuType.iconResId),
+                            contentDescription = null
+                        )
                     }
                 }
             }
@@ -323,7 +376,12 @@ enum class MenuType {
     Version, Terms, Policy, Instagram, Logout
 }
 
-data class MenuItem(val type: MenuType, @StringRes val titleStrResId: Int, val rightMenuType: RightMenuType = RightMenuType.Icon(), val clickEvent: () -> Unit = {})
+data class MenuItem(
+    val type: MenuType,
+    @StringRes val titleStrResId: Int,
+    val rightMenuType: RightMenuType = RightMenuType.Icon(),
+    val clickEvent: () -> Unit = {}
+)
 
 sealed interface RightMenuType {
     data class Text(val content: String) : RightMenuType

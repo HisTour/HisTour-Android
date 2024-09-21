@@ -15,7 +15,8 @@ import kotlin.coroutines.suspendCoroutine
 
 
 class KaKaoLoginClient @Inject constructor(
-    @ActivityContext private val context: Context, private val userApiClient: UserApiClient
+    @ActivityContext private val context: Context,
+    private val userApiClient: UserApiClient
 ) {
 
     /**

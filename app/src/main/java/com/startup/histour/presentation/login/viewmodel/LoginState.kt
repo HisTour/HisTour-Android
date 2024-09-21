@@ -18,4 +18,5 @@ sealed interface LoginViewEvent : BaseEvent {
     data object MoveToCharacterSettingView : LoginViewEvent
     data object MoveToPlaceSelectView : LoginViewEvent
     data object MoveToMainView : LoginViewEvent
+    data object ClickKakaoLogin : LoginViewEvent
 }

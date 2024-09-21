@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -53,7 +52,10 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = viewModel(LocalContext.current as ComponentActivity)
+) {
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -85,6 +87,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
                                 }
                             }
                         }
+
+                        else -> Unit
                     }
                 }
         }
@@ -121,14 +125,17 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
                 .padding(horizontal = 24.dp)
                 .background(Color(0xFFFEE500), RoundedCornerShape(12.dp))
                 .noRippleClickable {
-                    loginViewModel.login()
+                    loginViewModel.sendKakaoEvent()
                 }
                 .padding(vertical = 15.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Image(painter = painterResource(id = R.drawable.ic_kakao), contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Kakao 로 계속하기", style = HistourTheme.typography.body1Bold.copy(color = HistourTheme.colors.gray900))
+            Text(
+                text = "Kakao 로 계속하기",
+                style = HistourTheme.typography.body1Bold.copy(color = HistourTheme.colors.gray900)
+            )
         }
         Spacer(modifier = Modifier.height(18.dp))
         Text(

@@ -20,6 +20,7 @@ class LoginViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _state = LoginStateImpl()
     override val state: LoginState = _state
+
     fun login(type: String = "DEVELOPER", token: String = "asdasd") {
         loginUseCase.executeOnViewModel(
             params = RequestLogin.of(type, token),
@@ -71,5 +72,9 @@ class LoginViewModel @Inject constructor(
             }
             notifyEvent(LoginViewEvent.MoveToMainView)
         }
+    }
+
+    fun sendKakaoEvent(){
+        notifyEvent(LoginViewEvent.ClickKakaoLogin)
     }
 }
