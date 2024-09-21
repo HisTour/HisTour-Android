@@ -44,6 +44,9 @@ android {
         buildConfigField("String", "SERVER_DOMAIN", properties.getProperty("SERVER_DOMAIN"))
         buildConfigField("String", "SSE_SERVER_DOMAIN", properties.getProperty("SSE_SERVER_DOMAIN"))
 
+        val nativeAppKey = properties.getProperty("NATIVE_APP_KEY")?.trim('"') ?: ""
+        manifestPlaceholders["NATIVE_APP_KEY"] = nativeAppKey
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
