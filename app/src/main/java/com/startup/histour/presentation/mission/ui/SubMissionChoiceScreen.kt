@@ -99,8 +99,8 @@ fun SubMissionChoiceScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(10.dp))
-                .padding(all = 24.dp),
+                .padding(all = 24.dp)
+                .clip(RoundedCornerShape(10.dp)),
         )
 
         SubMissionList(
