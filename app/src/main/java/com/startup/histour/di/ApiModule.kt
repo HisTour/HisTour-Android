@@ -94,7 +94,7 @@ object ApiModule {
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(50, TimeUnit.SECONDS)
+            .readTimeout(100, TimeUnit.SECONDS)
             .build()
 
     @Provides
