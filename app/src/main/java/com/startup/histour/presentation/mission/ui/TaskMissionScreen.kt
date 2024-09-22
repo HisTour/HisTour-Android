@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -128,6 +129,7 @@ fun TaskMissionScreen(
         mutableStateOf("")
     }
     var isAnswerSubmitted by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     // 퀴즈가 얼마나 클리어 되었는가 중복 채점시에는 올라가면 안되고 해당 숫자 기준으로 뷰페이저 페이지 최대치가 설정됨
@@ -415,6 +417,7 @@ fun TaskMissionScreen(
                                         if (isAnswerSubmitted) {
                                             taskMissionViewModel.showAlreadyAnsweredToast()
                                         } else {
+                                            keyboardController?.hide()
                                             taskMissionViewModel.checkAnswer(
                                                 isLast = currentTaskNumber == tasksData.value.size,
                                                 taskId = tasksData.value[currentTaskNumber - 1].id,
