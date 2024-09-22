@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">나들이</string>
+    <string name="app_name">나들ai</string>
     <string name="title_character">캐릭터 변경</string>
     <string name="title_misson">미션 이름</string>
     <string name="title_bundle">역사 보따리</string>
