@@ -123,16 +123,16 @@ fun CharacterSettingScreen(
             histourDialogModel = HistourDialogModel(
                 titleRes = R.string.dialog_change_close,
                 descriptionRes = R.string.dialog_save_description,
-                positiveButtonRes = R.string.dialog_continue,
-                negativeButtonRes = R.string.dialog_exit,
+                positiveButtonRes = R.string.dialog_exit,
+                negativeButtonRes = R.string.dialog_continue,
                 type = TYPE.DEFAULT
             ),
             onClickPositive = {
                 openDialog.value = false
+                navController.popBackStack()
             },
             onClickNegative = {
                 openDialog.value = false
-                navController.popBackStack()
             },
         )
     }
