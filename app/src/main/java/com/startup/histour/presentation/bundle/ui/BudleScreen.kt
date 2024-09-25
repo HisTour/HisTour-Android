@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -174,14 +175,6 @@ private fun RecommendedSpotListItem(
     Box(
         modifier = Modifier
             .height(109.dp)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color.Transparent, Color.Black.copy(0.5F)),
-                    start = Offset.Zero,
-                    end = Offset(0F, Float.POSITIVE_INFINITY)
-                ),
-                shape = RoundedCornerShape(8.dp)
-            )
     ) {
         AsyncImage(
             model = attraction.imageUrl,
@@ -198,12 +191,25 @@ private fun RecommendedSpotListItem(
                 },
             contentDescription = null,
         )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(0.5F)),
+                        start = Offset.Zero,
+                        end = Offset(0F, Float.POSITIVE_INFINITY)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
         Text(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
-                .align(Alignment.BottomCenter),
+                .align(Alignment.BottomStart),
+            textAlign = TextAlign.Start,
             style = HistourTheme.typography.body3Medi.copy(color = HistourTheme.colors.white000),
-            text = attraction.description,
+            text = attraction.name,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )

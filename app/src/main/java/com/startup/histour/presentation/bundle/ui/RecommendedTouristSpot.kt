@@ -1,5 +1,6 @@
 package com.startup.histour.presentation.bundle.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -56,6 +60,17 @@ fun RecommendedSpotScreen(navController: NavController, attraction: Attraction) 
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(Color.Black.copy(0.5F), Color.Transparent),
+                                        start = Offset.Zero,
+                                        end = Offset(0F, Float.POSITIVE_INFINITY)
+                                    ),
+                                )
                         )
                         Text(
                             modifier = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp),
