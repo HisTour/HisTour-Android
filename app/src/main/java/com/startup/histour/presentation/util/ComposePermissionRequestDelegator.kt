@@ -54,13 +54,6 @@ fun rememberPermissionRequestDelegator(
             return@rememberLauncherForActivityResult
         }
 
-        if (OsVersions.isGreaterThanOrEqualsUPSIDEDOWNCAKE() && permission == Permission.GALLERY) {
-            if (!deniedPermissions.contains(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-                doOnGranted()
-                return@rememberLauncherForActivityResult
-            }
-        }
-
         deniedPermissions
             .filter { shouldShowRequestPermissionRationale(it) }
             .takeIf { it.isNotEmpty() }

@@ -1,9 +1,7 @@
 package com.startup.histour.presentation.util
 
-import android.Manifest
 import androidx.activity.result.ActivityResultLauncher
 import com.startup.histour.core.osversion.UsePermissionHelper
-import com.startup.histour.core.osversion.OsVersions
 import com.startup.histour.core.osversion.UsePermissionHelper.Permission
 
 abstract class PermissionRequestDelegator(
@@ -34,13 +32,6 @@ abstract class PermissionRequestDelegator(
         if (deniedPermissions.isEmpty()) {
             doOnGranted()
             return
-        }
-
-        if (OsVersions.isGreaterThanOrEqualsUPSIDEDOWNCAKE() && requestPermissionType == Permission.GALLERY) {
-            if (!deniedPermissions.contains(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-                doOnGranted()
-                return
-            }
         }
 
         deniedPermissions
