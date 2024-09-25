@@ -141,7 +141,7 @@ fun OnBoardingMapScreen(navController: NavController, snackBarHostState: Snackba
         ) {
             Text(
                 text = stringResource(id = R.string.on_boarding_map_title),
-                style = HistourTheme.typography.head1
+                style = HistourTheme.typography.head1.copy(HistourTheme.colors.gray900)
             )
 
             CTAImageButton(
