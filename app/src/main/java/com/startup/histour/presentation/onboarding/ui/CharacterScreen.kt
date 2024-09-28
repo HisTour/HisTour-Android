@@ -183,7 +183,7 @@ fun CharacterPagerViewItem(model: CharacterModel) {
             )
             .padding(
                 top = 38.dp,
-                bottom = 30.dp
+                bottom = 31.dp
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -208,20 +208,21 @@ fun CharacterPagerViewItem(model: CharacterModel) {
         ) {
             Column(
                 modifier = Modifier
-                    .padding(top = 19.dp)
+                    .padding(top = 18.dp)
             ) {
                 Text(
                     text = model.description,
                     style = HistourTheme.typography.detail2Regular.copy(
                         color = HistourTheme.colors.gray500
                     ),
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(color = HistourTheme.colors.white000, shape = RoundedCornerShape(11.dp))
+                        .height(110.dp)
                         .padding(
-                            start = 22.dp,
-                            end = 22.dp,
-                            top = 27.dp,
-                            bottom = 16.dp
+                            start = 18.dp,
+                            end = 18.dp,
+                            top = 24.dp,
                         )
                 )
             }

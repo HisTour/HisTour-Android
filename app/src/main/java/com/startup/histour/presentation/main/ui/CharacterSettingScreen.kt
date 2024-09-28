@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -172,6 +173,7 @@ fun SelectedCharacterDisplayView(character: CharacterModel) {
                     style = HistourTheme.typography.detail1Regular.copy(
                         color = HistourTheme.colors.gray700
                     ),
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(color = HistourTheme.colors.gray100, shape = RoundedCornerShape(12.dp))
                         .padding(
