@@ -66,9 +66,9 @@ fun RecommendedSpotScreen(navController: NavController, attraction: Attraction) 
                                 .fillMaxSize()
                                 .background(
                                     brush = Brush.linearGradient(
-                                        colors = listOf(Color.Black.copy(0.5F), Color.Transparent),
-                                        start = Offset.Zero,
-                                        end = Offset(0F, Float.POSITIVE_INFINITY)
+                                        colors = listOf(Color.White.copy(0.5F), Color.Transparent),
+                                        start = Offset(Float.POSITIVE_INFINITY, 0F),
+                                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
                                     ),
                                 )
                         )
