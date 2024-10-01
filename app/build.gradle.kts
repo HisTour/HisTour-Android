@@ -37,8 +37,8 @@ android {
         applicationId = "com.startup.histour"
         minSdk = deps.versions.android.minSdk.get().toInt()
         targetSdk = deps.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         buildConfigField("String", "NATIVE_APP_KEY", properties.getProperty("NATIVE_APP_KEY"))
         buildConfigField("String", "SERVER_DOMAIN", properties.getProperty("SERVER_DOMAIN"))
