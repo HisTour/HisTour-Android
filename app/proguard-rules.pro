@@ -46,7 +46,40 @@
 -dontwarn okhttp3.**
 -dontwarn javax.annotation.**
 -dontwarn org.conscrypt.**
+-keep class retrofit2.** { *; }
+-keep interface retrofit2.** { *; }
+# OkHttp 관련 설정 (로깅 인터셉터 등 사용 시)
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
 
+# Hilt 관련 설정
+-keep class dagger.hilt.** { *; }
+-keep interface dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+
+# Dagger 관련 설정 (Hilt는 Dagger 기반)
+-keep class dagger.** { *; }
+-keep interface dagger.** { *; }
+
+# Room 관련 설정
+-keep class androidx.room.** { *; }
+-keep interface androidx.room.** { *; }
+
+
+-keep class com.google.firebase.** { *; }
+-keep interface com.google.firebase.** { *; }
+
+# Kotlin 관련 설정
+-keepclassmembers class * {
+    @kotlin.Metadata <fields>;
+}
+
+-keep class com.startup.histour.data.** { *; }
+# 데이터 클래스의 getter와 setter 유지
+-keepclassmembers class * {
+    *** get*();
+    void set*(***);
+}
 
 -keepattributes Signature, InnerClasses, EnclosingMethod
 
@@ -57,7 +90,8 @@
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
-
+-keepattributes Signature
+-keepattributes *Annotation*
 # With R8 full mode generic signatures are stripped for classes that are not
 # kept. Suspend functions are wrapped in continuations where the type argument
 # is used.
@@ -69,3 +103,4 @@
 
 # With R8 full mode generic signatures are stripped for classes that are not kept.
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
+
