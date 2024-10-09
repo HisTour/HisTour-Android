@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -122,9 +123,8 @@ fun MissionClearScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Bottom
         ) {
-            Spacer(modifier = Modifier.height(88.dp))
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -132,20 +132,19 @@ fun MissionClearScreen(
                 Row(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(111.dp))
-                        .height(27.dp)
+                        .wrapContentHeight()
                         .width(IntrinsicSize.Max)
-                        .background(HistourTheme.colors.green200),
+                        .background(HistourTheme.colors.green200)
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 10.dp),
                         text = titleText,
                         style = HistourTheme.typography.body1Bold,
                         color = HistourTheme.colors.green400
                     )
                 }
                 Text(
-                    modifier = Modifier.height(33.dp),
                     text = stringResource(id = descriptionText),
                     style = HistourTheme.typography.head2,
                     color = HistourTheme.colors.gray900
@@ -185,6 +184,7 @@ fun MissionClearScreen(
                 }
             }
             if (clearType == SUBMISSION) {
+                Spacer(modifier = Modifier.height(8.dp))
                 CTAButton(
                     text = R.string.mission_clear_cta, mode = CTAMode.SubEnable.instance()
                 ) {
